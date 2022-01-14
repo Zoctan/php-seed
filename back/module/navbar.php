@@ -24,13 +24,14 @@ $selfName = Util::phpSelfName();
                         <li class="<?php echo $selfName == 'miniprogramTabbar.php' ? 'active' : ''; ?>"><a href="miniprogramTabbar.php" target="_blank">底部导航栏</a></li>
                     </ul>
                 </li>
-                <li class="dropdown <?php echo $selfName == 'accountAdmin.php' || $selfName == 'systemKeyValue.php' ? 'active' : ''; ?>">
+                <li class="dropdown <?php echo $selfName == 'member.php' || $selfName == 'role.php' || $selfName == 'systemKeyValue.php' || $selfName == 'log.php' ? 'active' : ''; ?>">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         系统 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
                         <?php if ($_COOKIE["role"] == "superadmin") { ?>
-                            <li class="<?php echo $selfName == 'accountAdmin.php' ? 'active' : ''; ?>"><a href="accountAdmin.php" target="_blank">账户管理</a></li>
+                            <li class="<?php echo $selfName == 'member.php' ? 'active' : ''; ?>"><a href="member.php" target="_blank">账户管理</a></li>
+                            <li class="<?php echo $selfName == 'role.php' ? 'active' : ''; ?>"><a href="role.php" target="_blank">角色管理</a></li>
                             <li class="<?php echo $selfName == 'systemKeyValue.php' ? 'active' : ''; ?>"><a href="systemKeyValue.php" target="_blank">系统键值对</a></li>
                             <li class="<?php echo $selfName == 'log.php' ? 'active' : ''; ?>"><a href="log.php" target="_blank">日志列表</a></li>
                         <?php } ?>
@@ -38,7 +39,7 @@ $selfName = Util::phpSelfName();
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="accountInfo.php" target="_blank"><span class="glyphicon glyphicon-user"></span> 我的</a></li>
+                <li><a href="memberInfo.php" target="_blank"><span class="glyphicon glyphicon-user"></span> 我的</a></li>
                 <li><a href="logout.php"><span class="glyphicon glyphicon-log-out"></span> 登出</a></li>
             </ul>
         </div>

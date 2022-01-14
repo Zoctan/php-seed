@@ -12,9 +12,9 @@ if (!empty($_GET) && isset($_GET["id"])) {
 }
 
 // 频道配置列表
-$channelSettingList = System::getInstance()->getValue("channel");
+$channelList = System::getInstance()->getValue("channel");
 // 展示配置列表
-$showSettingList = System::getInstance()->getValue("worksShow");
+$workShowList = System::getInstance()->getValue("workShow");
 ?>
 <!DOCTYPE html>
 <html lang="zh">
@@ -73,16 +73,16 @@ $showSettingList = System::getInstance()->getValue("worksShow");
             <div class="form-group">
                 <label for="channelId">频道</label>
                 <select id="channelIdSelect" class="form-control" name="channelId">
-                    <?php for ($i = 0, $len = count($channelSettingList); $i < $len; $i++) { ?>
-                        <option value="<?php echo $channelSettingList[$i]["id"]; ?>"><?php echo $channelSettingList[$i]["title"]; ?></option>
+                    <?php for ($i = 0, $len = count($channelList); $i < $len; $i++) { ?>
+                        <option value="<?php echo $channelList[$i]["id"]; ?>"><?php echo $channelList[$i]["title"]; ?></option>
                     <?php } ?>
                 </select>
             </div>
             <div class="form-group">
                 <label for="show">是否展示</label>
                 <select id="showSelect" class="form-control" name="show">
-                    <?php for ($i = 0, $len = count($showSettingList); $i < $len; $i++) { ?>
-                        <option value="<?php echo $showSettingList[$i]["value"]; ?>"><?php echo $showSettingList[$i]["title"]; ?></option>
+                    <?php for ($i = 0, $len = count($workShowList); $i < $len; $i++) { ?>
+                        <option value="<?php echo $workShowList[$i]["value"]; ?>"><?php echo $workShowList[$i]["title"]; ?></option>
                     <?php } ?>
                 </select>
             </div>

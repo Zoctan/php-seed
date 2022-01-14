@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 
 require_once dirname(__FILE__) . "/../function/Util.php";
 require_once dirname(__FILE__) . "/../function/Result.php";
-require_once dirname(__FILE__) . "/../model/Account.php";
+require_once dirname(__FILE__) . "/../model/Member.php";
 
 header('Access-Control-Allow-Origin:*');
 header('Access-Control-Allow-Methods:POST,GET,OPTIONS');

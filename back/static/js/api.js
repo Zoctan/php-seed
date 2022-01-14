@@ -91,41 +91,41 @@
         },
     }
 
-    // Account
-    API.Account = {
+    // Member
+    API.Member = {
         // 刷新用户登陆状态
         refresh: function (args) {
-            API.Post(args, 'controller/Account.php?action=refresh');
+            API.Post(args, 'controller/Member.php?action=refresh');
         },
 
         // 创建用户
         create: function (args) {
-            API.Post(args, 'controller/Account.php?action=create');
+            API.Post(args, 'controller/Member.php?action=create');
         },
 
         // 获取单个用户信息
         get: function (args) {
-            API.Post(args, 'controller/Account.php?action=get');
+            API.Post(args, 'controller/Member.php?action=get');
         },
 
         // 搜索用户
         search: function (args) {
-            API.Post(args, 'controller/Account.php?action=search');
+            API.Post(args, 'controller/Member.php?action=search');
         },
 
         // 修改用户信息
         update: function (args) {
-            API.Post(args, 'controller/Account.php?action=update');
+            API.Post(args, 'controller/Member.php?action=update');
         },
 
         // 修改用户角色
         updateRole: function (args) {
-            API.Post(args, 'controller/Account.php?action=updateRole');
+            API.Post(args, 'controller/Member.php?action=updateRole');
         },
 
         // 用户登出
         logout: function (args) {
-            API.Get(args, 'controller/Account.php?action=logout');
+            API.Get(args, 'controller/Member.php?action=logout');
         },
     }
 

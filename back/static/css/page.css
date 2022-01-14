@@ -47,7 +47,7 @@
     justify-content: space-between;
 }
 
-#data-list .data-item .data-btn-group {
+#data-list .data-item .data-item-right {
     width: 40rem;
     text-align: right;
 }
@@ -65,7 +65,7 @@
     text-overflow:ellipsis;
 }
 
-#data-list .data-item .data-btn-group a {
+#data-list .data-item .data-item-right a {
     margin: 0.5rem;
 }
 

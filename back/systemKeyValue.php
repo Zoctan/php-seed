@@ -73,7 +73,7 @@ require_once dirname(__FILE__) . "/module/header.php";
                 var result = `<div class="data-item">
                                     <div class="data-item-left">说明</div>
                                     <div class="data-item-center">键</div>
-                                    <div class="data-btn-group"></div>
+                                    <div class="data-item-right"></div>
                                 </div>`;
                 $.each(systemList, function(_, item) {
                     result += `<div class="data-item">
@@ -83,7 +83,7 @@ require_once dirname(__FILE__) . "/module/header.php";
                                     <div class="data-item-center">
                                         ${item.key}
                                     </div>
-                                    <div class="data-btn-group">
+                                    <div class="data-item-right">
                                         <button class="btn btn-success show-system" data-id="${item.id}">查看</button>
                                         <button class="btn btn-warning edit-system" data-id="${item.id}">编辑</button>
                                         <button class="btn btn-danger delete-system" data-id="${item.id}">删除</button>

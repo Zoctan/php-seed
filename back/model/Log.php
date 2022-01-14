@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 require_once dirname(__FILE__) . "/../function/Util.php";
 require_once dirname(__FILE__) . "/../function/MysqliDb.php";
 require_once dirname(__FILE__) . "/../function/IpDb/Ipv4Location.php";
-require_once dirname(__FILE__) . "/Account.php";
+require_once dirname(__FILE__) . "/Member.php";
 
 class Log
 {
@@ -83,7 +83,7 @@ class Log
      */
     public function create($data)
     {
-        $account =  Account::getInstance()->getOneBy(["id"], [$data["account_id"]]);
+        $member =  Member::getInstance()->getOneBy(["id"], [$data["member_id"]]);
 
         $ip = Util::getIp();
         $ipInfo = Ipv4Location::getLocation($ip);
@@ -97,7 +97,7 @@ class Log
         }
 
         $data =  array_merge($data, [
-            "account_name" =>  $account["nickname"],
+            "member_name" =>  $member["nickname"],
             "ip" => ip2long($ip),
             "ip_city" => implode("-", $ipCity),
         ]);
@@ -109,33 +109,33 @@ class Log
     }
 
 
-    public function info($accountId, $content, $extra = null)
+    public function info($memberId, $content, $extra = null)
     {
         return $this->create([
             "level" => 0,
-            "account_id" => (int) $accountId,
+            "member_id" => (int) $memberId,
             "content" => $content,
             "extra" => $extra,
         ]);
     }
 
 
-    public function warn($accountId, $content, $extra = null)
+    public function warn($memberId, $content, $extra = null)
     {
         return $this->create([
             "level" => 1,
-            "account_id" => (int)  $accountId,
+            "member_id" => (int)  $memberId,
             "content" => $content,
             "extra" => $extra,
         ]);
     }
 
 
-    public function error($accountId, $content, $extra = null)
+    public function error($memberId, $content, $extra = null)
     {
         return $this->create([
             "level" => 2,
-            "account_id" => (int)  $accountId,
+            "member_id" => (int)  $memberId,
             "content" => $content,
             "extra" => $extra,
         ]);

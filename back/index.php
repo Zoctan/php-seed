@@ -2,7 +2,7 @@
 require_once dirname(__FILE__) . "/module/header.php";
 
 // 频道配置列表
-$channelSettingList = System::getInstance()->getValue("channel");
+$channelList = System::getInstance()->getValue("channel");
 ?>
 <!DOCTYPE html>
 <html lang="zh">
@@ -39,7 +39,7 @@ $channelSettingList = System::getInstance()->getValue("channel");
             </div>
             <input type="text" class="form-control" id="searchValue" placeholder="请输入关键字">
             <span class="input-group-btn">
-                <button id="onSearch" class="form-control btn btn-primary" disabled="disabled">搜索</button>
+                <button id="search" class="form-control btn btn-primary" disabled="disabled">搜索</button>
             </span>
         </div>
         <!-- 新建按钮 -->
@@ -63,10 +63,10 @@ $channelSettingList = System::getInstance()->getValue("channel");
     <script src="static/js/api.js"></script>
     <script>
         $(function() {
-            var channelSettingList = JSON.parse('<?php echo json_encode($channelSettingList); ?>');
+            var channelList = JSON.parse('<?php echo json_encode($channelList); ?>');
             var channelNameDict = {};
-            for (var i = 0; i < channelSettingList.length; i++) {
-                channelNameDict[channelSettingList[i].id] = channelSettingList[i].title;
+            for (var i = 0; i < channelList.length; i++) {
+                channelNameDict[channelList[i].id] = channelList[i].title;
             }
 
             var articleList = [];
@@ -80,7 +80,7 @@ $channelSettingList = System::getInstance()->getValue("channel");
                 var result = `<div class="data-item">
                                     <div class="data-item-left">频道 / 顺序</div>
                                     <div class="data-item-center">文章</div>
-                                    <div class="data-btn-group"></div>
+                                    <div class="data-item-right"></div>
                                 </div>`;
                 $.each(articleList, function(_, item) {
                     var images = JSON.parse(item.images);
@@ -96,7 +96,7 @@ $channelSettingList = System::getInstance()->getValue("channel");
                     result += `         </div>
                                         <div class="data-title">${item.title}</div>
                                     </div>
-                                    <div class="data-btn-group">
+                                    <div class="data-item-right">
                                         <a href="readArticle.php?id=${item.id}" target="_blank" class="btn btn-success" role="button">查看</a>
                                         <a href="editArticle.php?id=${item.id}" target="_blank" class="btn btn-warning" role="button">编辑</a>
                                         <button class="btn btn-danger change-show" data-id=${item.id} data-show=${item.show}>${item.show == 0 ? '转为展示' : '转为下架'}</button>
@@ -139,7 +139,7 @@ $channelSettingList = System::getInstance()->getValue("channel");
             function getArticleListByPage() {
                 // 如果搜索框有内容，则应该是搜索过的内容分页
                 if ($("#searchValue").val().trim()) {
-                    $("#onSearch").click();
+                    $("#search").click();
                 } else {
                     searchArticle();
                 }
@@ -148,15 +148,15 @@ $channelSettingList = System::getInstance()->getValue("channel");
             $("#searchValue").bind("input propertychange", function() {
                 var text = $(this).val().trim()
                 if (text === "") {
-                    $("#onSearch").attr({
+                    $("#search").attr({
                         "disabled": "disabled"
                     })
                 } else {
-                    $("#onSearch").removeAttr("disabled")
+                    $("#search").removeAttr("disabled")
                 }
             });
             // 搜索按钮
-            $("#onSearch").click(function() {
+            $("#search").click(function() {
                 searchArticle();
             });
 

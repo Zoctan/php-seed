@@ -28,13 +28,13 @@ require_once dirname(__FILE__) . "/module/header.php";
         <div class="input-group">
             <div class="input-group-btn">
                 <select id="targetColumn" class="form-control" style="width: 10rem;">
-                    <option value="account_name" selected="selected">用户名</option>
+                    <option value="member_name" selected="selected">用户名</option>
                     <option value="content">内容</option>
                 </select>
             </div>
             <input type="text" class="form-control" id="searchValue" placeholder="请输入关键字">
             <span class="input-group-btn">
-                <button id="onSearch" class="form-control btn btn-primary" disabled="disabled">搜索</button>
+                <button id="search" class="form-control btn btn-primary" disabled="disabled">搜索</button>
             </span>
         </div>
     </div>
@@ -57,35 +57,35 @@ require_once dirname(__FILE__) . "/module/header.php";
                     <form role="form">
                         <div class="form-group">
                             <label for="level">等级</label>
-                            <div id="modal_level"></div>
+                            <div id="modal-level"></div>
                         </div>
                         <div class="form-group">
-                            <label for="accountId">用户ID</label>
-                            <div id="modal_accountId"></div>
+                            <label for="memberId">用户ID</label>
+                            <div id="modal-memberId"></div>
                         </div>
                         <div class="form-group">
-                            <label for="accountName">用户名</label>
-                            <div id="modal_accountName"></div>
+                            <label for="memberName">用户名</label>
+                            <div id="modal-memberName"></div>
                         </div>
                         <div class="form-group">
                             <label for="content">内容</label>
-                            <div id="modal_content"></div>
+                            <div id="modal-content"></div>
                         </div>
                         <div class="form-group">
                             <label for="ip">IP</label>
-                            <div id="modal_ip"></div>
+                            <div id="modal-ip"></div>
                         </div>
                         <div class="form-group">
                             <label for="ipCity">IP所属城市</label>
-                            <div id="modal_ipCity"></div>
+                            <div id="modal-ipCity"></div>
                         </div>
                         <div class="form-group">
                             <label for="extra">额外信息</label>
-                            <div id="modal_extra"></div>
+                            <div id="modal-extra"></div>
                         </div>
                         <div class="form-group">
                             <label for="createTime">创建时间</label>
-                            <div id="modal_createTime"></div>
+                            <div id="modal-createTime"></div>
                         </div>
                     </form>
                 </div>
@@ -116,7 +116,7 @@ require_once dirname(__FILE__) . "/module/header.php";
                 var result = `<div class="data-item">
                                     <div class="data-item-left">时间</div>
                                     <div class="data-item-center">日志</div>
-                                    <div class="data-btn-group"></div>
+                                    <div class="data-item-right"></div>
                                 </div>`;
                 $.each(logList, function(_, item) {
                     //var textColor = ;
@@ -125,10 +125,10 @@ require_once dirname(__FILE__) . "/module/header.php";
                                         ${item.create_time}
                                     </div>
                                     <div class="data-item-center">
-                                        ${item.account_name}
+                                        ${item.member_name}
                                         ${item.content}
                                     </div>
-                                    <div class="data-btn-group">
+                                    <div class="">
                                         <button class="btn btn-success show-log" data-id=${item.id}>查看</button>
                                         <button class="btn btn-danger delete-log" data-id=${item.id}>删除</button>
                                     </div>
@@ -170,7 +170,7 @@ require_once dirname(__FILE__) . "/module/header.php";
             function getLogListByPage() {
                 // 如果搜索框有内容，则应该是搜索过的内容分页
                 if ($("#searchValue").val().trim()) {
-                    $("#onSearch").click();
+                    $("#search").click();
                 } else {
                     searchLog();
                 }
@@ -179,15 +179,15 @@ require_once dirname(__FILE__) . "/module/header.php";
             $("#searchValue").bind("input propertychange", function() {
                 var text = $(this).val().trim()
                 if (text === "") {
-                    $("#onSearch").attr({
+                    $("#search").attr({
                         "disabled": "disabled"
                     })
                 } else {
-                    $("#onSearch").removeAttr("disabled")
+                    $("#search").removeAttr("disabled")
                 }
             });
             // 搜索按钮
-            $("#onSearch").click(function() {
+            $("#search").click(function() {
                 searchLog();
             });
 
@@ -196,14 +196,14 @@ require_once dirname(__FILE__) . "/module/header.php";
                 var id = $(this).attr('data-id');
                 for (var i = 0; i < logList.length; i++) {
                     if (id == logList[i].id) {
-                        $("#modal_level").text(logList[i].level);
-                        $("#modal_accountId").text(logList[i].account_id);
-                        $("#modal_accountName").text(logList[i].account_name);
-                        $("#modal_content").text(logList[i].content);
-                        $("#modal_ip").text(Utils.Ip.long2ip(logList[i].ip));
-                        $("#modal_ipCity").text(logList[i].ip_city);
-                        $("#modal_extra").text(logList[i].extra);
-                        $("#modal_createTime").text(logList[i].createTime);
+                        $("#modal-level").text(logList[i].level == 0 ? '信息' : logList[i].level == 1 ? '警告' : '错误');
+                        $("#modal-memberId").text(logList[i].member_id);
+                        $("#modal-memberName").text(logList[i].member_name);
+                        $("#modal-content").text(logList[i].content);
+                        $("#modal-ip").text(Utils.Ip.long2ip(logList[i].ip));
+                        $("#modal-ipCity").text(logList[i].ip_city);
+                        $("#modal-extra").text(logList[i].extra);
+                        $("#modal-createTime").text(logList[i].create_time);
 
                         $("#logModal").modal("toggle");
                         break;
@@ -213,25 +213,27 @@ require_once dirname(__FILE__) . "/module/header.php";
 
             // 删除日志
             $('#data-list').on('click', '.delete-log', function() {
-                API.Log.delete({
-                    data: {
-                        "id": $(this).attr('data-id'),
-                    },
-                    beforeCallback: function() {
-                        $.LoadingOverlay("show", {
-                            text: "删除中..."
-                        });
-                    },
-                    successCallback: function(data) {
-                        location.reload();
-                    },
-                    errorCallback: function() {
-                        alert("删除失败");
-                    },
-                    completeCallback: function() {
-                        $.LoadingOverlay("hide");
-                    }
-                });
+                if (confirm('确定删除日志？')) {
+                    API.Log.delete({
+                        data: {
+                            "id": $(this).attr('data-id'),
+                        },
+                        beforeCallback: function() {
+                            $.LoadingOverlay("show", {
+                                text: "删除中..."
+                            });
+                        },
+                        successCallback: function(data) {
+                            location.reload();
+                        },
+                        errorCallback: function() {
+                            alert("删除失败");
+                        },
+                        completeCallback: function() {
+                            $.LoadingOverlay("hide");
+                        }
+                    });
+                }
             });
 
         });

@@ -100,7 +100,7 @@ require_once dirname(__FILE__) . "/module/header.php";
                 var result = `<div class="data-item">
                                     <div class="data-item-left">顺序</div>
                                     <div class="data-item-center">名称</div>
-                                    <div class="data-btn-group"></div>
+                                    <div class="data-item-right"></div>
                                 </div>`;
                 $.each(tabbarList, function(_, item) {
                     result += `<div class="data-item">
@@ -115,7 +115,7 @@ require_once dirname(__FILE__) . "/module/header.php";
                                     <div class="data-item-center">
                                         ${item.title}
                                     </div>
-                                    <div class="data-btn-group">
+                                    <div class="data-item-right">
                                         <button class="btn btn-success show-tabbar" data-id="${item.id}">查看</button>
                                         <button class="btn btn-warning edit-tabbar" data-id="${item.id}">编辑</button>
                                         <button class="btn btn-danger delete-tabbar" data-id="${item.id}">删除</button>

@@ -3,19 +3,19 @@ ini_set("display_errors", "On");
 error_reporting(E_ALL);
 
 require_once dirname(__FILE__) . "/function/Util.php";
-require_once dirname(__FILE__) . "/model/Account.php";
+require_once dirname(__FILE__) . "/model/Member.php";
 
 if (!empty($_POST)) {
     if (isset($_POST["username"]) && isset($_POST["password"])) {
         $username = $_POST["username"];
         $password = $_POST["password"];
 
-        $account = Account::getInstance()->getOneBy(["username", "password"], [$username, $password]);
-        if (empty($account)) {
+        $member = Member::getInstance()->getOneBy(["username", "password"], [$username, $password]);
+        if (empty($member)) {
             Util::alert("用户名或密码错误，请重新输入");
         } else {
             // 保存登录状态
-            Account::getInstance()->saveLoginStatus($account);
+            Member::getInstance()->saveLoginStatus($member);
             return Util::jump2("index.php");
         }
     }
