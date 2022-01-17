@@ -1,0 +1,25 @@
+{
+    "name": "zoctan/api",
+    "description": "php seed for complete project quickly.",
+    "type": "project",
+    "license": "Apache",
+    "autoload": {
+        "classmap": [
+            "."
+        ]
+    },
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Zoctan",
+            "email": "zoctan@163.com"
+        }
+    ],
+    "require": {
+        "lcobucci/jwt": "^4.0",
+        "predis/predis": "^1.1",
+        "fzaninotto/faker": "^1.9",
+        "catfan/medoo": "^2.1",
+        "symfony/http-foundation": "5.4.x-dev"
+    }
+}
