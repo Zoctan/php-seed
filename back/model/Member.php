@@ -2,27 +2,19 @@
 ini_set("display_errors", "On");
 error_reporting(E_ALL);
 
-require_once dirname(__FILE__) . "/../function/Util.php";
-require_once dirname(__FILE__) . "/../function/MysqliDb.php";
-require_once dirname(__FILE__) . "/../function/Predis/autoload.php";
+require_once "../function/Singleton.php";
+require_once "../function/Util.php";
+require_once "../vendor/autoload.php";
 
-class Member
+class Member extends BaseModel
 {
-    // 单例
-    private static $instance;
-    private $tableName = "member";
+    use Singleton;
 
-    // 获取实例
-    public static function getInstance()
-    {
-        if (!self::$instance instanceof self) {
-            self::$instance = new self;
-        }
-        return self::$instance;
-    }
+    protected $table = "member";
 
     private function __construct()
     {
+        parent::__construct($this->table);
     }
 
     /*
@@ -48,12 +40,12 @@ class Member
         $client = new Predis\Client($redisCache);
 
         // redis保存jwt，用于刷新和登出
-        $client->set('foo', 'bar');
-        $value = $client->get('foo');
+        $client->set("foo", "bar");
+        $value = $client->get("foo");
         var_dump($value);
         // cookie保存jwt
         Util::saveInSessionAndCookie($key, $value);
-        
+
         // $array = [
         //     "id" => $member["id"],
         //     "username" => $member["username"],
@@ -63,6 +55,7 @@ class Member
         //     Util::saveInSessionAndCookie($key, $value);
         // }
     }
+
 
     /**
      * 分页查询
@@ -97,7 +90,7 @@ class Member
             if (!$like) {
                 $sql .= " `$keys[$i]` = ?";
             } else {
-                $sql .= " UPPER(`$keys[$i]`) LIKE BINARY CONCAT('%',UPPER(?),'%')";
+                $sql .= " UPPER(`$keys[$i]`) LIKE BINARY CONCAT("%",UPPER(?),"%")";
             }
             array_push($params, $values[$i]);
         }
