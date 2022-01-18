@@ -1,8 +1,7 @@
 <?php
 
-namespace Seed\Core;
+namespace PHPSeed\Core;
 
-use Seed\Core\Singleton;
 use Predis\Client;
 
 /**

@@ -1,9 +1,7 @@
 <?php
 
-namespace Seed\Core;
+namespace PHPSeed\Core;
 
-use Seed\Core\Singleton;
-use Seed\Core\RedisUtil;
 use DateTimeZone;
 use DateTimeImmutable;
 use Lcobucci\Clock\SystemClock;
@@ -34,6 +32,10 @@ class JwtUtil
     // 公钥
     private $verificationKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKw+D9cjGEbEuGEhGwe1dy0LP/ujK02wHZ5RfAnWp4Hg/PYEa6fbM/DLrSNbNsTj56Wr0r/B3gd1acBNSMNVitkCAwEAAQ==";
 
+    private function __construct()
+    {
+    }
+    
     private function createJwtConfig()
     {
         return Configuration::forAsymmetricSigner(

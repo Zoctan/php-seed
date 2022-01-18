@@ -1,6 +1,6 @@
 <?php
 
-namespace Seed\Core;
+namespace PHPSeed\Core;
 
 use PDO;
 use Medoo\Medoo;

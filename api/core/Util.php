@@ -1,6 +1,6 @@
 <?php
 
-namespace Seed\Core;
+namespace PHPSeed\Core;
 // 开启session
 session_start();
 

@@ -1,6 +1,6 @@
 {
-    "name": "zoctan/api",
-    "description": "php seed for complete project quickly.",
+    "name": "phpseed/api",
+    "description": "PHPSeed for complete project quickly.",
     "type": "project",
     "license": "Apache",
     "autoload": {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Seed\Core\Http;
+namespace PHPSeed\Core\Http;
 
 use Symfony\Component\HttpFoundation\Request as BaseRequest;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Seed\Core;
+namespace PHPSeed\Core;
 
 require_once dirname(__FILE__) . "/Util.php";
 require_once dirname(__FILE__) . "/../model/System.php";
