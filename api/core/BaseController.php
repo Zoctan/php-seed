@@ -3,6 +3,7 @@
 namespace PHPSeed\Core;
 
 use PHPSeed\Core\Http\Request;
+use PHPSeed\Core\Http\Response;
 
 class BaseController
 {
@@ -16,9 +17,16 @@ class BaseController
      */
     protected $request;
 
+    /**
+     * @var Response
+     */
+    protected $response;
+
+
     public function __construct()
     {
         $this->di = DI::getInstance();
         $this->request = $this->di->request;
+        $this->response = $this->di->response;
     }
 }

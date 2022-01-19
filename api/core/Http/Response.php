@@ -11,7 +11,7 @@ class Response extends BaseResponse
 
     public function setDebug($key, $value)
     {
-        $this->debug = array_merge($this->debug, [$key => $value]);
+        $this->debug[$key] = $value;
         return $this;
     }
 
@@ -31,9 +31,7 @@ class Response extends BaseResponse
         if ($isDebug && !empty($this->debug)) {
             // 解析成 json 数组
             $content = json_decode($this->getContent(), true);
-            $content = array_merge($content, [
-                "debug" => $this->debug,
-            ]);
+            $content["debug"] = $this->debug;
             $this->setContent(json_encode($content));
         }
     }
