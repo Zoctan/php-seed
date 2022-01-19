@@ -2,6 +2,7 @@
 
 namespace PHPSeed\Core;
 
+use PHPSeed\Core\DI;
 use DateTimeZone;
 use DateTimeImmutable;
 use Lcobucci\Clock\SystemClock;
@@ -19,30 +20,17 @@ class JwtUtil
 {
     use Singleton;
 
-    // 签发人
-    private $issuedBy = "seed";
-    // 受众
-    private $permittedFor = "member";
-    // 签发人
-    private $identifiedBy = "123";
-    // 多久过期（分钟）
-    private $expiresMinutes = "1";
-    // 私钥
-    private $signingKey = __DIR__ . "/../rsa/private-key.pem";
-    // 公钥
-    private $verificationKey = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKw+D9cjGEbEuGEhGwe1dy0LP/ujK02wHZ5RfAnWp4Hg/PYEa6fbM/DLrSNbNsTj56Wr0r/B3gd1acBNSMNVitkCAwEAAQ==";
+    private $config;
+    private $jwtConfig;
 
     private function __construct()
     {
-    }
-    
-    private function createJwtConfig()
-    {
-        return Configuration::forAsymmetricSigner(
+        $this->config = DI::getInstance()->config->jwt;
+        $this->jwtConfig = Configuration::forAsymmetricSigner(
             // You may use RSA or ECDSA and all their variations (256, 384, and 512) and EdDSA over Curve25519
             new Signer\Rsa\Sha256(),
-            InMemory::file($this->signingKey),
-            InMemory::base64Encoded($this->verificationKey)
+            InMemory::file($this->config->signingKey),
+            InMemory::base64Encoded($this->config->verificationKey)
             // You may also override the JOSE encoder/decoder if needed by providing extra arguments here
         );
     }
@@ -54,15 +42,14 @@ class JwtUtil
     {
         $now = new DateTimeImmutable();
 
-        $jwtConfig = $this->createJwtConfig();
-        $jwtObj = $jwtConfig->builder()
-            ->issuedBy($this->issuedBy)
-            ->permittedFor($this->permittedFor)
-            ->identifiedBy($this->identifiedBy)
+        $jwtObj = $this->jwtConfig->builder()
+            ->issuedBy($this->config->issuedBy)
+            ->permittedFor($this->config->permittedFor)
+            ->identifiedBy($this->config->identifiedBy)
             ->issuedAt($now)
             // 在1分钟后才可使用
             // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
-            ->expiresAt($now->modify("+$this->expiresMinutes minute"));
+            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
 
         // 装载 payload
         // "role": "ADMIN"
@@ -75,17 +62,25 @@ class JwtUtil
 
         // 生成 token
         $token = $jwtObj
-            ->getToken($jwtConfig->signer(), $jwtConfig->signingKey())
+            ->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey())
             ->toString();
 
+        $this->save2Redis($memberId, $token);
+
+        return $token;
+    }
+
+    /**
+     * 保存 token 到 redis
+     */
+    public function save2Redis($memberId, $token)
+    {
         // 保存 token（1有效，0有效但已登出）
         //      因为账户登出后 JWT 本身只要没过期就仍然有效，所以只能通过 redis 缓存来校验有无效
         //      校验时只要 redis 中的 token 无效即可（JWT 本身可以校验有无过期，而 redis 过期即被删除了）
-        RedisUtil::getInstance()->setex($token, $this->expiresMinutes * 60, 1);
+        RedisUtil::getInstance()->setex($token, $this->config->expiresMinutes * 60, 1);
         // 用户无需重复请求 token
-        RedisUtil::getInstance()->setex($memberId, $this->expiresMinutes * 60, $token);
-
-        return $token;
+        RedisUtil::getInstance()->setex($memberId, $this->config->expiresMinutes * 60, $token);
     }
 
     /**
@@ -102,24 +97,23 @@ class JwtUtil
      */
     public function validateToken($token)
     {
-        $jwtConfig = $this->createJwtConfig();
         try {
-            $token = $jwtConfig->parser()->parse($token);
+            $token = $this->jwtConfig->parser()->parse($token);
         } catch (Exception $e) {
             // var_dump($e);
             return false;
         }
 
-        $jwtConfig->setValidationConstraints(new IdentifiedBy($this->identifiedBy));
-        $jwtConfig->setValidationConstraints(new IssuedBy($this->issuedBy));
-        $jwtConfig->setValidationConstraints(new PermittedFor($this->permittedFor));
+        $this->jwtConfig->setValidationConstraints(new IdentifiedBy($this->config->identifiedBy));
+        $this->jwtConfig->setValidationConstraints(new IssuedBy($this->config->issuedBy));
+        $this->jwtConfig->setValidationConstraints(new PermittedFor($this->config->permittedFor));
         $time = new SystemClock(new DateTimeZone('Asia/Shanghai'));
         // 包的问题，能读取，下同
-        $jwtConfig->setValidationConstraints(new ValidAt($time));
+        $this->jwtConfig->setValidationConstraints(new ValidAt($time));
 
-        $validationConstraints  = $jwtConfig->validationConstraints();
+        $validationConstraints  = $this->jwtConfig->validationConstraints();
         try {
-            $jwtConfig->validator()->assert($token, ...$validationConstraints);
+            $this->jwtConfig->validator()->assert($token, ...$validationConstraints);
             return true;
         } catch (RequiredConstraintsViolated $e) {
             // var_dump($e);
@@ -132,9 +126,8 @@ class JwtUtil
      */
     public function parseToken($token)
     {
-        $jwtConfig = $this->createJwtConfig();
         try {
-            $token = $jwtConfig->parser()->parse($token);
+            $token = $this->jwtConfig->parser()->parse($token);
             // 包的问题，能读取
             $claims = json_decode(base64_decode($token->claims()->toString()), true);
         } catch (Exception $e) {

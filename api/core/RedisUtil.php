@@ -2,6 +2,7 @@
 
 namespace PHPSeed\Core;
 
+use PHPSeed\Core\DI;
 use Predis\Client;
 
 /**
@@ -20,13 +21,13 @@ class RedisUtil
 
     private function __construct()
     {
+        $config = DI::getInstance()->config->datasource->redis;
         $this->redis = new Client([
-            "scheme" => "tcp",
-            "host" => "127.0.0.1",
-            "port" => 6379,
-            "cache" => 0,
-            "password" => "root",
-
+            "scheme" => $config["scheme"],
+            "host" => $config["host"],
+            "port" => $config["port"],
+            "cache" => $config["cache"],
+            "password" => $config["password"],
         ]);
     }
 }

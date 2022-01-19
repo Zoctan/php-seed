@@ -2,6 +2,7 @@
 
 namespace PHPSeed\Core\Http;
 
+use PHPSeed\Core\DI;
 use PHPSeed\Core\Exception\RouterException;
 
 /**
@@ -52,7 +53,8 @@ class Router
         } elseif (is_string($callback) && strpos($callback, "@") !== FALSE) {
             // 通过控制器方法注册的路由回调
             list($controllerClass, $controllerMethod) = explode("@", $callback);
-            $controllerClass = "PHPSeed\\Controller\\$controllerClass";
+            $controllerNamespace = DI::getInstance()->config->app->controllerNamespace;
+            $controllerClass = $controllerNamespace . $controllerClass;
             $controllerInstance = new $controllerClass;
             call_user_func([$controllerInstance, $controllerMethod]);
         } else {

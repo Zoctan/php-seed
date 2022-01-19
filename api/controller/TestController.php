@@ -16,8 +16,6 @@ class TestController extends BaseController
             exit();
         }
 
-        var_dump(ResultGenerator::success("123", ['1','2']));
-        var_dump(ResultGenerator::error(ResultCode::FIND_FAILED, "456"));
-        // var_dump(ResultCode::SUCCEED[1]);
+        return ResultGenerator::success("123", ['1', '2']);
     }
 }

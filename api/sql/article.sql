@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS `article`;
 CREATE TABLE `article`
 (
     `id`            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '文章id',
-    `order`         BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT '顺序',
     `member_id`     BIGINT(20) UNSIGNED NOT NULL COMMENT '成员id',
+    `order`         BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT '顺序',
     `images`        LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '封面图列表',
     `title`         LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '标题',
     `content`       LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '内容',

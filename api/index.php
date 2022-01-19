@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . "/vendor/autoload.php";
 
-use PHPSeed\Core\Container;
+use PHPSeed\Core\DI;
 use PHPSeed\Core\Http\Session;
 use PHPSeed\Core\Http\Request;
 use PHPSeed\Core\Http\Response;
@@ -11,47 +11,31 @@ use PHPSeed\Core\Response\ResultCode;
 use PHPSeed\Core\Response\ResultGenerator;
 
 /**
- * 初始化全局配置
+ * 启动应用
  */
 function bootApp()
 {
     registerExceptionHandler();
-    // 新增一个 IoC 容器，通过依赖注入获取对象实例
-    $container = Container::getInstance();
-    // restful api 用不上 session
-    //initSession($container);
-    initRequest($container);
-    return $container;
+
+    $di = DI::getInstance();
+
+    // 初始化配置
+    $di->config = require_once __DIR__ . "/config.php";
+
+    // 捕获全局请求
+    $di->request = Request::capture();
+
+    // 注册响应
+    $di->response = new Response();
+    return $di;
 }
 
-// 初始化全局配置
-function initConfig(Container $container)
-{
-    $configs = require __DIR__ . '/config.php';
-    foreach ($configs as $module => $config) {
-        foreach ($config as $key => $val) {
-            $container->bind($module . '.' . $key, $val);
-        }
-    }
-}
-
-function initSession($container)
+// restful api 用不上 session
+function initSession($di)
 {
     $session = new Session();
     $session->start();
-    $container->bind('session', $session);
-}
-
-function initRequest($container)
-{
-    // 捕获全局请求
-    $request = Request::capture();
-    $container->bind('request', $request);
-
-    // 注册路由
-    $router = require_once __DIR__ . '/routes.php';
-    // 路由分发、处理请求、返回响应
-    $router->dispatch($request);
+    $di->session = $session;
 }
 
 // 注册全局异常处理器
@@ -59,14 +43,24 @@ function registerExceptionHandler()
 {
     set_exception_handler(function (Throwable $exception) {
         $response = new Response();
+        $message = $exception->getMessage();
         if ($exception instanceof BaseException) {
-            $response->setContent(ResultGenerator::error($exception->getResultCode(), $exception->getMessage()));
+            // 继承自基类的异常
+            $message = implode("：", [$exception->getResultCode()[1], $message]);
+            $response->setContent(ResultGenerator::error($exception->getResultCode(), $message));
         } else {
-            $response->setContent(ResultGenerator::error(ResultCode::UNKNOWN_FAILED, $exception->getMessage()));
+            // 其他异常
+            $message = implode("：", [ResultCode::UNKNOWN_FAILED[1], $message]);
+            $response->setContent(ResultGenerator::error(ResultCode::UNKNOWN_FAILED, $message));
         }
         $response->send();
     });
 }
 
 // 启动应用
-$container = bootApp();
+$di = bootApp();
+
+// 注册路由
+$router = require_once __DIR__ . "/routes.php";
+// 路由分发、处理请求、返回响应
+$router->dispatch($di->request);

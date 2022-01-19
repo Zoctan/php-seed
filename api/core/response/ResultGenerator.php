@@ -29,7 +29,7 @@ class ResultGenerator
                 return (new Result())
                     ->setErrno(ResultCode::SUCCEED[0])
                     ->setMsg(ResultCode::SUCCEED[1])
-                    ->toString();
+                    ->response();
         }
     }
 
@@ -44,7 +44,7 @@ class ResultGenerator
         return (new Result())
             ->setErrno(ResultCode::SUCCEED[0])
             ->setMsg($msg)
-            ->toString();
+            ->response();
     }
 
     /**
@@ -60,7 +60,7 @@ class ResultGenerator
             ->setErrno(ResultCode::SUCCEED[0])
             ->setMsg($msg)
             ->setData($data)
-            ->toString();
+            ->response();
     }
 
     /**
@@ -84,7 +84,7 @@ class ResultGenerator
                 return (new Result())
                     ->setErrno(ResultCode::FAILED[0])
                     ->setMsg(ResultCode::FAILED[1])
-                    ->toString();
+                    ->response();
         }
     }
 
@@ -99,7 +99,7 @@ class ResultGenerator
         return (new Result())
             ->setErrno($resultCode[0])
             ->setMsg($resultCode[1])
-            ->toString();
+            ->response();
     }
 
     /**
@@ -114,7 +114,7 @@ class ResultGenerator
         return (new Result())
             ->setErrno($resultCode[0])
             ->setMsg(!empty($msg) ? $msg : $resultCode[1])
-            ->toString();
+            ->response();
     }
 
     /**
@@ -131,6 +131,6 @@ class ResultGenerator
             ->setErrno($resultCode[0])
             ->setMsg(!empty($msg) ? $msg : $resultCode[1])
             ->setData($data)
-            ->toString();
+            ->response();
     }
 }

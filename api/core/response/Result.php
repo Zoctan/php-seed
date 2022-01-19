@@ -2,6 +2,8 @@
 
 namespace PHPSeed\Core\Response;
 
+use PHPSeed\Core\Http\Response;
+
 /**
  * 响应结果
  */
@@ -32,7 +34,7 @@ class Result
         return $this;
     }
 
-    public function toString()
+    public function response()
     {
         $result = ["errno" => $this->errno];
         if (!empty($this->data)) {
@@ -41,6 +43,9 @@ class Result
         if (!empty($this->msg)) {
             $result = array_merge($result, ["msg" => $this->msg]);
         }
-        return json_encode($result);
+        // JSON_UNESCAPED_UNICODE 中文也能显示
+        $jsonResult = json_encode($result, JSON_UNESCAPED_UNICODE);
+        $response = new Response($jsonResult);
+        $response->send();
     }
 }

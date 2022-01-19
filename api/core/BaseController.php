@@ -7,9 +7,9 @@ use PHPSeed\Core\Http\Request;
 class BaseController
 {
     /**
-     * @var Container
+     * @var DI
      */
-    protected $container;
+    protected $di;
 
     /**
      * @var Request
@@ -18,7 +18,7 @@ class BaseController
 
     public function __construct()
     {
-        $this->container = Container::getInstance();
-        $this->request = $this->container->resolve('request');
+        $this->di = DI::getInstance();
+        $this->request = $this->di->request;
     }
 }
