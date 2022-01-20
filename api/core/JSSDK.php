@@ -25,6 +25,9 @@ class JSSDK
     private $appId;
     private $appSecret;
 
+    private $jssdkTicketKey = "jssdk_ticket";
+    private $accessTokenKey = "jssdk_access_token";
+
     public function __construct()
     {
         $this->config = DI::getInstance()->config->wechat;
@@ -49,22 +52,22 @@ class JSSDK
         $nonceStr = Util::randomStr();
 
         // 这里参数的顺序要按照 key 值 ASCII 码升序排序
-        $string = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
-        $signature = sha1($string);
+        $rawString = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
+        $signature = sha1($rawString);
         return [
             "appId" => $this->appId,
             "nonceStr" => $nonceStr,
             "timestamp" => $timestamp,
             "url" => $url,
             "signature" => $signature,
-            "rawString" => $string,
+            "rawString" => $rawString,
         ];
     }
 
     private function getJsApiTicket()
     {
         // 先从缓存里找，不然再请求微信服务器
-        $jsapiTicket = $this->cache->get("jssdk_ticket");
+        $jsapiTicket = $this->cache->get($this->jssdkTicketKey);
         if ($jsapiTicket) {
             return $jsapiTicket;
         }
@@ -84,13 +87,13 @@ class JSSDK
         }
 
         // 微信的token设置了过期时间7200
-        $this->cache->setex("jssdk_ticket", 7200, $res->ticket);
+        $this->cache->setex($this->jssdkTicketKey, 7200, $res->ticket);
         return $res->ticket;
     }
 
     private function getAccessToken()
     {
-        $access_token = $this->cache->get("jssdk_access_token");
+        $access_token = $this->cache->get($this->accessTokenKey);
         if (empty($access_token)) {
             // 过期了，刷新
             return $this->updateAccessToken();
@@ -106,9 +109,8 @@ class JSSDK
         if (empty($res) || (isset($res->errcode) && $res->errcode != 0)) {
             throw new Exception("内部服务器请求微信服务器 access_token 出现错误，请重试");
         }
-        
-        // 缓存
-        $this->cache->setex("jssdk_access_token", $res->expires_in, $res->access_token);
+
+        $this->cache->setex($this->accessTokenKey, $res->expires_in, $res->access_token);
         return $res->access_token;
     }
 }
