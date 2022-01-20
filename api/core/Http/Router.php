@@ -10,15 +10,24 @@ use PHPSeed\Core\Exception\RouterException;
  */
 class Router
 {
+
     /**
      * 路由列表
      */
     protected $routes = [];
 
     /**
+     * 获取路由列表
+     */
+    public function getRoutes()
+    {
+        return $this->routes;
+    }
+
+    /**
      * 注册路由
      */
-    public function register($methods, $uri, $callback)
+    public function register($methods, $uri, $callback, $needAuth = false)
     {
         if (isset($this->routes[$uri])) {
             return;
@@ -26,7 +35,7 @@ class Router
         if (is_string($methods)) {
             $methods = [$methods];
         }
-        $route = new Route($methods, $uri, $callback);
+        $route = new Route($methods, $uri, $callback, $needAuth);
         $this->routes[$uri] = $route;
     }
 

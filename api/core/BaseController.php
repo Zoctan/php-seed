@@ -5,6 +5,9 @@ namespace PHPSeed\Core;
 use PHPSeed\Core\Http\Request;
 use PHPSeed\Core\Http\Response;
 
+/**
+ * 控制器基类
+ */
 class BaseController
 {
     /**
@@ -21,7 +24,6 @@ class BaseController
      * @var Response
      */
     protected $response;
-
 
     public function __construct()
     {

@@ -2,31 +2,44 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 
+use Predis\Client;
+use Medoo\Medoo;
 use PHPSeed\Core\DI;
 use PHPSeed\Core\Http\Session;
 use PHPSeed\Core\Http\Request;
 use PHPSeed\Core\Http\Response;
-use PHPSeed\Core\BaseException;
-use PHPSeed\Core\Response\ResultCode;
-use PHPSeed\Core\Response\ResultGenerator;
+use PHPSeed\Core\Filter;
+use PHPSeed\Core\Filter\AuthenticationFilter;
+use PHPSeed\Core\Filter\CorsFilter;
+use PHPSeed\Core\Exception\ExceptionHandler;
 
 /**
  * 启动应用
  */
 function bootApp()
 {
-    registerExceptionHandler();
-
+    date_default_timezone_set("prc");
+    
     $di = DI::getInstance();
 
     // 初始化配置
     $di->config = require_once __DIR__ . "/config.php";
+
+    // 注册全局异常处理器
+    $di->exceptionHandler = new ExceptionHandler();
 
     // 捕获全局请求
     $di->request = Request::capture();
 
     // 注册响应
     $di->response = new Response();
+
+    // 注册数据库连接
+    $mysqlConfig = json_decode(json_encode($di->config->datasource->mysql), true);
+    $di->mysql = new Medoo($mysqlConfig);
+
+    // 注册缓存工具
+    $di->cache = new Client($di->config->datasource->redis);
     return $di;
 }
 
@@ -38,23 +51,12 @@ function initSession($di)
     $di->session = $session;
 }
 
-// 注册全局异常处理器
-function registerExceptionHandler()
+// 执行过滤链
+function doFilterChain(Filter ...$filters)
 {
-    set_exception_handler(function (Throwable $exception) {
-        $response = new Response();
-        $message = $exception->getMessage();
-        if ($exception instanceof BaseException) {
-            // 继承自基类的异常
-            $message = implode("：", [$exception->getResultCode()[1], $message]);
-            $response->setContent(ResultGenerator::error($exception->getResultCode(), $message));
-        } else {
-            // 其他异常
-            $message = implode("：", [ResultCode::UNKNOWN_FAILED[1], $message]);
-            $response->setContent(ResultGenerator::error(ResultCode::UNKNOWN_FAILED, $message));
-        }
-        $response->send();
-    });
+    foreach ($filters as $filter) {
+        $filter->doFilter();
+    }
 }
 
 // 启动应用
@@ -62,5 +64,12 @@ $di = bootApp();
 
 // 注册路由
 $router = require_once __DIR__ . "/routes.php";
+
+// 按顺序执行过滤链
+doFilterChain(
+    new CorsFilter(),
+    new AuthenticationFilter($router->getRoutes()),
+);
+
 // 路由分发、处理请求、返回响应
 $router->dispatch($di->request);

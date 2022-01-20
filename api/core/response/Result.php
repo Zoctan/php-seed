@@ -2,7 +2,9 @@
 
 namespace PHPSeed\Core\Response;
 
+use Exception;
 use PHPSeed\Core\DI;
+use PHPSeed\Core\Http\Response;
 
 /**
  * 响应结果
@@ -15,6 +17,25 @@ class Result
     private $msg = "";
     // 数据
     private $data = null;
+    // 响应结构字段映射
+    private $structureMap = [
+        "errno" => "errno",
+        "data"  => "data",
+        "msg"   => "msg",
+        "debug" => "debug",
+    ];
+
+    public function __construct()
+    {
+        $this->structureMap = (object) $this->structureMap;
+        try {
+            $structureMap = DI::getInstance()->config->app->response->structureMap;
+            if (!empty($structureMap)) {
+                $this->structureMap = $structureMap;
+            }
+        } catch (Exception $exception) {
+        }
+    }
 
     public function setErrno($errno)
     {
@@ -34,18 +55,24 @@ class Result
         return $this;
     }
 
-    public function response()
+    public function toString()
     {
-        $response = DI::getInstance()->response;
-        $result = ["errno" => $this->errno];
-        if (!empty($this->data)) {
-            $result["data"] = $this->data;
-        }
+        $result = [];
+        $result[$this->structureMap->errno] = $this->errno;
         if (!empty($this->msg)) {
-            $result["msg"] = $this->msg;
+            $result[$this->structureMap->msg] = $this->msg;
+        }
+        if (!empty($this->data)) {
+            $result[$this->structureMap->data] = $this->data;
         }
         // JSON_UNESCAPED_UNICODE 中文也能显示
-        $response->setContent(json_encode($result, JSON_UNESCAPED_UNICODE));
+        return json_encode($result, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function response()
+    {
+        $response = DI::getInstance()->get("response", new Response());
+        $response->setContent($this->toString());
         $response->send();
     }
 }

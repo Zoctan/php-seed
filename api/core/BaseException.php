@@ -4,6 +4,9 @@ namespace PHPSeed\Core;
 
 use Exception;
 
+/**
+ * 异常基类
+ */
 class BaseException extends Exception
 {
     private $resultCode;

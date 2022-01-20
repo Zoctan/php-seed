@@ -2,10 +2,7 @@
 
 namespace PHPSeed\Core;
 
-use PDO;
-use Medoo\Medoo;
-
-/*
+/**
  * select($table, $columns)
  * select($table, $columns, $callback)
  * select($table, $columns, $where)
@@ -14,71 +11,66 @@ use Medoo\Medoo;
  * select($table, $join, $columns, $where, $callback)
  * https://medoo.in/api/select
  * 
- * 
- * get($table, $columns, $where)
- * get($table, $join, $columns, $where)
- * https://medoo.in/api/get
- * 
- * 
  * insert($table, $values)
  * https://medoo.in/api/insert
  * 
+ * delete($table, $where)
+ * https://medoo.in/api/delete
  * 
  * update($table, $values, $where)
  * https://medoo.in/api/update
  * 
- * 
- * delete($table, $where)
- * https://medoo.in/api/delete
+ * get($table, $columns, $where)
+ * get($table, $join, $columns, $where)
+ * https://medoo.in/api/get
  */
 
+use Medoo\Medoo;
+
+/**
+ * 异常模型类
+ */
 class BaseModel
 {
-    protected $database = null;
     protected $table = "";
 
-    protected function __construct($table)
+    /**
+     * @var Medoo
+     */
+    protected $mysql;
+
+    public function __construct()
     {
-        // https://medoo.in/api/new
-        $this->database = new Medoo([
-            "type" => "mysql",
-            "host" => "localhost",
-            "database" => "digitalduhu",
-            "username" => "root",
-            "password" => "root",
+        $this->mysql = DI::getInstance()->mysql;
+    }
 
-            // [optional]
-            "charset" => "utf8mb4",
-            "collation" => "utf8mb4_unicode_ci",
-            "port" => 3306,
+    public function save(...$values)
+    {
+        $this->mysql->insert($this->table, $values);
+        if (count($values) == 1) {
+            return $this->mysql->id();
+        }
+    }
 
-            // [optional] Table prefix, all table names will be prefixed as PREFIX_table.
-            //"prefix" => "PREFIX_",
+    public function deleteById($id): int
+    {
+        $result =  $this->mysql->delete($this->table, ["id" => $id]);
+        return $result->rowCount();
+    }
 
-            // [optional] Enable logging, it is disabled by default for better performance.
-            "logging" => true,
+    public function updateById($values, $id): int
+    {
+        $result =  $this->mysql->update($this->table, $values, ["id" => $id]);
+        return $result->rowCount();
+    }
 
-            // [optional]
-            // Error mode
-            // Error handling strategies when error is occurred.
-            // PDO::ERRMODE_SILENT (default) | PDO::ERRMODE_WARNING | PDO::ERRMODE_EXCEPTION
-            // Read more from https://www.php.net/manual/en/pdo.error-handling.php.
-            "error" => PDO::ERRMODE_SILENT,
+    public function getById($columns = "*", $id)
+    {
+        return $this->mysql->get($this->table, $columns, ["id" => $id]);
+    }
 
-            // [optional]
-            // The driver_option for connection.
-            // Read more from http://www.php.net/manual/en/pdo.setattribute.php.
-            "option" => [
-                // PDO::ATTR_CASE：强制列名为指定的大小写
-                //      PDO::CASE_NATURAL：保留数据库驱动返回的列名
-                PDO::ATTR_CASE => PDO::CASE_NATURAL
-            ],
-
-            // [optional] Medoo will execute those commands after connected to the database.
-            "command" => [
-                "SET SQL_MODE=ANSI_QUOTES"
-            ]
-        ]);
-        $this->table = $table;
+    public function listAll($columns = "*", $where = [])
+    {
+        $this->mysql->select($this->table, $columns, $where);
     }
 }

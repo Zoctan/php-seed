@@ -15,11 +15,14 @@ class Route
     public $action;
     // 参数
     public $params;
+    // 需要认证
+    public $needAuth;
 
-    public function __construct($methods, $uri, $action)
+    public function __construct($methods, $uri, $action, $needAuth)
     {
         $this->methods = $methods;
         $this->uri = $uri;
         $this->action = $action;
+        $this->needAuth = $needAuth;
     }
 }
