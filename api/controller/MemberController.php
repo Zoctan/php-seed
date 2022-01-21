@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Core\BaseController;
+use App\Util\JwtUtil;
 use App\Model\MemberModel;
+use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
 class MemberController extends BaseController
@@ -38,7 +39,12 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("成员状态异常");
         }
         
-        $memberModel->updateLoginTimeByName($username);
+        $memberModel->updateLoginTimeById($member->id);
+
+        $role = ;
+        $rule = ;
+        
+        JwtUtil::sign($member->id, []);
 
         $this->response->setDebug("token", "username");
         return ResultGenerator::successWithData();

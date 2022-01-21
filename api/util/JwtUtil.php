@@ -3,7 +3,7 @@
 namespace App\Util;
 
 use Predis\Client;
-use App\Model\Member;
+use App\Model\MemberModel;
 use App\Core\AuthMember;
 use App\Core\Singleton;
 use App\Core\exception\UnAuthorizedException;
@@ -65,7 +65,7 @@ class JwtUtil
     /**
      * 生成 token
      */
-    public function getToken($memberId, array $payload = [])
+    public function sign($memberId, array $payload = [])
     {
         $now = new \DateTimeImmutable();
 
@@ -82,6 +82,7 @@ class JwtUtil
         // "memberId": 1
         // "role": "ADMIN"
         // "rule": "article:add,article:delete"
+        $jwtObj->withClaim("memberId", $memberId);
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
                 $jwtObj->withClaim($key, $value);
@@ -152,7 +153,7 @@ class JwtUtil
         $roles = explode(",", $claims[$this->config->tokenRoleKey]);
         $rules = explode(",", $claims[$this->config->tokenRuleKey]);
         $memberId = $claims["memberId"];
-        $member = (new Member())->getById(["id", "username", "status"], $memberId);
+        $member = (new MemberModel())->getById(["id", "username", "status"], $memberId);
         return new AuthMember($member, $roles, $rules);
     }
 

@@ -13,10 +13,20 @@ class MemberModel extends BaseModel
         return $this->mysql->get($this->table, "*", $username);
     }
 
-    public function updateLoginTimeByName($username)
+    public function updateLoginTimeById($id)
     {
-        $result =  $this->mysql->update($this->table, ["login_at" => ], ["username" => $username]);
-        return $result->rowCount();
+        return $this->updateBy(["login_at" => "NOW()"], ["id" => $id]);
+    }
+
+    public function getRole()
+    {
+        
+        return;
+    }
+
+    public function getRule()
+    {
+        return;
     }
 
     public function verifyPassword($password, $passwordDB)

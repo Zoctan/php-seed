@@ -52,16 +52,26 @@ class BaseModel
         }
     }
 
+    public function deleteBy($where): int
+    {
+        $result =  $this->mysql->delete($this->table, $where);
+        return $result->rowCount();
+    }
+
     public function deleteById($id): int
     {
-        $result =  $this->mysql->delete($this->table, ["id" => $id]);
+        return $this->deleteBy(["id" => $id]);
+    }
+
+    public function updateBy($values, $where): int
+    {
+        $result =  $this->mysql->update($this->table, $values, $where);
         return $result->rowCount();
     }
 
     public function updateById($values, $id): int
     {
-        $result =  $this->mysql->update($this->table, $values, ["id" => $id]);
-        return $result->rowCount();
+        return $this->updateBy($values, ["id" => $id]);
     }
 
     public function getById($columns = "*", $id)
