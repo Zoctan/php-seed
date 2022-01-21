@@ -7,30 +7,27 @@ namespace App\Core\Response;
  */
 class ResultGenerator
 {
+    /** ------------------ 成功响应结果 ------------------ **/
 
     /**
-     * 成功响应结果（重载）
+     * 成功响应结果
      * 
      * @return string 响应结果
      */
     public static function success()
     {
-        // 获得参数数量
-        $argsNum = func_num_args();
-        // 获得参数数组
-        $args = func_get_args();
-        switch ($argsNum) {
-            case 1:
-                return self::successWithData($args[0]);
-            case 2:
-                return self::successWithMsgData($args[0], $args[1]);
-            case 0:
-            default:
-                return (new Result())
-                    ->setErrno(ResultCode::SUCCEED[0])
-                    ->setMsg(ResultCode::SUCCEED[1])
-                    ->response();
-        }
+        return self::successWithMsgData(ResultCode::SUCCEED[1]);
+    }
+
+    /**
+     * 成功响应结果
+     *
+     * @param $msg 消息
+     * @return string 响应结果
+     */
+    public static function successWithMsg($msg = "")
+    {
+        return self::successWithMsgData($msg);
     }
 
     /**
@@ -41,10 +38,7 @@ class ResultGenerator
      */
     public static function successWithData($data = "")
     {
-        return (new Result())
-            ->setErrno(ResultCode::SUCCEED[0])
-            ->setData($data)
-            ->response();
+        return self::successWithMsgData("", $data);
     }
 
     /**
@@ -63,29 +57,27 @@ class ResultGenerator
             ->response();
     }
 
+    /** ------------------ 失败响应结果 ------------------ **/
+
     /**
-     * 失败响应结果（重载）
+     * 失败响应结果
      * 
      * @return string 响应结果
      */
     public static function error()
     {
-        $argsNum = func_num_args();
-        $args = func_get_args();
-        switch ($argsNum) {
-            case 1:
-                return self::errorWithCode($args[0]);
-            case 2:
-                return self::errorWithCodeMsg($args[0], $args[1]);
-            case 3:
-                return self::errorWithCodeMsgData($args[0], $args[1], $args[2]);
-            case 0:
-            default:
-                return (new Result())
-                    ->setErrno(ResultCode::FAILED[0])
-                    ->setMsg(ResultCode::FAILED[1])
-                    ->response();
-        }
+        return self::errorWithCodeMsgData(ResultCode::FAILED);
+    }
+
+    /**
+     * 失败响应结果
+     *
+     * @param $msg 消息
+     * @return string 响应结果
+     */
+    public static function errorWithMsg($msg = "")
+    {
+        return self::errorWithCodeMsgData(ResultCode::FAILED, $msg);
     }
 
     /**
@@ -96,10 +88,7 @@ class ResultGenerator
      */
     public static function errorWithCode(array $resultCode)
     {
-        return (new Result())
-            ->setErrno($resultCode[0])
-            ->setMsg($resultCode[1])
-            ->response();
+        return self::errorWithCodeMsgData($resultCode);
     }
 
     /**
@@ -111,10 +100,7 @@ class ResultGenerator
      */
     public static function errorWithCodeMsg(array $resultCode, $msg = "")
     {
-        return (new Result())
-            ->setErrno($resultCode[0])
-            ->setMsg(!empty($msg) ? $msg : $resultCode[1])
-            ->response();
+        return self::errorWithCodeMsgData($resultCode, $msg);
     }
 
     /**

@@ -38,7 +38,7 @@ $config = [
         "mysql" => [
             "type" => "mysql",
             "host" => "localhost",
-            "database" => "digitalduhu",
+            "database" => "phpseed",
             "username" => "root",
             "password" => "root",
 

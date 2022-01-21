@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Core\BaseController;
+use App\Model\MemberModel;
 use App\Core\Response\ResultGenerator;
 
 class MemberController extends BaseController
@@ -14,12 +15,32 @@ class MemberController extends BaseController
     {
         $username = strval($this->request->get("username"));
         $password = strval($this->request->get("password"));
-        if (empty($username)) {
-            echo "请指定要访问的文章 ID";
-            exit();
-        }
+
         $this->response->setDebug("username", "username");
         $this->response->setDebug("password", "password");
-        return ResultGenerator::success("123", ["1", "2"]);
+
+        if (empty($username) || empty($password)) {
+            return ResultGenerator::errorWithMsg("请输入账户名和密码");
+        }
+
+        $memberModel = new MemberModel();
+        $member = $memberModel->getByUsername($username);
+
+        if (empty($member)) {
+            return ResultGenerator::errorWithMsg("账户名错误");
+        }
+
+        if ($memberModel->verifyPassword($password, $member->password)) {
+            return ResultGenerator::errorWithMsg("密码错误");
+        }
+
+        if ($member->status == 0) {
+            return ResultGenerator::errorWithMsg("成员状态异常");
+        }
+        
+        $memberModel->updateLoginTimeByName($username);
+
+        $this->response->setDebug("token", "username");
+        return ResultGenerator::successWithData();
     }
 }

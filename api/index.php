@@ -31,12 +31,16 @@ function bootApp()
     // 注册响应
     $di->response = new Response();
 
-    // 注册数据库连接
+    // 注册数据库：https://medoo.in/doc
     $mysqlConfig = json_decode(json_encode($di->config->datasource->mysql), true);
     $di->mysql = new Medoo\Medoo($mysqlConfig);
 
     // 注册缓存工具
     $di->cache = new Predis\Client((array) $di->config->datasource->redis);
+
+    // 注册数据检查工具：https://respect-validation.readthedocs.io/en/latest/concrete-api/
+    // 规则：https://respect-validation.readthedocs.io/en/latest/list-of-rules/
+    $di->validator = new Respect\Validation\Validator();
 
     // 注册伪造数据工具：https://github.com/fzaninotto/Faker
     $di->faker = Faker\Factory::create("zh_CN");

@@ -29,6 +29,7 @@
         "fzaninotto/faker": "^1.9",
         "catfan/medoo": "^2.1",
         "symfony/http-foundation": "5.4.x-dev",
-        "guzzlehttp/guzzle": "7.4.x-dev"
+        "guzzlehttp/guzzle": "7.4.x-dev",
+        "respect/validation": "dev-master"
     }
 }
