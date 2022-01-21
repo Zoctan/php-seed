@@ -1,9 +1,9 @@
 <?php
 
-namespace PHPSeed\Core\Exception;
+namespace App\Core\Exception;
 
-use PHPSeed\Core\BaseException;
-use PHPSeed\Core\Response\ResultCode;
+use App\Core\BaseException;
+use App\Core\Response\ResultCode;
 
 /**
  * 认证异常

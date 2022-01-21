@@ -4,15 +4,23 @@
     "type": "project",
     "license": "Apache",
     "autoload": {
+        "files": [
+            "functions.php"
+        ],
         "classmap": [
             "."
-        ]
+        ],
+        "psr-4": {
+            "App\\": "."
+        }
     },
     "minimum-stability": "dev",
     "authors": [
         {
             "name": "Zoctan",
-            "email": "zoctan@163.com"
+            "email": "zoctan@163.com",
+            "homepage": "https://github.com/Zoctan",
+            "role": "Developer"
         }
     ],
     "require": {
@@ -20,6 +28,7 @@
         "predis/predis": "^1.1",
         "fzaninotto/faker": "^1.9",
         "catfan/medoo": "^2.1",
-        "symfony/http-foundation": "5.4.x-dev"
+        "symfony/http-foundation": "5.4.x-dev",
+        "guzzlehttp/guzzle": "7.4.x-dev"
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core;
+namespace App\Core;
 
 /**
  * 过滤器接口

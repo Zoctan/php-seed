@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core;
+namespace App\Core;
 
 /**
  * select($table, $columns)
@@ -41,7 +41,7 @@ class BaseModel
 
     public function __construct()
     {
-        $this->mysql = DI::getInstance()->mysql;
+        $this->mysql = \App\DI()->mysql;
     }
 
     public function save(...$values)

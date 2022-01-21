@@ -1,13 +1,11 @@
 <?php
 
-namespace PHPSeed\Core;
-
-use Exception;
+namespace App\Core;
 
 /**
  * 异常基类
  */
-class BaseException extends Exception
+class BaseException extends \Exception
 {
     private $resultCode;
 

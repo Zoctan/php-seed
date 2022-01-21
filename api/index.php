@@ -2,16 +2,13 @@
 
 require_once __DIR__ . "/vendor/autoload.php";
 
-use Predis\Client;
-use Medoo\Medoo;
-use PHPSeed\Core\DI;
-use PHPSeed\Core\Http\Session;
-use PHPSeed\Core\Http\Request;
-use PHPSeed\Core\Http\Response;
-use PHPSeed\Core\Filter;
-use PHPSeed\Core\Filter\AuthenticationFilter;
-use PHPSeed\Core\Filter\CorsFilter;
-use PHPSeed\Core\Exception\ExceptionHandler;
+use App\Core\Http\Session;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
+use App\Core\Filter;
+use App\Core\Filter\AuthenticationFilter;
+use App\Core\Filter\CorsFilter;
+use App\Core\Exception\ExceptionHandler;
 
 /**
  * 启动应用
@@ -19,8 +16,8 @@ use PHPSeed\Core\Exception\ExceptionHandler;
 function bootApp()
 {
     date_default_timezone_set("prc");
-    
-    $di = DI::getInstance();
+
+    $di = \App\DI();
 
     // 初始化配置
     $di->config = require_once __DIR__ . "/config.php";
@@ -36,10 +33,16 @@ function bootApp()
 
     // 注册数据库连接
     $mysqlConfig = json_decode(json_encode($di->config->datasource->mysql), true);
-    $di->mysql = new Medoo($mysqlConfig);
+    $di->mysql = new Medoo\Medoo($mysqlConfig);
 
     // 注册缓存工具
-    $di->cache = new Client($di->config->datasource->redis);
+    $di->cache = new Predis\Client((array) $di->config->datasource->redis);
+
+    // 注册伪造数据工具：https://github.com/fzaninotto/Faker
+    $di->faker = Faker\Factory::create("zh_CN");
+
+    // 注册 HTTP 客户端：https://docs.guzzlephp.org/en/stable/quickstart.html
+    $di->curl = new \GuzzleHttp\Client();
     return $di;
 }
 
@@ -71,5 +74,6 @@ doFilterChain(
     new AuthenticationFilter($router->getRoutes()),
 );
 
+var_dump($di->request->getPath());
 // 路由分发、处理请求、返回响应
 $router->dispatch($di->request);

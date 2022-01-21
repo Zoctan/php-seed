@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core;
+namespace App\Core;
 
 /** 
  * Trait Singleton 单例模式

@@ -1,9 +1,11 @@
 <?php
 
-namespace PHPSeed\Core;
+declare(strict_types=1);
 
-use PHPSeed\Core\Http\Request;
-use PHPSeed\Core\Http\Response;
+namespace App\Core;
+
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 
 /**
  * 控制器基类
@@ -11,7 +13,7 @@ use PHPSeed\Core\Http\Response;
 class BaseController
 {
     /**
-     * @var DI
+     * @var DependencyInjection
      */
     protected $di;
 
@@ -27,7 +29,7 @@ class BaseController
 
     public function __construct()
     {
-        $this->di = DI::getInstance();
+        $this->di = \App\DI();
         $this->request = $this->di->request;
         $this->response = $this->di->response;
     }

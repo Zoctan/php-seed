@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core\Response;
+namespace App\Core\Response;
 
 /**
  * 响应状态码枚举类

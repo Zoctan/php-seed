@@ -16,7 +16,7 @@ $config = [
             ],
         ],
         // 控制器的命名空间
-        "controllerNamespace" => "PHPSeed\\Controller\\",
+        "controllerNamespace" => "App\\Controller\\",
         "upload" => [
             "image" => [
                 // 本地路径
@@ -104,6 +104,7 @@ $config = [
         "verificationKey" => "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKw+D9cjGEbEuGEhGwe1dy0LP/ujK02wHZ5RfAnWp4Hg/PYEa6fbM/DLrSNbNsTj56Wr0r/B3gd1acBNSMNVitkCAwEAAQ==",
     ],
     "wechat" => [
+        "sslCert" => __DIR__ . "/cert/cacert.pem",
         "credential" => [
             "appId" => "wx07f8fd1b50ae8109",
             "appSecret" => "aab76a401717a502eb32aa4b37f96570"

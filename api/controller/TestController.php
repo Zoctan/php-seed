@@ -1,9 +1,10 @@
 <?php
 
-namespace PHPSeed\Controller;
+namespace App\Controller;
 
-use PHPSeed\Core\BaseController;
-use PHPSeed\Core\Response\ResultGenerator;
+use App\Util\JssdkUtil;
+use App\Core\BaseController;
+use App\Core\Response\ResultGenerator;
 
 class TestController extends BaseController
 {
@@ -17,5 +18,9 @@ class TestController extends BaseController
         $this->response->setDebug("8", "2");
         $this->response->setDebug("2", "1");
         return ResultGenerator::success("123", ['1', '2']);
+    }
+
+    public function jssdk() {
+        return ResultGenerator::success(JssdkUtil::getInstance()->getSignPackage());
     }
 }

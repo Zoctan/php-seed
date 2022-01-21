@@ -1,11 +1,10 @@
 <?php
 
-namespace PHPSeed\Core\Filter;
+namespace App\Core\Filter;
 
-use PHPSeed\Core\DI;
-use PHPSeed\Core\Filter;
-use PHPSeed\Core\JwtUtil;
-use PHPSeed\Core\Exception\UnAuthorizedException;
+use App\Core\Filter;
+use App\Util\JwtUtil;
+use App\Core\Exception\UnAuthorizedException;
 
 /**
  * 认证过滤器
@@ -21,7 +20,7 @@ class AuthenticationFilter implements Filter
 
     public function doFilter()
     {
-        $request = DI::getInstance()->request;
+        $request = \App\DI()->request;
         // 需要认证的路由才检查
         $uri =  $request->getPath();
         if ($this->routes[$uri]->needAuth) {
@@ -34,7 +33,7 @@ class AuthenticationFilter implements Filter
                 throw new UnAuthorizedException("无效 token");
             }
             // 注入已认证的成员信息
-            DI::getInstance()->authMember = $jwtUtil->getAuthentication($token);
+            \App\DI()->authMember = $jwtUtil->getAuthentication($token);
         }
     }
 }

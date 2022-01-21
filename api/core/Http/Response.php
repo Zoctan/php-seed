@@ -1,8 +1,7 @@
 <?php
 
-namespace PHPSeed\Core\Http;
+namespace App\Core\Http;
 
-use PHPSeed\Core\DI;
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 class Response extends BaseResponse
@@ -26,7 +25,7 @@ class Response extends BaseResponse
      */
     public function ifDebug()
     {
-        $config = DI::getInstance()->config;
+        $config = \App\DI()->config;
         if ($config->app->debug && !empty($this->debug)) {
             // 解析成 json 数组
             $content = json_decode($this->getContent(), true);

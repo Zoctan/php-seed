@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core\Http;
+namespace App\Core\Http;
 
 use Symfony\Component\HttpFoundation\Session\Session as BaseSession;
 

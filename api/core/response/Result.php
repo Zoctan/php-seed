@@ -1,10 +1,8 @@
 <?php
 
-namespace PHPSeed\Core\Response;
+namespace App\Core\Response;
 
-use Exception;
-use PHPSeed\Core\DI;
-use PHPSeed\Core\Http\Response;
+use App\Core\Http\Response;
 
 /**
  * 响应结果
@@ -29,11 +27,11 @@ class Result
     {
         $this->structureMap = (object) $this->structureMap;
         try {
-            $structureMap = DI::getInstance()->config->app->response->structureMap;
+            $structureMap = \App\DI()->config->app->response->structureMap;
             if (!empty($structureMap)) {
                 $this->structureMap = $structureMap;
             }
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
         }
     }
 
@@ -71,7 +69,7 @@ class Result
 
     public function response()
     {
-        $response = DI::getInstance()->get("response", new Response());
+        $response = \App\DI()->get("response", new Response());
         $response->setContent($this->toString());
         $response->send();
     }

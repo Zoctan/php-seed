@@ -1,6 +1,6 @@
 <?php
 
-namespace PHPSeed\Core\Response;
+namespace App\Core\Response;
 
 /**
  * 响应结果生成工具
@@ -21,7 +21,7 @@ class ResultGenerator
         $args = func_get_args();
         switch ($argsNum) {
             case 1:
-                return self::successWithMsg($args[0]);
+                return self::successWithData($args[0]);
             case 2:
                 return self::successWithMsgData($args[0], $args[1]);
             case 0:
@@ -36,14 +36,14 @@ class ResultGenerator
     /**
      * 成功响应结果
      *
-     * @param $msg 消息
+     * @param $data 数据
      * @return string 响应结果
      */
-    public static function successWithMsg($msg = "")
+    public static function successWithData($data = "")
     {
         return (new Result())
             ->setErrno(ResultCode::SUCCEED[0])
-            ->setMsg($msg)
+            ->setData($data)
             ->response();
     }
 

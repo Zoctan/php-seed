@@ -1,9 +1,8 @@
 <?php
 
-namespace PHPSeed\Core\Filter;
+namespace App\Core\Filter;
 
-use PHPSeed\Core\DI;
-use PHPSeed\Core\Filter;
+use App\Core\Filter;
 
 /**
  * 跨域过滤器
@@ -12,7 +11,7 @@ class CorsFilter implements Filter
 {
     public function doFilter()
     {
-        $response = DI::getInstance()->response;
+        $response = \App\DI()->response;
         // 允许任何网址请求
         $response->headers->set("Access-Control-Allow-Origin", "*");
         // 返回的类型

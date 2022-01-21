@@ -1,8 +1,8 @@
 <?php
 
-namespace PHPSeed\Model;
+namespace App\Model;
 
-use PHPSeed\Core\BaseModel;
+use App\Core\BaseModel;
 
 class Member extends BaseModel
 {
