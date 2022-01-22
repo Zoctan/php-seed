@@ -30,7 +30,7 @@ class Response extends BaseResponse
             // 解析成 json 数组
             $content = json_decode($this->getContent(), true);
             $content[$config->app->response->structureMap->debug] = $this->debug;
-            $this->setContent(json_encode($content));
+            $this->setContent(json_encode($content, JSON_UNESCAPED_UNICODE));
         }
     }
 }

@@ -11,15 +11,15 @@ class AuthMember
     protected $member;
 
     // 角色列表
-    protected $roles;
+    protected $role;
 
     // 规则列表
-    protected $rules;
+    protected $rule;
 
-    public function __construct($member, $roles, $rules)
+    public function __construct($member, $roles, $rule)
     {
         $this->member = $member;
-        $this->roles = $roles;
-        $this->rules = $rules;
+        $this->role = $roles;
+        $this->rule = $rule;
     }
 }

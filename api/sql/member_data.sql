@@ -7,7 +7,7 @@ CREATE TABLE `member_data`
     `gender`        TINYINT(3) DEFAULT 0 COMMENT '性别：0无|1男|2女',
     `created_at`    DATETIME DEFAULT NOW() COMMENT '创建于',
     `updated_at`    DATETIME DEFAULT NULL COMMENT '更新于',
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`member_id`),
     UNIQUE KEY `U_MID` (`member_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='成员信息表';

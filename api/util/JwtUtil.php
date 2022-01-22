@@ -81,7 +81,7 @@ class JwtUtil
         // 装载 payload
         // "memberId": 1
         // "role": "ADMIN"
-        // "rule": "article:add,article:delete"
+        // "operate": "article:add,article:delete"
         $jwtObj->withClaim("memberId", $memberId);
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
@@ -150,11 +150,11 @@ class JwtUtil
     public function getAuthentication($token)
     {
         $claims =  $this->parseToken($token);
-        $roles = explode(",", $claims[$this->config->tokenRoleKey]);
-        $rules = explode(",", $claims[$this->config->tokenRuleKey]);
+        $role = explode(",", $claims[$this->config->tokenRoleKey]);
+        $rule = explode(",", $claims[$this->config->tokenRuleKey]);
         $memberId = $claims["memberId"];
         $member = (new MemberModel())->getById(["id", "username", "status"], $memberId);
-        return new AuthMember($member, $roles, $rules);
+        return new AuthMember($member, $role, $rule);
     }
 
     /**

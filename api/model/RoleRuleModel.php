@@ -7,6 +7,4 @@ use App\Core\BaseModel;
 class RoleRuleModel extends BaseModel
 {
     protected $table = "role_rule";
-    
-    
 }

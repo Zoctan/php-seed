@@ -3,6 +3,10 @@
 namespace App\Core;
 
 /**
+ * // Supported data type: [String | Bool | Int | Number | Object | JSON]
+ * // [String] is the default type for all output data.
+ * // [Object] is a PHP object data decoded by serialize(), and will be unserialize()
+ * // [JSON] is a valid JSON, and will be json_decode()
  * select($table, $columns)
  * select($table, $columns, $callback)
  * select($table, $columns, $where)
@@ -74,12 +78,17 @@ class BaseModel
         return $this->updateBy($values, ["id" => $id]);
     }
 
-    public function getById($columns = "*", $id)
+    public function getBy($columns = "*", $where)
     {
-        return $this->mysql->get($this->table, $columns, ["id" => $id]);
+        return $this->mysql->get($this->table, $columns, $where);
     }
 
-    public function listAll($columns = "*", $where = [])
+    public function getById($columns = "*", $id)
+    {
+        return $this->getBy($columns, ["id" => $id]);
+    }
+
+    public function listBy($columns = "*", $where = [])
     {
         $this->mysql->select($this->table, $columns, $where);
     }

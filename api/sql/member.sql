@@ -14,5 +14,5 @@ CREATE TABLE `member`
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='成员表';
 
 INSERT INTO `member` VALUES
-(1, 'user', 'user', 1, '2022-01-01 00:00:00', NULL, NULL),
-(2, 'admin', 'admin', 1, '2022-01-01 00:00:00', NULL, NULL);
+(1, 'user', '$2y$10$ODodrsHcNKbAbF9ypnJ2qOuvQYYJ\/oK1lcOTX3ZNDFwD1Eg5wTtpa', 1, '2022-01-01 00:00:00', NULL, NULL),
+(2, 'admin', '$2y$10$1yJq5zEGFDNXUXaRSNo3ruEjUgzWmxf3jgSPdlp8jMViVDg7Qsctq', 1, '2022-01-01 00:00:00', NULL, NULL);

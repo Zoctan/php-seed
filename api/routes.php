@@ -10,4 +10,6 @@ $router->register(["get", "post"], "/", "TestController@show", true);
 
 $router->register("get", "jssdk", "TestController@jssdk", false);
 
+$router->register("get", "login", "MemberController@login", false);
+
 return $router;
