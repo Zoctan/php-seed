@@ -29,7 +29,7 @@ class AuthenticationFilter implements Filter
             if (empty($token)) {
                 throw new UnAuthorizedException("空 token");
             }
-            if (!$jwtUtil->validateToken($token)) {
+            if (!$jwtUtil->validateTokenRedis($token)) {
                 throw new UnAuthorizedException("无效 token");
             }
             // 注入已认证的成员信息

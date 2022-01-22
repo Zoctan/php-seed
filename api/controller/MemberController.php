@@ -3,12 +3,39 @@
 namespace App\Controller;
 
 use App\Util\JwtUtil;
+use App\Model\AuthMemberModel;
 use App\Model\MemberModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
 class MemberController extends BaseController
 {
+    /**
+     * 注册
+     */
+    public function register()
+    {
+        $username = strval($this->request->get("username"));
+        $password = strval($this->request->get("password"));
+
+        if (empty($username) || empty($password)) {
+            return ResultGenerator::errorWithMsg("请输入账户名和密码");
+        }
+
+        $memberModel = new MemberModel();
+        $memberId = $memberModel->save([
+            "username" => $username,
+            "password" => $password,
+        ]);
+
+        $authMemberModel = new AuthMemberModel();
+        $authMember = $authMemberModel->get($memberId);
+
+        $token = JwtUtil::getInstance()->sign($memberId, ["role" => $authMember->role, "operate" => $authMember->operate]);
+
+        return ResultGenerator::successWithData($token);
+    }
+
     /**
      * 登录
      */
@@ -42,17 +69,44 @@ class MemberController extends BaseController
 
         $memberModel->updateLoginTimeById($member["id"]);
 
-        $role = $memberModel->getRole($member["id"]);
-        $rules = $memberModel->getRule($member["id"]);
-        $operate = $memberModel->getOperate($rules);
-        
-        $this->response->setDebug("role", $role);
-        $this->response->setDebug("rules", $rules);
-        $this->response->setDebug("operate", $operate);
+        $authMemberModel = new AuthMemberModel();
+        $authMember = $authMemberModel->get($member["id"]);
 
-        $token = JwtUtil::getInstance()->sign($member["id"], ["role" => $role["name"], "operate" => $operate]);
+        $token = JwtUtil::getInstance()->sign($member["id"], ["role" => $authMember->role, "operate" => $authMember->operate]);
 
-        $this->response->setDebug("validateToken", JwtUtil::getInstance()->validateToken($token));
         return ResultGenerator::successWithData($token);
+    }
+
+    /**
+     * 登出
+     */
+    public function logout()
+    {
+        $memberId = \App\DI()->authMember->member->id;
+        JwtUtil::getInstance()->invalidRedisToken($memberId);
+        return ResultGenerator::success();
+    }
+
+    /**
+     * 更新
+     */
+    public function update()
+    {
+        $memberInfo = $this->request->get("memberInfo");
+        $memberId = \App\DI()->authMember->member->id;
+        $memberModel = new MemberModel();
+        $memberModel->updateById($memberInfo, $memberId);
+        return ResultGenerator::success();
+    }
+
+    /**
+     * 删除
+     */
+    public function delete()
+    {
+        $memberId = \App\DI()->authMember->member->id;
+        $memberModel = new MemberModel();
+        $memberModel->deleteById($memberId);
+        return ResultGenerator::success();
     }
 }

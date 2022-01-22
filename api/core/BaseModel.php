@@ -56,26 +56,30 @@ class BaseModel
         }
     }
 
-    public function deleteBy($where): int
+    public function deleteBy($where): void
     {
-        $result =  $this->mysql->delete($this->table, $where);
-        return $result->rowCount();
+        $result = $this->mysql->delete($this->table, $where);
+        if ($result->rowCount() != 1) {
+            throw new \Exception("删除失败");
+        }
     }
 
-    public function deleteById($id): int
+    public function deleteById($id): void
     {
-        return $this->deleteBy(["id" => $id]);
+        $this->deleteBy(["id" => $id]);
     }
 
-    public function updateBy($values, $where): int
+    public function updateBy($values, $where): void
     {
-        $result =  $this->mysql->update($this->table, $values, $where);
-        return $result->rowCount();
+        $result = $this->mysql->update($this->table, $values, $where);
+        if ($result->rowCount() != 1) {
+            throw new \Exception("更新失败");
+        }
     }
 
-    public function updateById($values, $id): int
+    public function updateById($values, $id): void
     {
-        return $this->updateBy($values, ["id" => $id]);
+        $this->updateBy($values, ["id" => $id]);
     }
 
     public function getBy($columns = "*", $where)

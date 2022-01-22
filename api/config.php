@@ -89,7 +89,7 @@ $config = [
         // token 角色键
         "tokenRoleKey" => "role",
         // token 规则键
-        "tokenRuleKey" => "rule",
+        "tokenOperateKey" => "operate",
         // 签发人
         "issuedBy" => "seed",
         // 受众

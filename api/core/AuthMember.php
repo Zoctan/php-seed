@@ -8,18 +8,18 @@ namespace App\Core;
 class AuthMember
 {
     // 用户
-    protected $member;
+    public $member;
 
     // 角色列表
-    protected $role;
+    public $role;
 
     // 规则列表
-    protected $rule;
+    public $operate;
 
-    public function __construct($member, $roles, $rule)
+    public function __construct($member, $role, $operate)
     {
         $this->member = $member;
-        $this->role = $roles;
-        $this->rule = $rule;
+        $this->role = $role;
+        $this->operate = $operate;
     }
 }

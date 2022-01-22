@@ -113,11 +113,20 @@ class JwtUtil
     }
 
     /**
+     * 使 redis 里的 token失效
+     */
+    public function invalidRedisToken($memberId)
+    {
+        $token = $this->cache->get($memberId);
+        $this->cache->setex($token, $this->config->expiresMinutes * 60, 0);
+    }
+
+    /**
      * 验证 token & redis
      */
-    public function validateTokenAndRedis($token)
+    public function validateTokenRedis($token)
     {
-        $redisTokenValidate = $this->cache->get($token) == 1;
+        $redisTokenValidate = $this->cache->getset($token, 0) == 1;
         return $this->validateToken($token) && $redisTokenValidate;
     }
 
@@ -151,10 +160,10 @@ class JwtUtil
     {
         $claims =  $this->parseToken($token);
         $role = explode(",", $claims[$this->config->tokenRoleKey]);
-        $rule = explode(",", $claims[$this->config->tokenRuleKey]);
+        $operate = explode(",", $claims[$this->config->tokenOperateKey]);
         $memberId = $claims["memberId"];
         $member = (new MemberModel())->getById(["id", "username", "status"], $memberId);
-        return new AuthMember($member, $role, $rule);
+        return new AuthMember($member, $role, $operate);
     }
 
     /**
