@@ -23,7 +23,7 @@ class MemberController extends BaseController
         }
 
         $memberModel = new MemberModel();
-        $memberId = $memberModel->save([
+        $memberId = $memberModel->add([
             "username" => $username,
             "password" => $password,
         ]);
@@ -67,7 +67,7 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("成员状态异常");
         }
 
-        $memberModel->updateLoginTimeById($member["id"]);
+        $memberModel->updateLoginedAtById($member["id"]);
 
         $authMemberModel = new AuthMemberModel();
         $authMember = $authMemberModel->get($member["id"]);

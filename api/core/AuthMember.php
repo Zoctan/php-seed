@@ -7,13 +7,25 @@ namespace App\Core;
  */
 class AuthMember
 {
-    // 用户
+    /**
+     * 用户
+     * 
+     * @var 
+     */
     public $member;
 
-    // 角色列表
+    /**
+     * 角色
+     * 
+     * @var string
+     */
     public $role;
 
-    // 规则列表
+    /**
+     * 规则列表
+     * 
+     * @var array
+     */
     public $operate;
 
     public function __construct($member, $role, $operate)

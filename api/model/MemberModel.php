@@ -10,10 +10,13 @@ class MemberModel extends BaseModel
 {
     protected $table = "member";
 
-    public function save($member)
+    /**
+     * 添加
+     */
+    public function add($member)
     {
         $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
-        $memberId = $this->save($member);
+        $memberId = $this->insert($member);
         if (!$memberId) {
             throw new \Exception("成员创建失败");
         }
@@ -23,16 +26,25 @@ class MemberModel extends BaseModel
         return $memberId;
     }
 
+    /**
+     * 根据账户名获取成员
+     */
     public function getByUsername($username)
     {
-        return $this->mysql->get($this->table, ["id [Int]", "username", "password", "status [Int]"], ["username" => $username]);
+        return $this->getBy(["id [Int]", "username", "password", "status [Int]"], ["username" => $username]);
     }
 
-    public function updateLoginTimeById($id)
+    /**
+     * 更新登录时间
+     */
+    public function updateLoginedAtById($id)
     {
-        return $this->updateBy(["login_at" => Medoo::raw("NOW()")], ["id" => $id]);
+        $this->updateBy(["logined_at" => Medoo::raw("NOW()")], ["id" => $id]);
     }
 
+    /**
+     * 校验密码
+     */
     public function verifyPassword($password, $passwordDB)
     {
         return password_verify($password, $passwordDB);

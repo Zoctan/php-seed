@@ -10,13 +10,12 @@ class MemberRoleModel extends BaseModel
 
     public function saveAsDefaultRole($memberId)
     {
-        return $this->save(["member_id" => $memberId]);
+        return $this->insert(["member_id" => $memberId]);
     }
 
     public function getRole($memberId)
     {
-        return $this->mysql->get(
-            "member_role",
+        return $this->getBy(
             [
                 "[>]role" => ["role_id" => "id"],
             ],
@@ -32,8 +31,7 @@ class MemberRoleModel extends BaseModel
 
     public function getRule($memberId)
     {
-        return $this->mysql->select(
-            "member_role",
+        return $this->select(
             [
                 "[>]role_rule" => ["role_id" => "role_id"],
                 "[>]rule" => ["role_rule.rule_id" => "id"],

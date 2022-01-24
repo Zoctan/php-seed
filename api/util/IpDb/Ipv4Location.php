@@ -1,4 +1,7 @@
 <?php
+
+namespace App\Util;
+
 /**
  * IP 地理位置查询类
  *
@@ -7,7 +10,8 @@
  * @copyright 2012-2021 itbdw.com
  */
 
-class Ipv4Location {
+class Ipv4Location
+{
     private static $instance;
 
     /**
@@ -113,11 +117,13 @@ class Ipv4Location {
      *
      * @param null $filepath
      */
-    private final function __construct($filepath = null) {
+    private final function __construct($filepath = null)
+    {
         $this->init($filepath);
     }
 
-    private function init($filepath) {
+    private function init($filepath)
+    {
         $filename = __DIR__ . '/qqwry.dat';
         if ($filepath) {
             $filename = $filepath;
@@ -142,7 +148,8 @@ class Ipv4Location {
      * @access private
      * @return int
      */
-    private function getlong() {
+    private function getlong()
+    {
         //将读取的little-endian编码的4个字节转化为长整型数
         $result = unpack('Vlong', fread($this->fp, 4));
 
@@ -154,7 +161,8 @@ class Ipv4Location {
      * @param null $filepath
      * @return array
      */
-    public static function getLocation($ip, $filepath = null) {
+    public static function getLocation($ip, $filepath = null)
+    {
         if (self::$instance === null) {
             self::$instance = new self($filepath);
         }
@@ -179,7 +187,8 @@ class Ipv4Location {
      * @param $ip
      * @return array
      */
-    private function getAddr($ip) {
+    private function getAddr($ip)
+    {
         $result          = [];
         $is_china        = false;
         $seperator_sheng = '省';
@@ -305,11 +314,11 @@ class Ipv4Location {
 
             $result['ip'] = $location['ip'];
 
-//            $result['beginip']   = $location['beginip'];
-//            $result['endip']     = $location['endip'];
+            //            $result['beginip']   = $location['beginip'];
+            //            $result['endip']     = $location['endip'];
 
-//            $result['org_country']    = $location['org_country'];  //纯真数据库返回的列1
-//            $result['org_area'] = $location['org_area'];
+            //            $result['org_country']    = $location['org_country'];  //纯真数据库返回的列1
+            //            $result['org_area'] = $location['org_area'];
 
             $result['country']  = $location['country'];
             $result['province'] = $location['province'];
@@ -326,7 +335,8 @@ class Ipv4Location {
      * @param $ip
      * @return bool
      */
-    private function isValidIpV4($ip) {
+    private function isValidIpV4($ip)
+    {
         $flag = false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
 
         return $flag;
@@ -339,7 +349,8 @@ class Ipv4Location {
      * @param string $ip
      * @return array
      */
-    private function getlocationfromip($ip) {
+    private function getlocationfromip($ip)
+    {
         if (!$this->fp) {
             return null;
         } // 如果数据文件没有被正确打开，则直接返回空
@@ -429,7 +440,8 @@ class Ipv4Location {
      * @param string $ip
      * @return string
      */
-    private function packip($ip) {
+    private function packip($ip)
+    {
         // 将IP地址转化为长整型数，如果在PHP5中，IP地址错误，则返回False，
         // 这时intval将Flase转化为整数-1，之后压缩成big-endian编码的字符串
         return pack('N', intval($this->ip2long($ip)));
@@ -443,7 +455,8 @@ class Ipv4Location {
      * @param string $ip 要转换的 ip 地址
      * @return int    转换完成的数字
      */
-    private function ip2long($ip) {
+    private function ip2long($ip)
+    {
         $ip_arr = explode('.', $ip);
         $iplong = (16777216 * intval($ip_arr[0])) + (65536 * intval($ip_arr[1])) + (256 * intval($ip_arr[2])) + intval($ip_arr[3]);
 
@@ -456,7 +469,8 @@ class Ipv4Location {
      * @access private
      * @return int
      */
-    private function getlong3() {
+    private function getlong3()
+    {
         //将读取的little-endian编码的3个字节转化为长整型数
         $result = unpack('Vlong', fread($this->fp, 3) . chr(0));
 
@@ -470,7 +484,8 @@ class Ipv4Location {
      * @param string $data
      * @return string
      */
-    private function getstring($data = "") {
+    private function getstring($data = "")
+    {
         $char = fread($this->fp, 1);
         while (ord($char) > 0) { // 字符串按照C格式保存，以\0结束
             $data .= $char; // 将读取的字符连接到给定字符串之后
@@ -486,7 +501,8 @@ class Ipv4Location {
      * @access private
      * @return string
      */
-    private function getarea() {
+    private function getarea()
+    {
         $byte = fread($this->fp, 1); // 标志字节
         switch (ord($byte)) {
             case 0: // 没有区域信息
@@ -509,7 +525,8 @@ class Ipv4Location {
      * @param $str
      * @return string
      */
-    private function getIsp($str) {
+    private function getIsp($str)
+    {
         $ret = '';
 
         foreach ($this->dict_isp as $k => $v) {
@@ -522,10 +539,37 @@ class Ipv4Location {
         return $ret;
     }
 
+    /*
+     * 获取IP
+     */
+    public static function getIp()
+    {
+        $ip = 'unknown';
+        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+            return self::isIp($_SERVER['HTTP_CLIENT_IP']) ? $_SERVER['HTTP_CLIENT_IP'] : $ip;
+        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            return self::isIp($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $ip;
+        } else {
+            return self::isIp($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : $ip;
+        }
+    }
+
+    public static function isIp($str)
+    {
+        $ip = explode('.', $str);
+        for ($i = 0; $i < count($ip); $i++) {
+            if ($ip[$i] > 255) {
+                return false;
+            }
+        }
+        return preg_match('/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/', $str);
+    }
+
     /**
      * 析构函数，用于在页面执行结束后自动关闭打开的文件。
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         if ($this->fp) {
             fclose($this->fp);
         }
