@@ -133,7 +133,7 @@ abstract class MedooModel
 
     public function __construct(array $config)
     {
-        if (!$config) {
+        if (empty($config)) {
             throw new \Exception("配置不能为空");
         }
         $this->config = $config;
@@ -191,9 +191,9 @@ abstract class MedooModel
      * @param string $columns
      * @param array $where
      *
-     * @return mixed
+     * @return 
      */
-    public function getBy($columns = "*", array $where): mixed
+    public function getBy($columns = "*", array $where)
     {
         if (empty($where)) throw new \Exception("条件为空，查询单条数据失败");
 
@@ -207,9 +207,9 @@ abstract class MedooModel
      * @param string $columns
      * @param $id
      *
-     * @return mixed
+     * @return 
      */
-    public function getById($columns = "*", $id): mixed
+    public function getById($columns = "*", $id)
     {
         return $this->getBy($columns, [$this->primary => $id]);
     }
@@ -461,15 +461,19 @@ abstract class MedooModel
     protected function connection()
     {
         if (!isset($_ENV[$this->place]) || !isset($_ENV[$this->place][$this->database])) {
-            $master = $this->config[$this->database]["master"];
+            $master = $this->config["master"];
             $master = $master[array_rand($master)];
-
-            $slave = $this->config[$this->database]["slave"];
-            $slave = $slave[array_rand($slave)];
+            $master["database"] = $this->database;
 
             $_ENV[$this->place][$this->database]["master"] = new Medoo($master);
 
-            if (empty(array_diff($master, $slave))) {
+            $slave = $this->config["slave"];
+            $slave = $slave[array_rand($slave)];
+            if (!empty($slave)) {
+                $slave["database"] = $this->database;
+            }
+
+            if (empty($slave) || empty(array_diff($master, $slave))) {
                 $_ENV[$this->place][$this->database]["slave"] = &$_ENV[$this->place][$this->database]["master"];
             } else {
                 $_ENV[$this->place][$this->database]["slave"] = new Medoo($slave);

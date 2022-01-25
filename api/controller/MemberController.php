@@ -10,6 +10,7 @@ use App\Core\Response\ResultGenerator;
 
 class MemberController extends BaseController
 {
+
     /**
      * 注册
      */

@@ -11,9 +11,18 @@ use App\Core\Response\ResultCode;
  */
 class ExceptionHandler
 {
-    private static $showFileLine = false;
+    private static $showFileLine = true;
 
-    public function __construct()
+    public static function register()
+    {
+        self::setErrorHandler();
+        self::setExceptionHandler();
+    }
+
+    /**
+     * 处理用户抛出的 Exception
+     */
+    private static function setExceptionHandler()
     {
         set_exception_handler(function (\Throwable $exception) {
             $resultCode = [];
@@ -39,7 +48,33 @@ class ExceptionHandler
                     $exception->getMessage()
                 );
             }
-            ResultGenerator::error($resultCode, $message);
+            ResultGenerator::errorWithCodeMsg($resultCode, $message);
         });
+    }
+
+    /**
+     * 处理用户抛出的 Error
+     */
+    private static function setErrorHandler()
+    {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+            $resultCode = ResultCode::FAILED;
+            if (self::$showFileLine) {
+                $message = sprintf(
+                    "%s => %s[%s] => %s",
+                    $resultCode[1],
+                    $errfile,
+                    $errline,
+                    $errstr
+                );
+            } else {
+                $message = sprintf(
+                    "%s => %s",
+                    $resultCode[1],
+                    $errstr
+                );
+            }
+            ResultGenerator::errorWithCodeMsg($resultCode, $message);
+        }, E_ALL);
     }
 }
