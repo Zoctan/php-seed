@@ -1,6 +1,6 @@
 <?php
 
-ini_set("display_errors", false);
+//ini_set("display_errors", false);
 
 require_once __DIR__ . "/vendor/autoload.php";
 
@@ -8,8 +8,9 @@ use App\Core\Http\Session;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Filter;
-use App\Core\Filter\AuthenticationFilter;
 use App\Core\Filter\CorsFilter;
+use App\Core\Filter\RequestContentTypeFilter;
+use App\Core\Filter\AuthenticationFilter;
 use App\Core\Exception\ExceptionHandler;
 
 /**
@@ -18,7 +19,7 @@ use App\Core\Exception\ExceptionHandler;
 function bootApp()
 {
     // 注册全局异常处理器
-    ExceptionHandler::register();
+    //ExceptionHandler::register();
 
     date_default_timezone_set("prc");
 
@@ -73,9 +74,11 @@ $router = require_once __DIR__ . "/routes.php";
 // 按顺序执行过滤链
 doFilterChain(
     new CorsFilter(),
+    new RequestContentTypeFilter(),
     new AuthenticationFilter($router->getRoutes()),
 );
 
+var_dump($request);
 //var_dump($di->request->getPath());
 // 路由分发、处理请求、返回响应
 $router->dispatch($di->request);

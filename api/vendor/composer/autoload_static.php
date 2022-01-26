@@ -150,6 +150,7 @@ class ComposerStaticInitcbfea467e759cba3600718835ed968db
         'App\\Core\\Filter' => __DIR__ . '/../..' . '/core/Filter.php',
         'App\\Core\\Filter\\AuthenticationFilter' => __DIR__ . '/../..' . '/core/filter/AuthenticationFilter.php',
         'App\\Core\\Filter\\CorsFilter' => __DIR__ . '/../..' . '/core/filter/CorsFilter.php',
+        'App\\Core\\Filter\\RequestContentTypeFilter' => __DIR__ . '/../..' . '/core/filter/RequestContentTypeFilter.php',
         'App\\Core\\Http\\Request' => __DIR__ . '/../..' . '/core/http/Request.php',
         'App\\Core\\Http\\Response' => __DIR__ . '/../..' . '/core/http/Response.php',
         'App\\Core\\Http\\Route' => __DIR__ . '/../..' . '/core/http/Route.php',

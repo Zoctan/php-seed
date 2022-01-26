@@ -10,6 +10,15 @@ use App\Core\Response\ResultGenerator;
 
 class MemberController extends BaseController
 {
+    /**
+     * @var MemberModel
+     */
+    private $memberModel;
+
+    public function __construct()
+    {
+        $this->memberModel = new MemberModel();
+    }
 
     /**
      * 注册
@@ -23,8 +32,7 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("请输入账户名和密码");
         }
 
-        $memberModel = new MemberModel();
-        $memberId = $memberModel->add([
+        $memberId = $this->memberModel->add([
             "username" => $username,
             "password" => $password,
         ]);
@@ -52,15 +60,14 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("请输入账户名和密码");
         }
 
-        $memberModel = new MemberModel();
-        $member = $memberModel->getByUsername($username);
+        $member = $this->memberModel->getByUsername($username);
 
         $this->response->setDebug("member", $member);
         if (empty($member)) {
             return ResultGenerator::errorWithMsg("账户名错误");
         }
 
-        if (!$memberModel->verifyPassword($password, $member["password"])) {
+        if (!$this->memberModel->verifyPassword($password, $member["password"])) {
             return ResultGenerator::errorWithMsg("密码错误");
         }
 
@@ -68,7 +75,7 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("成员状态异常");
         }
 
-        $memberModel->updateLoginedAtById($member["id"]);
+        $this->memberModel->updateLoginedAtById($member["id"]);
 
         $authMemberModel = new AuthMemberModel();
         $authMember = $authMemberModel->get($member["id"]);
@@ -89,14 +96,38 @@ class MemberController extends BaseController
     }
 
     /**
+     * 列表
+     */
+    public function list()
+    {
+        $currentPage = intval($this->request->get("currentPage"));
+        $pageSize = intval($this->request->get("pageSize"));
+
+        $username = strval($this->request->get("username"));
+        $status = intval($this->request->get("status"));
+        
+        $result =  $this->memberModel->page($currentPage, $pageSize, [
+            "id",
+            "username",
+            "status",
+            "logined_at",
+            "created_at",
+            "updated_at",
+        ], [
+            "username" => $username,
+            "status" => $status,
+        ]);
+        return ResultGenerator::successWithData($result);
+    }
+
+    /**
      * 更新
      */
     public function update()
     {
         $memberInfo = $this->request->get("memberInfo");
         $memberId = \App\DI()->authMember->member->id;
-        $memberModel = new MemberModel();
-        $memberModel->updateById($memberInfo, $memberId);
+        $this->memberModel->updateById($memberInfo, $memberId);
         return ResultGenerator::success();
     }
 
@@ -106,8 +137,7 @@ class MemberController extends BaseController
     public function delete()
     {
         $memberId = \App\DI()->authMember->member->id;
-        $memberModel = new MemberModel();
-        $memberModel->deleteById($memberId);
+        $this->memberModel->deleteById($memberId);
         return ResultGenerator::success();
     }
 }

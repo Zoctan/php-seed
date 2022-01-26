@@ -26,14 +26,22 @@ class Router
     /**
      * 注册路由
      */
-    public function register($methods, $uri, $callback, $needAuth = false)
+    public function register($methods, string $uri, $callback, bool $needAuth = false)
     {
         if (isset($this->routes[$uri])) {
             return;
         }
+
         if (is_string($methods)) {
             $methods = [$methods];
         }
+
+        foreach ($methods as $key => $value) {
+            $methods[$key] = strtolower($value);
+        }
+
+        $uri = !str_starts_with($uri, "/") ? $uri : substr($uri, strlen("/"));
+        
         $route = new Route($methods, $uri, $callback, $needAuth);
         $this->routes[$uri] = $route;
     }

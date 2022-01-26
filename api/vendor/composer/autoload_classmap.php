@@ -22,6 +22,7 @@ return array(
     'App\\Core\\Filter' => $baseDir . '/core/Filter.php',
     'App\\Core\\Filter\\AuthenticationFilter' => $baseDir . '/core/filter/AuthenticationFilter.php',
     'App\\Core\\Filter\\CorsFilter' => $baseDir . '/core/filter/CorsFilter.php',
+    'App\\Core\\Filter\\RequestContentTypeFilter' => $baseDir . '/core/filter/RequestContentTypeFilter.php',
     'App\\Core\\Http\\Request' => $baseDir . '/core/http/Request.php',
     'App\\Core\\Http\\Response' => $baseDir . '/core/http/Response.php',
     'App\\Core\\Http\\Route' => $baseDir . '/core/http/Route.php',

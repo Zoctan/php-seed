@@ -53,7 +53,7 @@ class Result
         return $this;
     }
 
-    public function toString()
+    public function get()
     {
         $result = [];
         $result[$this->structureMap->errno] = $this->errno;
@@ -63,14 +63,13 @@ class Result
         if (!empty($this->data)) {
             $result[$this->structureMap->data] = $this->data;
         }
-        // JSON_UNESCAPED_UNICODE 中文也能显示
-        return json_encode($result, JSON_UNESCAPED_UNICODE);
+        return $result;
     }
 
     public function response()
     {
         $response = \App\DI()->get("response", new Response());
-        $response->setContent($this->toString());
+        $response->setData($this->get());
         $response->send();
     }
 }

@@ -274,6 +274,33 @@ abstract class MedooModel
     }
 
     /**
+     * 分页
+     *
+     * @param int $currentPage
+     * @param int $pageSize
+     * @param string|array $columns
+     * @param array $where
+     *
+     * @return array
+     */
+    public function page(int $currentPage = 0, int $pageSize = 20, $columns = "*", array $where): array
+    {
+        $limitStart = ($currentPage - 1) * $pageSize;
+        // 根据分页获取id
+        $where = array_merge($where, ["LIMIT" => [$limitStart, $pageSize]]);
+        $id = $this->connection()->select($this->table, $this->primary, $where);
+        $total = count($id);
+        $list = $this->connection()->select($this->table, $columns, [$this->primary => $id]);
+        return [
+            "list" => $list,
+            "total" => $total,
+            "currentPage" => $currentPage,
+            "pageSize" => $pageSize,
+            "totalPage" => ceil($total / $pageSize),
+        ];
+    }
+
+    /**
      * 获取 sql 执行记录
      *
      * @return array

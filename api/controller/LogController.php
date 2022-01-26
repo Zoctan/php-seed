@@ -15,7 +15,7 @@ class LogController extends BaseController
     {
         $key = strval($this->request->get("key"));
         $logModel = new LogModel();
-        $result = $logModel->getValue($key);
+        $result = $logModel->list($key);
         return ResultGenerator::successWithData($result);
     }
 
