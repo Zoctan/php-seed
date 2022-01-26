@@ -105,7 +105,7 @@ class MemberController extends BaseController
 
         $username = strval($this->request->get("username"));
         $status = intval($this->request->get("status"));
-        
+
         $result =  $this->memberModel->page($currentPage, $pageSize, [
             "id",
             "username",

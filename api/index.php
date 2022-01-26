@@ -78,7 +78,6 @@ doFilterChain(
     new AuthenticationFilter($router->getRoutes()),
 );
 
-var_dump($request);
 //var_dump($di->request->getPath());
 // 路由分发、处理请求、返回响应
 $router->dispatch($di->request);

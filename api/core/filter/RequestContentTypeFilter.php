@@ -28,7 +28,7 @@ class RequestContentTypeFilter implements Filter
         }
     }
 
-    private function transformJsonBody(Request $request)
+    private function transformJsonBody(Request &$request)
     {
         $data = json_decode($request->getContent(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -38,6 +38,5 @@ class RequestContentTypeFilter implements Filter
             return;
         }
         $request->request->replace($data);
-        var_dump($request);
     }
 }

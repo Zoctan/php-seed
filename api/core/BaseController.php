@@ -30,7 +30,8 @@ class BaseController
     public function __construct()
     {
         $this->di = \App\DI();
-        $this->request = $this->di->request;
-        $this->response = $this->di->response;
+        $this->request = $this->di->get("request", Request::capture());
+        var_dump($this->request);
+        $this->response = $this->di->get("response", new Response());
     }
 }
