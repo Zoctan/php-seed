@@ -10,13 +10,8 @@ use App\Core\Http\Response;
 /**
  * 控制器基类
  */
-class BaseController
+abstract class BaseController
 {
-    /**
-     * @var DependencyInjection
-     */
-    protected $di;
-
     /**
      * @var Request
      */
@@ -29,9 +24,7 @@ class BaseController
 
     public function __construct()
     {
-        $this->di = \App\DI();
-        $this->request = $this->di->get("request", Request::capture());
-        var_dump($this->request);
-        $this->response = $this->di->get("response", new Response());
+        $this->request = \App\DI()->request;
+        $this->response = \App\DI()->response;
     }
 }

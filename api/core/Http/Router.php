@@ -41,7 +41,7 @@ class Router
         }
 
         $uri = !str_starts_with($uri, "/") ? $uri : substr($uri, strlen("/"));
-        
+
         $route = new Route($methods, $uri, $callback, $needAuth);
         $this->routes[$uri] = $route;
     }
@@ -70,9 +70,18 @@ class Router
             // 通过控制器方法注册的路由回调
             list($controllerClass, $controllerMethod) = explode("@", $callback);
             $controllerNamespace = \App\DI()->config->app->controllerNamespace;
+            // App\Controller\XXController
             $controllerClass = $controllerNamespace . $controllerClass;
-            $controllerInstance = new $controllerClass;
-            call_user_func([$controllerInstance, $controllerMethod]);
+            $controllerReflector = new \ReflectionClass($controllerClass);
+            // 创建控制器实例
+            $controllerInstance = (new \ReflectionClass($controllerClass))->newInstanceArgs();
+            $setModelArguments = $controllerReflector->getMethod("setModel")->getParameters();
+            foreach ($setModelArguments as $setModelArgument) {
+                $argumentClassHint = $setModelArgument->getType();
+                var_dump($argumentClassHint);
+            }
+            // 调用控制器方法
+            $controllerInstance->$controllerMethod();
         } else {
             throw new RouterException("路由内部回调书写错误，请联系管理员处理");
         }

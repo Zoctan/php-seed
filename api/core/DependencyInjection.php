@@ -80,9 +80,30 @@ class DependencyInjection implements \ArrayAccess
     }
 
     /**
-     * 1.类 => 初始化
-     * 2.方法 => 调用
-     * 3.值 => 调用
+     * 是否存在值
+     */
+    public function hasValue($key)
+    {
+        return isset($this->data[$key]);
+    }
+
+    /**
+     * 是否存在实例
+     */
+    public function hasInstance($className)
+    {
+        foreach ($this->data as $key => $value) {
+            if (class_exists($value) && get_class($value) == $className) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 类   => 初始化
+     * 方法 => 调用
+     * 值   => 调用
      */
     protected function initService($value)
     {
@@ -97,6 +118,29 @@ class DependencyInjection implements \ArrayAccess
         }
 
         return $rs;
+    }
+
+    private function resolveClassDependancy(\ReflectionClass $dependancyClass)
+    {
+        $dependancyClassName = $dependancyClass->getName();
+
+        if ($this->hasInstance($dependancyClassName)) {
+            return $this->get($dependancyClassName);
+        }
+
+        // try to match by interfaces
+        $interfaces = $dependancyClass->getInterfaces();
+        foreach ($interfaces as $interface) {
+            $resolvedService = $this->resolveClassDependancy($interface);
+            if (null !== $resolvedService) {
+                return $resolvedService;
+            }
+        }
+
+        // fallback to parent class
+        if ($parentClass = $dependancyClass->getParentClass()) {
+            return $this->resolveClassDependancy($parentClass);
+        }
     }
 
     /** ------------------ 魔法方法 ------------------ **/

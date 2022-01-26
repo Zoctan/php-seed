@@ -15,9 +15,9 @@ class MemberController extends BaseController
      */
     private $memberModel;
 
-    public function __construct()
+    protected function setModel(MemberModel $memberModel)
     {
-        $this->memberModel = new MemberModel();
+        $this->memberModel = $memberModel;
     }
 
     /**
