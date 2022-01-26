@@ -7,6 +7,7 @@ use App\Model\MemberModel;
 use App\Core\AuthMember;
 use App\Core\Singleton;
 use App\Core\exception\UnAuthorizedException;
+use App\Core\Http\Request;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Exception;
@@ -55,7 +56,7 @@ class JwtUtil
     /**
      * 从请求头或请求参数中获取 token
      */
-    public function getTokenFromRequest($request)
+    public function getTokenFromRequest(Request $request)
     {
         $headerKey = $this->config->header;
         $token = $request->headers->get($headerKey);
@@ -72,11 +73,7 @@ class JwtUtil
         $jwtObj = $this->jwtConfig->builder()
             ->issuedBy($this->config->issuedBy)
             ->permittedFor($this->config->permittedFor)
-            ->identifiedBy($this->config->identifiedBy)
-            ->issuedAt($now)
-            // 在1分钟后才可使用
-            // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
-            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
+            ->identifiedBy($this->config->identifiedBy);
 
         // 装载 payload
         // "memberId": 1
@@ -88,6 +85,11 @@ class JwtUtil
                 $jwtObj->withClaim($key, $value);
             }
         }
+
+        $jwtObj->issuedAt($now)
+            // 在1分钟后才可使用
+            // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
+            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
 
         // 生成 token
         $token = $jwtObj
@@ -126,8 +128,11 @@ class JwtUtil
      */
     public function validateTokenRedis($token)
     {
-        $redisTokenValidate = $this->cache->getset($token, 0) == 1;
-        return $this->validateToken($token) && $redisTokenValidate;
+        $redisToken = $this->cache->get($token);
+        if ($redisToken && intval($redisToken) == 1) {
+            return $this->validateToken($token);
+        }
+        return false;
     }
 
     /**
@@ -159,8 +164,8 @@ class JwtUtil
     public function getAuthentication($token)
     {
         $claims =  $this->parseToken($token);
-        $role = explode(",", $claims[$this->config->tokenRoleKey]);
-        $operate = explode(",", $claims[$this->config->tokenOperateKey]);
+        $role = $claims[$this->config->tokenRoleKey];
+        $operate = $claims[$this->config->tokenOperateKey];
         $memberId = $claims["memberId"];
         $member = (new MemberModel())->getById(["id", "username", "status"], $memberId);
         return new AuthMember($member, $role, $operate);

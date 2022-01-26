@@ -15,8 +15,9 @@ class MemberController extends BaseController
      */
     private $memberModel;
 
-    protected function setModel(MemberModel $memberModel)
+    public function __construct(MemberModel $memberModel)
     {
+        parent::__construct();
         $this->memberModel = $memberModel;
     }
 
@@ -100,11 +101,19 @@ class MemberController extends BaseController
      */
     public function list()
     {
-        $currentPage = intval($this->request->get("currentPage"));
-        $pageSize = intval($this->request->get("pageSize"));
+        $currentPage = intval($this->request->get("currentPage", 0));
+        $pageSize = intval($this->request->get("pageSize", 20));
 
         $username = strval($this->request->get("username"));
         $status = intval($this->request->get("status"));
+
+        $where = [];
+        if ($username) {
+            $where["username"] = $username;
+        }
+        if ($status) {
+            $where["status"] = $status;
+        }
 
         $result =  $this->memberModel->page($currentPage, $pageSize, [
             "id",
@@ -113,10 +122,7 @@ class MemberController extends BaseController
             "logined_at",
             "created_at",
             "updated_at",
-        ], [
-            "username" => $username,
-            "status" => $status,
-        ]);
+        ], $where);
         return ResultGenerator::successWithData($result);
     }
 

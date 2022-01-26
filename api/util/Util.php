@@ -176,21 +176,7 @@ class Util
         }
         return $afterArray;
     }
-
-    /**
-     * 分页
-     */
-    public static function page($currentPage, $pageSize, $total, $data)
-    {
-        return [
-            "data" => $data,
-            "currentPage" => $currentPage,
-            "total" => $total,
-            "pageSize" => $pageSize,
-            "totalPage" => ceil($total / $pageSize),
-        ];
-    }
-
+    
     /**
      * 生成随机字符串
      * @param $length

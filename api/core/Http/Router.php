@@ -72,14 +72,8 @@ class Router
             $controllerNamespace = \App\DI()->config->app->controllerNamespace;
             // App\Controller\XXController
             $controllerClass = $controllerNamespace . $controllerClass;
-            $controllerReflector = new \ReflectionClass($controllerClass);
             // 创建控制器实例
-            $controllerInstance = (new \ReflectionClass($controllerClass))->newInstanceArgs();
-            $setModelArguments = $controllerReflector->getMethod("setModel")->getParameters();
-            foreach ($setModelArguments as $setModelArgument) {
-                $argumentClassHint = $setModelArgument->getType();
-                var_dump($argumentClassHint);
-            }
+            $controllerInstance = \App\DI()->newInstance($controllerClass);
             // 调用控制器方法
             $controllerInstance->$controllerMethod();
         } else {

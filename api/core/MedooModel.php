@@ -283,14 +283,14 @@ abstract class MedooModel
      *
      * @return array
      */
-    public function page(int $currentPage = 0, int $pageSize = 20, $columns = "*", array $where): array
+    public function page(int $currentPage = 0, int $pageSize = 20, $columns = "*", array $where = []): array
     {
-        $limitStart = ($currentPage - 1) * $pageSize;
+        $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
         // 根据分页获取id
-        $where = array_merge($where, ["LIMIT" => [$limitStart, $pageSize]]);
-        $id = $this->connection()->select($this->table, $this->primary, $where);
-        $total = count($id);
-        $list = $this->connection()->select($this->table, $columns, [$this->primary => $id]);
+        $where["LIMIT"] = [$limitStart, $pageSize];
+        $ids = $this->connection()->select($this->table, $this->primary, $where);
+        $total = count($ids);
+        $list = $this->connection()->select($this->table, $columns, [$this->primary => $ids]);
         return [
             "list" => $list,
             "total" => $total,

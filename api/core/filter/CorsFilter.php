@@ -14,13 +14,13 @@ class CorsFilter implements Filter
 
     public function __construct()
     {
-
         $this->config = \App\DI()->config;
     }
 
     public function doFilter()
     {
         $response = \App\DI()->response;
+        $request = \App\DI()->request;
         // 返回的类型
         $this->setContentType($response);
         // 允许任何网址请求
@@ -32,6 +32,12 @@ class CorsFilter implements Filter
         $response->headers->set("Access-Control-Allow-Credentials", "false");
         // 设置允许自定义请求头的字段
         $response->headers->set("Access-Control-Allow-Headers", "Content-Type,Content-Length,Authorization");
+
+        // 预请求后，直接返回
+        if ("OPTIONS" == $request->getMethod()) {
+            return false;
+        }
+        return true;
     }
 
     public function setContentType(Response $response)

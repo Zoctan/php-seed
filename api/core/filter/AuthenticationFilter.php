@@ -21,19 +21,23 @@ class AuthenticationFilter implements Filter
     public function doFilter()
     {
         $request = \App\DI()->request;
+
         // 需要认证的路由才检查
-        $uri =  $request->getPath();
+        $uri = $request->getPath();
         if ($this->routes[$uri]->needAuth) {
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($request);
             if (empty($token)) {
-                throw new UnAuthorizedException("空 token");
+                throw new UnAuthorizedException("empty token");
+                return false;
             }
             if (!$jwtUtil->validateTokenRedis($token)) {
-                throw new UnAuthorizedException("无效 token");
+                throw new UnAuthorizedException("invalid token");
+                return false;
             }
             // 注入已认证的成员信息
             \App\DI()->authMember = $jwtUtil->getAuthentication($token);
         }
+        return true;
     }
 }

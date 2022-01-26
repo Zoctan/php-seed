@@ -16,15 +16,16 @@ class RequestContentTypeFilter implements Filter
         $request = \App\DI()->request;
 
         if (empty($request->getContent())) {
-            return;
+            return true;
         }
 
         switch ($request->getContentType()) {
             case "":
-                return;
+                return false;
             default:
             case "json":
                 $this->transformJsonBody($request);
+                return true;
         }
     }
 

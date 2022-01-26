@@ -105,7 +105,7 @@ $config = [
         // 签发id
         "identifiedBy" => "123",
         // 多久过期（分钟）
-        "expiresMinutes" => "2",
+        "expiresMinutes" => "15",
         // 私钥
         "signingKey" => __DIR__ . "/rsa/private-key.pem",
         // 公钥

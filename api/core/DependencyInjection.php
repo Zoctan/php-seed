@@ -78,28 +78,7 @@ class DependencyInjection implements \ArrayAccess
 
         return $this->data[$key];
     }
-
-    /**
-     * 是否存在值
-     */
-    public function hasValue($key)
-    {
-        return isset($this->data[$key]);
-    }
-
-    /**
-     * 是否存在实例
-     */
-    public function hasInstance($className)
-    {
-        foreach ($this->data as $key => $value) {
-            if (class_exists($value) && get_class($value) == $className) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    
     /**
      * 类   => 初始化
      * 方法 => 调用
@@ -120,27 +99,29 @@ class DependencyInjection implements \ArrayAccess
         return $rs;
     }
 
-    private function resolveClassDependancy(\ReflectionClass $dependancyClass)
+    /**
+     * 反射方式创建实例
+     */
+    public function newInstance(string $class): object
     {
-        $dependancyClassName = $dependancyClass->getName();
+        $reflectionClass = new \ReflectionClass($class);
 
-        if ($this->hasInstance($dependancyClassName)) {
-            return $this->get($dependancyClassName);
+        if (($constructor = $reflectionClass->getConstructor()) === null) {
+            return $reflectionClass->newInstance();
         }
 
-        // try to match by interfaces
-        $interfaces = $dependancyClass->getInterfaces();
-        foreach ($interfaces as $interface) {
-            $resolvedService = $this->resolveClassDependancy($interface);
-            if (null !== $resolvedService) {
-                return $resolvedService;
-            }
+        if (($params = $constructor->getParameters()) === []) {
+            return $reflectionClass->newInstance();
         }
 
-        // fallback to parent class
-        if ($parentClass = $dependancyClass->getParentClass()) {
-            return $this->resolveClassDependancy($parentClass);
+        $newInstanceParams = [];
+        foreach ($params as $param) {
+            $newInstanceParams[] = $param->getType() === null
+                ? $param->getDefaultValue()
+                : $this->newInstance($param->getType()->getName());
         }
+
+        return $reflectionClass->newInstanceArgs($newInstanceParams);
     }
 
     /** ------------------ 魔法方法 ------------------ **/
