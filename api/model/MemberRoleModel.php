@@ -15,16 +15,18 @@ class MemberRoleModel extends BaseModel
 
     public function getRole($memberId)
     {
-        return $this->getBy(
+        return $this->get(
             [
                 "[>]role" => ["role_id" => "id"],
             ],
             [
                 "role.id [Int]",
-                "role.name"
+                "role.name",
+                "role.has_all_rule [Int]",
+                "role.lock [Int]",
             ],
             [
-                "member_role.id" => $memberId
+                "member_role.member_id" => $memberId
             ]
         );
     }
@@ -42,7 +44,7 @@ class MemberRoleModel extends BaseModel
                 "rule.operate"
             ],
             [
-                "member_role.id" => $memberId
+                "member_role.member_id" => $memberId
             ]
         );
     }

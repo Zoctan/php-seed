@@ -172,17 +172,15 @@ abstract class MedooModel
     }
 
     /**
-     * 插入数据
+     * 根据条件查询所有数据
      *
-     * @param array $values
-     *
-     * @return int|void
+     * @param string|array $columns
+     * @param array $where
+     * @param callback $callback
      */
-    public function insert(array $values)
+    public function listAll($columns = "*", array $where, callable $callback)
     {
-        $this->write = true;
-        $this->connection()->insert($this->table, $values);
-        return $this->id();
+        $this->connection()->select($this->table, $columns, $where, $callback);
     }
 
     /**
@@ -212,6 +210,20 @@ abstract class MedooModel
     public function getById($columns = "*", $id)
     {
         return $this->getBy($columns, [$this->primary => $id]);
+    }
+
+    /**
+     * 插入数据
+     *
+     * @param array $values
+     *
+     * @return int|void
+     */
+    public function insert(array $values)
+    {
+        $this->write = true;
+        $this->connection()->insert($this->table, $values);
+        return $this->id();
     }
 
     /**

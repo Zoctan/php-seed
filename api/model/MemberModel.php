@@ -31,7 +31,17 @@ class MemberModel extends BaseModel
      */
     public function getByUsername($username)
     {
-        return $this->getBy(["id [Int]", "username", "password", "status [Int]"], ["username" => $username]);
+        return $this->getBy(
+            [
+                "id [Int]",
+                "username",
+                "password",
+                "status [Int]"
+            ],
+            [
+                "username" => $username
+            ]
+        );
     }
 
     /**
