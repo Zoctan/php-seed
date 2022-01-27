@@ -226,7 +226,7 @@ abstract class MedooModel
         if (empty($where)) throw new \Exception("条件为空，删除失败");
 
         $result = $this->connection()->delete($this->table, $where);
-        if ($result->rowCount() != 1) {
+        if (empty($result)) {
             throw new \Exception("删除失败");
         }
     }
@@ -256,7 +256,7 @@ abstract class MedooModel
 
         $this->write = true;
         $result = $this->connection()->update($this->table, $values, $where);
-        if ($result->rowCount() != 1) {
+        if (empty($result)) {
             throw new \Exception("更新失败");
         }
     }

@@ -64,16 +64,32 @@ class JwtUtil
     }
 
     /**
-     * 生成 token
+     * 签发 token
      */
     public function sign($memberId, array $payload = [])
     {
+        $token = $this->cache->get($memberId);
+        if ($token) {
+            $ttl = $this->cache->ttl($memberId);
+            // 如果 redis 存在，并且有超过15分钟的有效期，就不签发新 token
+            if ($ttl > $this->config->refreshMinutes * 60) {
+                return $token;
+            } else if (0 < $ttl &&  $ttl <= $this->config->refreshMinutes * 60) {
+                // 最后15分钟有效期，使原先的 token 无效，重新签发
+                $this->invalidRedisToken($memberId);
+            }
+        }
+
         $now = new \DateTimeImmutable();
 
         $jwtObj = $this->jwtConfig->builder()
             ->issuedBy($this->config->issuedBy)
             ->permittedFor($this->config->permittedFor)
-            ->identifiedBy($this->config->identifiedBy);
+            ->identifiedBy($this->config->identifiedBy)
+            ->issuedAt($now)
+            // 在1分钟后才可使用
+            // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
+            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
 
         // 装载 payload
         // "memberId": 1
@@ -85,11 +101,6 @@ class JwtUtil
                 $jwtObj->withClaim($key, $value);
             }
         }
-
-        $jwtObj->issuedAt($now)
-            // 在1分钟后才可使用
-            // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
-            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
 
         // 生成 token
         $token = $jwtObj

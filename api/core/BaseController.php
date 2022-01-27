@@ -13,17 +13,29 @@ use App\Core\Http\Response;
 abstract class BaseController
 {
     /**
+     * 注入请求
+     * 
      * @var Request
      */
     protected $request;
 
     /**
+     * 注入响应
+     * 
      * @var Response
      */
     protected $response;
 
+    /**
+     * 注入已认证成员
+     * 
+     * @var AuthMember
+     */
+    protected $authMember;
+
     public function __construct()
     {
+        $this->authMember = \App\DI()->authMember;
         $this->request = \App\DI()->request;
         $this->response = \App\DI()->response;
     }

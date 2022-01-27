@@ -73,6 +73,7 @@ $di = bootApp();
 // 注册路由
 $router = require_once __DIR__ . "/routes.php";
 
+// var_dump($di->request->headers->all());
 // 按顺序执行过滤链
 doFilterChain(
     new CorsFilter(),
@@ -80,7 +81,6 @@ doFilterChain(
     new AuthenticationFilter($router->getRoutes()),
 );
 
-// var_dump($di->request->headers->all());
 //var_dump($di->request->getPath());
 // 路由分发、处理请求、返回响应
 $router->dispatch($di->request);

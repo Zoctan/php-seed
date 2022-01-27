@@ -24,7 +24,8 @@ class AuthenticationFilter implements Filter
 
         // 需要认证的路由才检查
         $uri = $request->getPath();
-        if ($this->routes[$uri]->needAuth) {
+        $authOperate = $this->routes[$uri]->authOperate;
+        if ($authOperate) {
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($request);
             if (empty($token)) {
@@ -35,8 +36,13 @@ class AuthenticationFilter implements Filter
                 throw new UnAuthorizedException("invalid token");
                 return false;
             }
+            $authMember = $jwtUtil->getAuthentication($token);
+            if (!$authMember->has($authOperate)) {
+                throw new UnAuthorizedException("no auth operate");
+                return false;
+            }
             // 注入已认证的成员信息
-            \App\DI()->authMember = $jwtUtil->getAuthentication($token);
+            \App\DI()->authMember = $authMember;
         }
         return true;
     }

@@ -14,11 +14,16 @@ class MemberController extends BaseController
      * @var MemberModel
      */
     private $memberModel;
+    /**
+     * @var JwtUtil
+     */
+    private $jwtUtil;
 
     public function __construct(MemberModel $memberModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
+        $this->jwtUtil = JwtUtil::getInstance();
     }
 
     /**
@@ -41,7 +46,7 @@ class MemberController extends BaseController
         $authMemberModel = new AuthMemberModel();
         $authMember = $authMemberModel->get($memberId);
 
-        $token = JwtUtil::getInstance()->sign($memberId, ["role" => $authMember->role, "operate" => $authMember->operate]);
+        $token = $this->jwtUtil->sign($memberId, ["role" => $authMember->role, "operate" => $authMember->operate]);
 
         return ResultGenerator::successWithData($token);
     }
@@ -81,7 +86,7 @@ class MemberController extends BaseController
         $authMemberModel = new AuthMemberModel();
         $authMember = $authMemberModel->get($member["id"]);
 
-        $token = JwtUtil::getInstance()->sign($member["id"], ["role" => $authMember->role, "operate" => $authMember->operate]);
+        $token = $this->jwtUtil->sign($member["id"], ["role" => $authMember->role, "operate" => $authMember->operate]);
 
         return ResultGenerator::successWithData($token);
     }
@@ -92,8 +97,17 @@ class MemberController extends BaseController
     public function logout()
     {
         $memberId = \App\DI()->authMember->member->id;
-        JwtUtil::getInstance()->invalidRedisToken($memberId);
+        $this->jwtUtil->invalidRedisToken($memberId);
         return ResultGenerator::success();
+    }
+
+    /**
+     * 刷新 token
+     */
+    public function refreshToken()
+    {
+        $token = $this->jwtUtil->sign($this->authMember->member["id"], ["role" => $this->authMember->role, "operate" => $this->authMember->operate]);
+        return ResultGenerator::successWithData($token);
     }
 
     /**

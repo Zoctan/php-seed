@@ -22,7 +22,7 @@ class AuthMember
     public $role;
 
     /**
-     * 规则列表
+     * 操作权限列表
      * 
      * @var array
      */
@@ -33,5 +33,15 @@ class AuthMember
         $this->member = $member;
         $this->role = $role;
         $this->operate = $operate;
+    }
+
+    /**
+     * 是否有操作权限
+     * 
+     * @param string $authOperate
+     */
+    public function has($authOperate)
+    {
+        return in_array($authOperate, $this->operate);
     }
 }
