@@ -35,8 +35,8 @@ abstract class BaseController
 
     public function __construct()
     {
-        $this->authMember = \App\DI()->authMember;
         $this->request = \App\DI()->request;
         $this->response = \App\DI()->response;
+        $this->authMember = \App\DI()->authMember;
     }
 }

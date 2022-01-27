@@ -1,10 +1,10 @@
 DROP TABLE IF EXISTS `system`;
 CREATE TABLE `system`
 (
-    `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '系统配置id',
-    `description`  LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '说明',
-    `key`          VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '键',
-    `value`        LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '值',
+    `id`            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '系统配置id',
+    `description`   LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '说明',
+    `key`           VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '键',
+    `value`         LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '值',
     `created_at`    DATETIME DEFAULT NOW() COMMENT '创建于',
     `updated_at`    DATETIME DEFAULT NULL COMMENT '更新于',
     PRIMARY KEY (`id`)

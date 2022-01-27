@@ -130,9 +130,9 @@ class MemberController extends BaseController
         }
 
         $result =  $this->memberModel->page($currentPage, $pageSize, [
-            "id",
+            "id [Int]",
             "username",
-            "status",
+            "status [Int]",
             "logined_at",
             "created_at",
             "updated_at",
