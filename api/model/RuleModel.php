@@ -17,7 +17,6 @@ class RuleModel extends BaseModel
             "operate"
         ], [], function ($rule) use (&$rules)  {
             $rules[] = $rule;
-            var_dump($rule);
         });
         return $rules;
     }

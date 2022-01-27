@@ -17,7 +17,7 @@ class AuthMember
     /**
      * 角色
      * 
-     * @var string
+     * @var
      */
     public $role;
 

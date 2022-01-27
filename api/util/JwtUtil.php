@@ -3,8 +3,7 @@
 namespace App\Util;
 
 use Predis\Client;
-use App\Model\MemberModel;
-use App\Core\AuthMember;
+use App\Model\AuthMemberModel;
 use App\Core\Singleton;
 use App\Core\exception\UnAuthorizedException;
 use App\Core\Http\Request;
@@ -93,9 +92,10 @@ class JwtUtil
 
         // 装载 payload
         // "memberId": 1
+        $jwtObj->withClaim("memberId", $memberId);
+        // 不适合放操作权限列表，太长了
         // "role": "ADMIN"
         // "operate": "article:add,article:delete"
-        $jwtObj->withClaim("memberId", $memberId);
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
                 $jwtObj->withClaim($key, $value);
@@ -175,11 +175,8 @@ class JwtUtil
     public function getAuthentication($token)
     {
         $claims =  $this->parseToken($token);
-        $role = $claims[$this->config->tokenRoleKey];
-        $operate = $claims[$this->config->tokenOperateKey];
         $memberId = $claims["memberId"];
-        $member = (new MemberModel())->getById(["id", "username", "status"], $memberId);
-        return new AuthMember($member, $role, $operate);
+        return (new AuthMemberModel())->get($memberId);
     }
 
     /**

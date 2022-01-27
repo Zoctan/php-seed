@@ -94,10 +94,6 @@ $config = [
     "jwt" => [
         // 请求头或请求参数的key
         "header" => "Authorization",
-        // token 角色键
-        "tokenRoleKey" => "role",
-        // token 规则键
-        "tokenOperateKey" => "operate",
         // 刷新时间（分钟）：这段时间内可以获取新 token
         "refreshMinutes" => "5",
         // 签发人

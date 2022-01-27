@@ -180,6 +180,7 @@ abstract class MedooModel
      */
     public function listAll($columns = "*", array $where, callable $callback)
     {
+        $this->read = true;
         $this->connection()->select($this->table, $columns, $where, $callback);
     }
 

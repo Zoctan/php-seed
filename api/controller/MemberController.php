@@ -83,10 +83,7 @@ class MemberController extends BaseController
 
         $this->memberModel->updateLoginedAtById($member["id"]);
 
-        $authMemberModel = new AuthMemberModel();
-        $authMember = $authMemberModel->get($member["id"]);
-
-        $token = $this->jwtUtil->sign($member["id"], ["role" => $authMember->role, "operate" => $authMember->operate]);
+        $token = $this->jwtUtil->sign($member["id"]);
 
         return ResultGenerator::successWithData($token);
     }
