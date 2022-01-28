@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Controller\\ArticleController' => $baseDir . '/controller/Article.php',
     'App\\Controller\\LogController' => $baseDir . '/controller/LogController.php',
     'App\\Controller\\MemberController' => $baseDir . '/controller/MemberController.php',
     'App\\Controller\\SystemController' => $baseDir . '/controller/SystemController.php',
@@ -33,6 +34,7 @@ return array(
     'App\\Core\\Response\\ResultCode' => $baseDir . '/core/response/ResultCode.php',
     'App\\Core\\Response\\ResultGenerator' => $baseDir . '/core/response/ResultGenerator.php',
     'App\\Core\\Singleton' => $baseDir . '/core/Singleton.php',
+    'App\\Model\\ArticleModel' => $baseDir . '/model/ArticleModel.php',
     'App\\Model\\AuthMemberModel' => $baseDir . '/model/AuthMemberModel.php',
     'App\\Model\\LogModel' => $baseDir . '/model/LogModel.php',
     'App\\Model\\MemberDataModel' => $baseDir . '/model/MemberDataModel.php',
@@ -48,7 +50,6 @@ return array(
     'App\\Util\\JssdkUtil' => $baseDir . '/util/JssdkUtil.php',
     'App\\Util\\JwtUtil' => $baseDir . '/util/JwtUtil.php',
     'App\\Util\\Util' => $baseDir . '/util/Util.php',
-    'Article' => $baseDir . '/model/Article.php',
     'Attribute' => $vendorDir . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
     'ComposerAutoloaderInitcbfea467e759cba3600718835ed968db' => $vendorDir . '/composer/autoload_real.php',
     'Composer\\Autoload\\ClassLoader' => $vendorDir . '/composer/ClassLoader.php',

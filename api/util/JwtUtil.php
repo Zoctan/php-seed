@@ -67,17 +67,17 @@ class JwtUtil
      */
     public function sign($memberId, array $payload = [])
     {
-        // $token = $this->cache->get($memberId);
-        // if ($token) {
-        //     $ttl = $this->cache->ttl($memberId);
-        //     // 如果 redis 存在，并且有超过15分钟的有效期，就不签发新 token
-        //     if ($ttl > $this->config->refreshMinutes * 60) {
-        //         return $token;
-        //     } else if (0 < $ttl &&  $ttl <= $this->config->refreshMinutes * 60) {
-        //         // 最后15分钟有效期，使原先的 token 无效，重新签发
-        //         $this->invalidRedisToken($memberId);
-        //     }
-        // }
+        $token = $this->cache->get($memberId);
+        if ($token) {
+            $ttl = $this->cache->ttl($memberId);
+            // 如果 redis 存在，并且有超过15分钟的有效期，就不签发新 token
+            if ($ttl > $this->config->refreshMinutes * 60) {
+                return $token;
+            } else if (0 < $ttl &&  $ttl <= $this->config->refreshMinutes * 60) {
+                // 最后15分钟有效期，使原先的 token 无效，重新签发
+                $this->invalidRedisToken($memberId);
+            }
+        }
 
         $now = new \DateTimeImmutable();
 
@@ -91,9 +91,10 @@ class JwtUtil
             ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
 
         // 装载 payload
-        // "memberId": 1
         $jwtObj->withClaim("memberId", $memberId);
-        // 不适合放操作权限列表，太长了
+        // 不适合放操作权限列表，后期可能会非常长
+        // 这里可能会有个疑惑，放不了什么东西，那为什么不用 UUID 这些做 token
+        // 因为 JWT 有私钥签名，安全性高，如果 APP 不涉及什么重要东西，仅当认证用，这个 JWT 还是很好的
         // "role": "ADMIN"
         // "operate": "article:add,article:delete"
         if (is_array($payload) && !empty($payload)) {
@@ -121,17 +122,20 @@ class JwtUtil
         //      因为账户登出后 JWT 本身只要没过期就仍然有效，所以只能通过 redis 缓存来校验有无效
         //      校验时只要 redis 中的 token 无效即可（JWT 本身可以校验有无过期，而 redis 过期即被删除了）
         $this->cache->setex($token, $this->config->expiresMinutes * 60, 1);
-        // 用户无需重复请求 token
+        // 用户无需重复请求签发 token
         $this->cache->setex($memberId, $this->config->expiresMinutes * 60, $token);
     }
 
     /**
-     * 使 redis 里的 token失效
+     * 使 redis 里的 token 失效
      */
     public function invalidRedisToken($memberId)
     {
+        // 直接删除
         $token = $this->cache->get($memberId);
-        $this->cache->setex($token, $this->config->expiresMinutes * 60, 0);
+        $this->cache->del([$token, $memberId]);
+        // $token = $this->cache->get($memberId);
+        // $this->cache->setex($token, $this->config->expiresMinutes * 60, 0);
     }
 
     /**
@@ -139,9 +143,10 @@ class JwtUtil
      */
     public function validateTokenRedis($token)
     {
-        $redisToken = $this->cache->get($token);
-        if ($redisToken && intval($redisToken) == 1) {
-            return $this->validateToken($token);
+        $tokenValid = $this->validateToken($token);
+        if ($tokenValid) {
+            $redisToken = $this->cache->get($token);
+            return $redisToken && intval($redisToken) == 1;
         }
         return false;
     }
@@ -172,7 +177,10 @@ class JwtUtil
         }
     }
 
-    public function getAuthentication($token)
+    /**
+     * 获取认证用户
+     */
+    public function getAuthMember($token)
     {
         $claims =  $this->parseToken($token);
         $memberId = $claims["memberId"];

@@ -41,6 +41,6 @@ class Route
         $this->methods = $methods;
         $this->uri = $uri;
         $this->action = $action;
-        $this->auth = $authOperate;
+        $this->authOperate = $authOperate;
     }
 }

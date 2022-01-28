@@ -134,6 +134,7 @@ class ComposerStaticInitcbfea467e759cba3600718835ed968db
     );
 
     public static $classMap = array (
+        'App\\Controller\\ArticleController' => __DIR__ . '/../..' . '/controller/Article.php',
         'App\\Controller\\LogController' => __DIR__ . '/../..' . '/controller/LogController.php',
         'App\\Controller\\MemberController' => __DIR__ . '/../..' . '/controller/MemberController.php',
         'App\\Controller\\SystemController' => __DIR__ . '/../..' . '/controller/SystemController.php',
@@ -161,6 +162,7 @@ class ComposerStaticInitcbfea467e759cba3600718835ed968db
         'App\\Core\\Response\\ResultCode' => __DIR__ . '/../..' . '/core/response/ResultCode.php',
         'App\\Core\\Response\\ResultGenerator' => __DIR__ . '/../..' . '/core/response/ResultGenerator.php',
         'App\\Core\\Singleton' => __DIR__ . '/../..' . '/core/Singleton.php',
+        'App\\Model\\ArticleModel' => __DIR__ . '/../..' . '/model/ArticleModel.php',
         'App\\Model\\AuthMemberModel' => __DIR__ . '/../..' . '/model/AuthMemberModel.php',
         'App\\Model\\LogModel' => __DIR__ . '/../..' . '/model/LogModel.php',
         'App\\Model\\MemberDataModel' => __DIR__ . '/../..' . '/model/MemberDataModel.php',
@@ -176,7 +178,6 @@ class ComposerStaticInitcbfea467e759cba3600718835ed968db
         'App\\Util\\JssdkUtil' => __DIR__ . '/../..' . '/util/JssdkUtil.php',
         'App\\Util\\JwtUtil' => __DIR__ . '/../..' . '/util/JwtUtil.php',
         'App\\Util\\Util' => __DIR__ . '/../..' . '/util/Util.php',
-        'Article' => __DIR__ . '/../..' . '/model/Article.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'ComposerAutoloaderInitcbfea467e759cba3600718835ed968db' => __DIR__ . '/..' . '/composer/autoload_real.php',
         'Composer\\Autoload\\ClassLoader' => __DIR__ . '/..' . '/composer/ClassLoader.php',

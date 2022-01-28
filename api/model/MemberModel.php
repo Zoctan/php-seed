@@ -29,15 +29,17 @@ class MemberModel extends BaseModel
     /**
      * 根据账户名获取成员
      */
-    public function getByUsername($username)
-    {
+    public function getByUsername(
+        $username,
+        $column = [
+            "id [Int]",
+            "username",
+            "password",
+            "status [Int]"
+        ]
+    ) {
         return $this->getBy(
-            [
-                "id [Int]",
-                "username",
-                "password",
-                "status [Int]"
-            ],
+            $column,
             [
                 "username" => $username
             ]

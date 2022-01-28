@@ -120,7 +120,7 @@ class MemberController extends BaseController
 
         $where = [];
         if ($username) {
-            $where["username"] = $username;
+            $where["username[~]"] = $username;
         }
         if ($status) {
             $where["status"] = $status;

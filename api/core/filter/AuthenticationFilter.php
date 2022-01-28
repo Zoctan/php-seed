@@ -11,6 +11,9 @@ use App\Core\Exception\UnAuthorizedException;
  */
 class AuthenticationFilter implements Filter
 {
+    /**
+     * @var array
+     */
     private $routes;
 
     public function __construct($routes)
@@ -36,7 +39,7 @@ class AuthenticationFilter implements Filter
                 throw new UnAuthorizedException("invalid token");
                 return false;
             }
-            $authMember = $jwtUtil->getAuthentication($token);
+            $authMember = $jwtUtil->getAuthMember($token);
             if (!$authMember->has($authOperate)) {
                 throw new UnAuthorizedException("no auth operate");
                 return false;
