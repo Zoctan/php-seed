@@ -8,21 +8,26 @@ use App\Core\Response\ResultGenerator;
 
 class UploadController extends BaseController
 {
-    // 当前后端文件夹目录
-    private $currentBackDir = "api/";
+    private $config;
 
-    function create()
+    public function __construct()
     {
-        $dir = $this->request->get("dir");
+        $this->config = \App\DI()->config->app->upload;
+    }
+
+    public function add()
+    {
+        $type = strval($this->request->get("type", "image"));
+        $dir = strval($this->request->get("dir"));
         // 按时间保存
-        $uploadDir = date("Y-m-d", time());
+        $timeUploadDir = date("Y-m-d", time());
         // 实际保存目录
-        $realUploadDir = implode("/", [$_SERVER["DOCUMENT_ROOT"], $this->currentBackDir, $uploadDir]);
+        $realUploadDir = implode("/", [$this->config->$type->localPath, $timeUploadDir]);
 
         // 上传到子文件夹
         if (!empty($dir)) {
             $realUploadDir .= $dir . "/";
-            $uploadDir .= $dir . "/";
+            $timeUploadDir .= $dir . "/";
             // 不存在则创建
             if (!is_dir($realUploadDir)) {
                 mkdir($realUploadDir, 0777, true);
@@ -43,6 +48,13 @@ class UploadController extends BaseController
             // 文件的临时保存路径
             $fileTmp = $item["tmp_name"];
 
+            if ($this->config->$type->min > $fileSize) {
+                return ResultGenerator::errorWithMsg("文件太小，最小：" . $this->config->$type->min);
+            }
+            if ($this->config->$type->max < $fileSize) {
+                return ResultGenerator::errorWithMsg("文件太大，最大：" . $this->config->$type->max);
+            }
+
             $isUploadSuccess = is_uploaded_file($fileTmp);
             if (!$isUploadSuccess) {
                 // 失败
@@ -59,7 +71,7 @@ class UploadController extends BaseController
                 $randomFileName = implode(".", [$fileName, end($fileNameArray)]);
                 $realUploadFile = $realUploadDir . $randomFileName;
                 // 返回的应该是网站目录下的上传目录，而不是D:\xx这样的目录地址
-                $uploadFile = $uploadDir . $randomFileName;
+                $uploadFile = $timeUploadDir . $randomFileName;
             } while (file_exists($realUploadFile));
 
             $isMoveSuccess = move_uploaded_file($fileTmp, $realUploadFile);
@@ -83,12 +95,13 @@ class UploadController extends BaseController
         return ResultGenerator::successWithData($successList);
     }
 
-    function delete()
+    public function delete()
     {
-        $name = $_POST["key"];
-        $path = $_POST["url"];
+        $type = strval($this->request->get("type", "image"));
+        $name = strval($this->request->get("key"));
+        $path = strval($this->request->get("url"));
         // 实际保存目录
-        $realPath = implode("/", [$_SERVER["DOCUMENT_ROOT"], $this->currentBackDir, $path]);
+        $realPath = implode("/", [$this->config->$type->localPath, $path]);
         if (!file_exists($realPath)) {
             return ResultGenerator::errorWithMsg($name . "文件不存在");
         }
@@ -98,12 +111,13 @@ class UploadController extends BaseController
         return ResultGenerator::success();
     }
 
-    function deleteVideo()
+    public function deleteVideo()
     {
+        $type = strval($this->request->get("type", "image"));
         $request = json_decode(file_get_contents('php://input'), true);
         $data = $request["data"][0];
         // 实际保存目录
-        $realPath = implode("/", [$_SERVER["DOCUMENT_ROOT"], $this->currentBackDir, $data["url"]]);
+        $realPath = implode("/", [$this->config->$type->localPath, $data["url"]]);
         if (!file_exists($realPath)) {
             return ResultGenerator::errorWithMsg($data["name"] . "文件不存在");
         }
