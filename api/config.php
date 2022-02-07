@@ -7,7 +7,6 @@ $config = [
         "url"  => "http://127.0.0.1",
         "debug" => true,
         "response" => [
-            "type" => "json",
             // 响应结构字段映射
             "structureMap" => [
                 "errno" => "errno",

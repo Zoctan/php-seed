@@ -110,7 +110,7 @@ class ArticleController extends BaseController
      */
     public function add()
     {
-        $article = [
+        $data = [
             "member_id" => intval($this->request->get("memberId")),
             "order" => intval($this->request->get("order")),
             "images" => strval($this->request->get("images")),
@@ -121,7 +121,7 @@ class ArticleController extends BaseController
             "show" => intval($this->request->get("show")),
         ];
 
-        $result = $this->articleModel->add($article);
+        $result = $this->articleModel->add($data);
         if (!$result) {
             return ResultGenerator::errorWithMsg("创建文章失败");
         }
@@ -132,66 +132,64 @@ class ArticleController extends BaseController
     public function updateArticle()
     {
         $data = [
-            "id" => $_POST["id"],
-            "order" => $_POST["order"],
-            "images" => $_POST["images"],
-            "title" => $_POST["title"],
-            "content" => $_POST["content"],
-            "brief" => $_POST["brief"],
-            "channel_id" => $_POST["channelId"],
-            "show" => $_POST["show"],
+            "id" => intval($this->request->get("id")),
+            "order" => intval($this->request->get("order")),
+            "images" => strval($this->request->get("images")),
+            "title" => strval($this->request->get("title")),
+            "content" => strval($this->request->get("content")),
+            "brief" => strval($this->request->get("brief")),
+            "channel_id" => intval($this->request->get("channelId")),
+            "show" => intval($this->request->get("show")),
         ];
-        $result = Article::getInstance()->update($data);
+
+        $result = $this->articleModel->update($data);
         if (!$result) {
-            Log::getInstance()->info($_COOKIE["id"], "修改失败，文章(ID)：" . $data["id"] . "《" . $data["title"] . "》");
-            return Result::error("修改文章失败");
+            return ResultGenerator::errorWithMsg("修改文章失败");
         }
-        Log::getInstance()->info($_COOKIE["id"], "修改成功，文章(ID)：" . $data["id"] . "《" . $data["title"] . "》");
-        return Result::success();
+        return ResultGenerator::success();
     }
 
     // 删除文章封面
     public function deleteImage()
     {
         $data = [
-            "id" => $_POST["id"],
-            "images" => $_POST["images"],
+            "id" => intval($this->request->get("id")),
+            "images" => strval($this->request->get("images")),
         ];
-        $result = Article::getInstance()->update($data);
+
+        $result = $this->articleModel->update($data);
         if (!$result) {
-            return Result::error("删除封面失败");
+            return ResultGenerator::errorWithMsg("删除封面失败");
         }
-        return Result::success();
+        return ResultGenerator::success();
     }
 
     public function changeStatus()
     {
         $data = [
-            "id" => $_POST["id"],
-            "status" => $_POST["status"],
+            "id" => intval($this->request->get("id")),
+            "status" => intval($this->request->get("status")),
         ];
-        $result = Article::getInstance()->update($data);
+
+        $result = $this->articleModel->update($data);
         if (!$result) {
-            Log::getInstance()->info($_COOKIE["id"], "修改审核状态失败，文章(ID)：" . $data["id"]);
-            return Result::error("修改审核状态失败");
+            return ResultGenerator::errorWithMsg("修改审核状态失败");
         }
-        Log::getInstance()->info($_COOKIE["id"], "修改审核状态成功，文章(ID)：" . $data["id"]);
-        return Result::success();
+        return ResultGenerator::success();
     }
 
     // 修改文章展示状态
     public function changeShow()
     {
         $data = [
-            "id" => $_POST["id"],
-            "show" => $_POST["show"],
+            "id" => intval($this->request->get("id")),
+            "show" => intval($this->request->get("show")),
         ];
-        $result = Article::getInstance()->update($data);
+
+        $result = $this->articleModel->update($data);
         if (!$result) {
-            Log::getInstance()->info($_COOKIE["id"], "修改展示状态失败，文章(ID)：" . $data["id"]);
-            return Result::error("修改展示状态失败");
+            return ResultGenerator::errorWithMsg("修改展示状态失败");
         }
-        Log::getInstance()->info($_COOKIE["id"], "修改展示状态成功，文章(ID)：" . $data["id"]);
-        return Result::success();
+        return ResultGenerator::success();
     }
 }

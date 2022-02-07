@@ -36,11 +36,19 @@ class Route
      */
     public $authOperate;
 
-    public function __construct($methods, $uri, $action, string $authOperate = null)
+    /**
+     * 返回的响应类型
+     * 
+     * @var string
+     */
+    public $responseContentType;
+
+    public function __construct($methods, $uri, $action, string $authOperate = null, string $responseContentType = "json")
     {
         $this->methods = $methods;
         $this->uri = $uri;
         $this->action = $action;
         $this->authOperate = $authOperate;
+        $this->responseContentType = $responseContentType;
     }
 }

@@ -37,15 +37,18 @@ function bootApp()
     // 注册缓存工具
     $di->cache = new Predis\Client((array) $di->config->datasource->redis);
 
-    // 注册数据检查工具：https://respect-validation.readthedocs.io/en/latest/concrete-api/
+    // 注册数据检查工具
     // 规则：https://respect-validation.readthedocs.io/en/latest/list-of-rules/
     $di->validator = new Respect\Validation\Validator();
 
-    // 注册伪造数据工具：https://github.com/fzaninotto/Faker
+    // 注册伪造数据工具
     $di->faker = Faker\Factory::create("zh_CN");
 
-    // 注册 HTTP 客户端：https://docs.guzzlephp.org/en/stable/quickstart.html
-    $di->curl = new \GuzzleHttp\Client();
+    // 注册 HTTP 客户端
+    $di->curl = new GuzzleHttp\Client();
+
+    // 注册图片处理工具
+    $di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
     return $di;
 }
 
@@ -61,7 +64,7 @@ function initSession($di)
 function doFilterChain(Filter ...$filters)
 {
     foreach ($filters as $filter) {
-        if(!$filter->doFilter()) {
+        if (!$filter->doFilter()) {
             break;
         }
     }
@@ -76,7 +79,7 @@ $router = require_once __DIR__ . "/routes.php";
 // var_dump($di->request->headers->all());
 // 按顺序执行过滤链
 doFilterChain(
-    new CorsFilter(),
+    new CorsFilter($router->getRoutes()),
     new RequestContentTypeFilter(),
     new AuthenticationFilter($router->getRoutes()),
 );

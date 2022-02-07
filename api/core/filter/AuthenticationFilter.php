@@ -15,22 +15,25 @@ class AuthenticationFilter implements Filter
      * @var array
      */
     private $routes;
+    private $request;
+    private $response;
 
     public function __construct($routes)
     {
         $this->routes = $routes;
+        $this->request = \App\DI()->request;
+        $this->response = \App\DI()->response;
     }
 
     public function doFilter()
     {
-        $request = \App\DI()->request;
 
         // 需要认证的路由才检查
-        $uri = $request->getPath();
+        $uri = $this->request->getPath();
         $authOperate = $this->routes[$uri]->authOperate;
         if ($authOperate) {
             $jwtUtil = JwtUtil::getInstance();
-            $token = $jwtUtil->getTokenFromRequest($request);
+            $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
                 throw new UnAuthorizedException("empty token");
                 return false;

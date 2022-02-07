@@ -5,7 +5,7 @@
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => 'facc44c6d4e064617c8276787707f250f87a8ea5',
+        'reference' => 'a51448e4d013411253eea1f6c389676c977ed632',
         'name' => 'phpseed/api',
         'dev' => true,
     ),
@@ -63,6 +63,15 @@
             'reference' => 'c5b547b9904106507e48c645b76ff74f18eea84e',
             'dev_requirement' => false,
         ),
+        'intervention/image' => array(
+            'pretty_version' => '2.7.1',
+            'version' => '2.7.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../intervention/image',
+            'aliases' => array(),
+            'reference' => '744ebba495319501b873a4e48787759c72e3fb8c',
+            'dev_requirement' => false,
+        ),
         'lcobucci/clock' => array(
             'pretty_version' => '2.0.x-dev',
             'version' => '2.0.9999999.9999999-dev',
@@ -87,7 +96,7 @@
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => 'facc44c6d4e064617c8276787707f250f87a8ea5',
+            'reference' => 'a51448e4d013411253eea1f6c389676c977ed632',
             'dev_requirement' => false,
         ),
         'predis/predis' => array(
