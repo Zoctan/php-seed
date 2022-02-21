@@ -1,29 +1,25 @@
-import Cookies from 'js-cookie'
-
-// 有效期 1 天
-const expires = 1
-
-const app = {
+export default {
   state: {
     sidebar: {
-      opened: !+Cookies.get('sidebarStatus', { expires: expires })
+      opened: true
     }
   },
+
   mutations: {
-    TOGGLE_SIDEBAR: state => {
-      if (state.sidebar.opened) {
-        Cookies.set('sidebarStatus', 1, { expires: expires })
-      } else {
-        Cookies.set('sidebarStatus', 0, { expires: expires })
-      }
+    OPEN_SIDEBAR: (state) => {
+      state.sidebar.opened = true
+    },
+    CLOSED_SIDEBAR: (state) => {
+      state.sidebar.opened = false
+    },
+    TOGGLE_SIDEBAR: (state) => {
       state.sidebar.opened = !state.sidebar.opened
     }
   },
+  
   actions: {
-    ToggleSideBar: ({ commit }) => {
+    toggleSideBar: ({ commit }) => {
       commit('TOGGLE_SIDEBAR')
     }
   }
 }
-
-export default app

@@ -1,7 +1,8 @@
 import { createApp } from 'vue'
+import store from '@/store'
+import router from '@/router'
 import { ActionBar, ActionBarIcon, ActionBarButton, Divider, Popup, Overlay, Loading, Dialog, ContactCard, Form, AddressEdit, AddressList, Field, CellGroup, Cell, SwipeCell, Icon, Stepper, Card, Checkbox, CheckboxGroup, Button, Swipe, SwipeItem, PullRefresh, List, Tab, Tabs, SubmitBar, Toast, Skeleton } from 'vant'
 import App from '@/App.vue'
-import router from '@/router'
 import 'vant/lib/index.css'; // 全局引入样式
 
 // 创建实例
@@ -40,6 +41,7 @@ app.use(ActionBarButton)
     .use(CheckboxGroup)
     .use(Skeleton)
 
+app.use(store)
 app.use(router)
 
 app.mount('#app')

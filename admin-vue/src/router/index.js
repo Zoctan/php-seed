@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-export const constantRouters = [
+export const noAuthRouters = [
     { path: '/404', component: () => import('@/views/Error/404.vue'), hidden: true },
     { path: '/401', component: () => import('@/views/Error/401.vue'), hidden: true },
     // { path: '/login', component: () => import('@/views/Login.vue'), hidden: true },
@@ -19,7 +19,7 @@ export const constantRouters = [
     }
 ]
 
-export const asyncRouters = [
+export const authRouters = [
     // {
     //     path: '/account',
     //     component: Layout,
@@ -67,7 +67,7 @@ export default createRouter({
      * HTML5 模式（推荐）：createWebHistory
      */
     history: createWebHistory(),
-    routes: constantRouters,
+    routes: noAuthRouters,
     /**
      * 滚动行为：使用前端路由，当切换到新路由时，想要页面滚到顶部，或者是保持原先的滚动位置，就像重新加载页面那样。
      * https://router.vuejs.org/zh/guide/advanced/scroll-behavior.html

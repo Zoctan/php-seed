@@ -1,15 +1,10 @@
+// https://vuex.vuejs.org/zh/guide/getters.html
 export default {
   sidebar: state => state.app.sidebar,
 
-  token: state => state.account.token,
-  accountId: state => state.account.accountId,
-  email: state => state.account.email,
-  name: state => state.account.name,
-  loginTime: state => state.account.loginTime,
-  registerTime: state => state.account.registerTime,
-  roleName: state => state.account.roleName,
-  permissionCodeList: state => state.account.permissionCodeList,
+  token: state => state.member.token,
+  member: state => state.member.member,
 
-  permissionRouters: state => state.permission.routers,
-  addRouters: state => state.permission.addRouters
+  accessedRouters: state => state.router.accessedRouters,
+  accessedAuthRouters: state => state.router.accessedAuthRouters
 }
