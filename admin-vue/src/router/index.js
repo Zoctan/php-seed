@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Layout from 'components/Layout'
+import Layout from 'components/Test'
 
 // 使用 Glob 动态引入：https://cn.vitejs.dev/guide/features.html#glob-import
 const modules = import.meta.glob('/src/views/**/**.vue')
@@ -8,7 +8,7 @@ const _import = (file) => modules[`/src/views/${file}.vue`]
 // console.debug('modules', modules)
 
 export const noAuthRouters = [
-    { path: '/:pathMatch(.*)*', redirect: '/404' },
+    //{ path: '/:pathMatch(.*)*', redirect: '/404' },
     { path: '/404', component: _import('error/404'), meta: { hidden: true } },
     { path: '/401', component: _import('error/401'), meta: { hidden: true } },
     { path: '/login', component: _import('Login'), meta: { hidden: true } },
