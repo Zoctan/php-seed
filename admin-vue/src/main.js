@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
-import store from '@/store'
-import router from '@/router'
+import store from './store'
+import router from './router'
 import { ActionBar, ActionBarIcon, ActionBarButton, Divider, Popup, Overlay, Loading, Dialog, ContactCard, Form, AddressEdit, AddressList, Field, CellGroup, Cell, SwipeCell, Icon, Stepper, Card, Checkbox, CheckboxGroup, Button, Swipe, SwipeItem, PullRefresh, List, Tab, Tabs, SubmitBar, Toast, Skeleton } from 'vant'
-import App from '@/App.vue'
+import App from './App.vue'
 import 'vant/lib/index.css'; // 全局引入样式
 
 // 创建实例

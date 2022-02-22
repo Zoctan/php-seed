@@ -1,4 +1,4 @@
-import { authRouters, noAuthRouters } from '@/router'
+import { authRouters, noAuthRouters } from '../../router'
 
 /**
  * 通过路由上的 meta.auth 判断是否与当前用户权限匹配
@@ -21,9 +21,9 @@ function filterAuthRouter(authRouters, ruleList) {
   return authRouters.filter(route => {
     if (hasPermission(ruleList, route)) {
       if (route.children && route.children.length) {
-        // 如果这个路由下面还有下一级的话,就递归调用
+        // 如果这个路由下面还有下一级的话，递归调用
         route.children = filterAuthRouter(route.children, ruleList)
-        // 如果过滤一圈后,没有子元素了,这个父级菜单就也不显示了
+        // 如果过滤一圈后,没有子元素了，这个父级菜单就也不显示了
         // return (route.children && route.children.length)
       }
       return true
@@ -41,7 +41,7 @@ export default {
   mutations: {
     SET_ROUTERS: (state, routers) => {
       state.accessedAuthRouters = routers
-      // 将固定路由和新增路由进行合并, 成为本用户最终的全部路由信息
+      // 路由合并，成为本用户最终可以访问的路由
       state.accessedRouters = state.accessedRouters.concat(routers)
     }
   },

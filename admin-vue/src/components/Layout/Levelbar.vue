@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: 'Levelbar',
+  name: 'levelbar',
   created() {
     this.getBreadcrumb()
   },
@@ -40,7 +40,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style lang="less" scoped>
 .app-levelbar.el-breadcrumb {
   display: inline-block;
   font-size: 14px;

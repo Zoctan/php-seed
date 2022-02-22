@@ -23,7 +23,8 @@ export default {
   name: 'error404',
   data() {
     return {
-      
+      error404,
+      error404Cloud,
     }
   },
   methods: {
@@ -57,12 +58,12 @@ export default {
     width: 600px;
     padding: 180px 0;
     overflow: hidden;
-    &__parent {
+    .pic-404__parent {
       width: 100%;
     }
-    &__child {
+    .pic-404__child {
       position: absolute;
-      &.left {
+      .left {
         width: 80px;
         top: 17px;
         left: 220px;
@@ -73,7 +74,7 @@ export default {
         animation-fill-mode: forwards;
         animation-delay: 1s;
       }
-      &.mid {
+      .mid {
         width: 46px;
         top: 10px;
         left: 420px;
@@ -84,7 +85,7 @@ export default {
         animation-fill-mode: forwards;
         animation-delay: 1.2s;
       }
-      &.right {
+      .right {
         width: 62px;
         top: 100px;
         left: 500px;
@@ -169,7 +170,7 @@ export default {
     width: 300px;
     padding: 250px 0;
     overflow: hidden;
-    &__msg-404 {
+    .pic-404__msg-404 {
       font-size: 13px;
       line-height: 21px;
       color: grey;
@@ -180,7 +181,7 @@ export default {
       animation-delay: 0.2s;
       animation-fill-mode: forwards;
     }
-    &__return-home {
+    .pic-404__return-home {
       display: block;
       float: left;
       width: 110px;

@@ -1,12 +1,10 @@
 import axios from 'axios'
 import { Toast } from 'vant'
-import router from '@/router'
-import store from '@/store'
-import { getToken } from '@/utils/token'
+import router from '../router'
 
 // 创建 axios 实例
 const instance = axios.create({
-    baseURL: process.env.BASE_API,
+    baseURL: import.meta.env.BASE_API,
     withCredentials: false,
     // 请求超时时间
     timeout: 5000,
@@ -19,7 +17,7 @@ instance.defaults.headers.post = {
 }
 
 instance.defaults.headers.common = {
-    'Authorization': store.getters.token ? getToken() : ''
+    'Authorization': localStorage.getItem('token') || ''
 }
 
 // 请求拦截器

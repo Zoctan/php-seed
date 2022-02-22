@@ -1,7 +1,7 @@
-import axios from '@/utils/axios'
+import request from '@/utils/request'
 
 export function search(params) {
-  return axios({
+  return request({
     url: '/member/search',
     method: 'post',
     params
@@ -9,7 +9,7 @@ export function search(params) {
 }
 
 export function list(params) {
-  return axios({
+  return request({
     url: '/member',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function list(params) {
 }
 
 export function validatePassword(params) {
-  return axios({
+  return request({
     url: '/member/password',
     method: 'post',
     params
@@ -25,7 +25,7 @@ export function validatePassword(params) {
 }
 
 export function update(params) {
-  return axios({
+  return request({
     url: '/member/detail',
     method: 'put',
     params
@@ -33,7 +33,7 @@ export function update(params) {
 }
 
 export function updatemember(params) {
-  return axios({
+  return request({
     url: '/member/' + params.Id,
     method: 'put',
     params

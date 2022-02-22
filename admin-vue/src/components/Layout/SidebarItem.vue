@@ -22,9 +22,14 @@
               class="menu-indent"
               v-if="child.children && child.children.length > 0"
               :routes="[child]"
-              :key="child"
+              :key="child.name"
             />
-            <router-link v-else class="menu-indent" :to="item.path + '/' + child.path" :key="child">
+            <router-link
+              v-else
+              class="menu-indent"
+              :to="item.path + '/' + child.path"
+              :key="child.name"
+            >
               <el-menu-item :index="item.path + '/' + child.path">{{ child.name }}</el-menu-item>
             </router-link>
           </div>
@@ -36,7 +41,7 @@
 
 <script>
 export default {
-  name: 'SidebarItem',
+  name: 'sidebarItem',
   props: {
     routes: {
       type: Array
@@ -45,7 +50,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style lang="less" scoped>
 .svg-icon {
   margin-right: 10px;
 }

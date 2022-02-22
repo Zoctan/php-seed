@@ -1,7 +1,7 @@
-import axios from '@/utils/axios'
+import request from '@/utils/request'
 
 export function listRoleWithPermission(params) {
-  return axios({
+  return request({
     url: '/role/permission',
     method: 'get',
     params
@@ -9,7 +9,7 @@ export function listRoleWithPermission(params) {
 }
 
 export function list(params) {
-  return axios({
+  return request({
     url: '/role',
     method: 'get',
     params
@@ -17,7 +17,7 @@ export function list(params) {
 }
 
 export function listResourcePermission(params) {
-  return axios({
+  return request({
     url: '/permission',
     method: 'get',
     params
@@ -25,7 +25,7 @@ export function listResourcePermission(params) {
 }
 
 export function add(params) {
-  return axios({
+  return request({
     url: '/role',
     method: 'post',
     params
@@ -33,7 +33,7 @@ export function add(params) {
 }
 
 export function update(params) {
-  return axios({
+  return request({
     url: '/role',
     method: 'put',
     params
@@ -41,14 +41,14 @@ export function update(params) {
 }
 
 export function remove(roleId) {
-  return axios({
+  return request({
     url: '/role/' + roleId,
     method: 'delete'
   })
 }
 
 export function updateAccountRole(params) {
-  return axios({
+  return request({
     url: '/account/role',
     method: 'put',
     params

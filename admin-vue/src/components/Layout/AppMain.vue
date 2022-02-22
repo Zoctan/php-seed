@@ -8,7 +8,7 @@
 
 <script>
 export default {
-  name: 'AppMain',
+  name: 'appMain',
   computed: {
     key() {
       return this.$route.name !== undefined

@@ -25,19 +25,20 @@ import Levelbar from './Levelbar'
 import Hamburger from '@/components/Hamburger'
 
 export default {
+  name: 'navbar',
   components: {
     Levelbar,
     Hamburger
   },
   computed: {
-    ...mapGetters(['name', 'sidebar', 'avatar'])
+    ...mapGetters(['member', 'sidebar'])
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch('ToggleSideBar')
+      this.$store.dispatch('toggleSideBar')
     },
     logout() {
-      this.$store.dispatch('Logout').then(() => {
+      this.$store.dispatch('logout').then(() => {
         location.reload() // 为了重新实例化vue-router对象 避免bug
       })
     }
@@ -45,7 +46,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style lang="less" scoped>
 .navbar {
   height: 55px;
   line-height: 55px;

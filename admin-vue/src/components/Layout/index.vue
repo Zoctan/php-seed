@@ -11,13 +11,17 @@
 </template>
 
 <script>
-import { Navbar, Sidebar, AppMain } from './components'
+import Navbar from './Navbar'
+import Sidebar from './Sidebar'
+import Levelbar from './Levelbar'
+import AppMain from './AppMain'
 
 export default {
   name: 'layout',
   components: {
     Navbar,
     Sidebar,
+    Levelbar,
     AppMain
   },
   computed: {
@@ -29,10 +33,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@import '../../../src/styles/mixin.scss';
-
 .app-wrapper {
-  @include clearFix;
   position: relative;
   height: 100%;
   width: 100%;
