@@ -1,10 +1,10 @@
 <template>
   <div class="app-wrapper" :class="{ hideSidebar: !sidebar.opened }">
     <div class="sidebar-wrapper">
-      <sidebar class="sidebar-container" />
+      <side-bar class="sidebar-container" />
     </div>
     <div class="main-container">
-      <navbar />
+      <nav-bar />
       <app-main />
     </div>
   </div>
@@ -26,7 +26,7 @@ export default {
   },
   computed: {
     sidebar() {
-      return this.$store.state.app.sidebar
+      return this.$store.getters.sidebar
     }
   }
 }

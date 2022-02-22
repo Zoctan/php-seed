@@ -47,9 +47,9 @@ export default {
   },
 
   actions: {
-    generateRoutes({ commit }, account) {
+    generateRoutes({ commit }, member) {
       return new Promise(resolve => {
-        const ruleList = account.ruleList
+        const ruleList = member.ruleList
         // 筛选出本角色可用的路由
         const accessedAuthRouters = filterAuthRouter(authRouters, ruleList)
         // 执行设置路由的方法

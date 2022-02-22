@@ -10,6 +10,7 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 - [Vite 下一代前端开发与构建工具](https://vitejs.cn/guide)
 - [Vuex 专为 Vue.js 应用程序开发的状态管理模式 + 库](https://vuex.vuejs.org/zh)
 - [Vue Router 是 Vue.js 的官方路由](https://router.vuejs.org/zh)
+- [NProgress 进度条](https://github.com/rstacruz/nprogress)
 
 # IDE 推荐
 
