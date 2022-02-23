@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { Toast } from 'vant'
 import router from '../router'
 
 // 创建 axios 实例
@@ -37,16 +36,28 @@ instance.interceptors.response.use(
         if (response.data.code === 200) {
             return Promise.resolve(response.data)
         } else {
-            Toast.fail(response.data.message)
-            return Promise.reject(error)
+            ElNotification({
+                title: '错误',
+                message: response.data.message,
+                type: 'error',
+            })
+            return Promise.reject('响应数据不正确')
         }
     },
     (error) => {
         if (error.response.data.code === 4002) {
-            Toast.fail('认证异常，请重新登录！')
+            ElNotification({
+                title: '错误',
+                message: '认证异常，请重新登录！',
+                type: 'error',
+            })
             router.push({ path: '/login' })
         } else {
-            Toast.fail(error.response.data.message)
+            ElNotification({
+                title: '错误',
+                message: error.response.data.message,
+                type: 'error',
+            })
         }
         return Promise.reject(error)
     }

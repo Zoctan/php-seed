@@ -24,9 +24,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^0.2.7",
     "axios": "^0.26.0",
+    "element-plus": "^2.0.2",
     "nprogress": "^0.2.0",
-    "vant": "^3.4.5",
     "vue": "^3.2.25",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2",
@@ -35,11 +36,15 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",
     "@vitejs/plugin-vue": "^2.2.0",
+    "@vue/cli-plugin-babel": "^5.0.1",
+    "@vue/cli-plugin-eslint": "^5.0.1",
     "babel-plugin-import": "^1.13.3",
     "eslint": "^8.9.0",
     "eslint-plugin-vue": "^8.4.1",
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
+    "unplugin-auto-import": "^0.6.1",
+    "unplugin-vue-components": "^0.17.20",
     "vite": "^2.8.2"
   }
 }

@@ -1,58 +1,68 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Layout from 'components/Test'
+import { createRouter, createWebHistory, isNavigationFailure } from 'vue-router'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+import Layout from '@/layout/index.vue'
 
 // 使用 Glob 动态引入：https://cn.vitejs.dev/guide/features.html#glob-import
 const modules = import.meta.glob('/src/views/**/**.vue')
 const _import = (file) => modules[`/src/views/${file}.vue`]
-
 // console.debug('modules', modules)
 
 export const noAuthRouters = [
-    //{ path: '/:pathMatch(.*)*', redirect: '/404' },
-    { path: '/404', component: _import('error/404'), meta: { hidden: true } },
-    { path: '/401', component: _import('error/401'), meta: { hidden: true } },
-    { path: '/login', component: _import('Login'), meta: { hidden: true } },
-    { path: '/', redirect: '/home' },
-    { path: '/home', name: '控制台', component: _import('Home'), meta: { noCache: true } },
+    { path: '/:allMatch(.*)*', redirect: '/404' },
+    { path: '/404', component: _import('error/404'), hidden: true },
+    { path: '/401', component: _import('error/401'), hidden: true },
+    { path: '/login', name: '登录', component: _import('Login'), hidden: true },
+    { path: '/', redirect: '/dashboard' },
+    {
+        path: '/dashboard',
+        component: Layout,
+        name: '控制台',
+        icon: '<house/>',
+        children: [{
+            path: '',
+            component: _import('Dashboard')
+        }],
+    },
 ]
 
 export const authRouters = [
-    {
-        path: '/member',
-        component: Layout,
-        redirect: '/member/list',
-        meta: { icon: 'name', noDropDown: true, },
-        children: [{
-            path: 'list',
-            name: '账户管理',
-            component: _import('member/list'),
-            meta: { rule: ['member:list'] }
-        }]
-    },
-    {
-        path: '/member',
-        component: Layout,
-        redirect: '/member/detail',
-        meta: { icon: 'name', hidden: true, },
-        children: [{
-            path: 'detail',
-            name: '账户中心',
-            component: _import('member/detail')
-        }]
-    },
-    {
-        path: '/role',
-        component: Layout,
-        redirect: '/role/list',
-        icon: 'role',
-        meta: { icon: 'role', noDropDown: true, },
-        children: [{
-            path: 'list',
-            name: '角色管理',
-            component: _import('role/list'),
-            meta: { rule: ['role:list'] }
-        }]
-    }
+    // {
+    //     path: '/member',
+    //     component: Layout,
+    //     redirect: '/member/list',
+    //     meta: { icon: 'name', noDropDown: true, },
+    //     children: [{
+    //         path: 'list',
+    //         name: '账户管理',
+    //         component: _import('member/list'),
+    //         meta: { rule: ['member:list'] }
+    //     }]
+    // },
+    // {
+    //     path: '/member',
+    //     component: Layout,
+    //     redirect: '/member/detail',
+    //     meta: { icon: 'name', hidden: true, },
+    //     children: [{
+    //         path: 'detail',
+    //         name: '账户中心',
+    //         component: _import('member/detail')
+    //     }]
+    // },
+    // {
+    //     path: '/role',
+    //     component: Layout,
+    //     redirect: '/role/list',
+    //     icon: 'role',
+    //     meta: { icon: 'role', noDropDown: true, },
+    //     children: [{
+    //         path: 'list',
+    //         name: '角色管理',
+    //         component: _import('role/list'),
+    //         meta: { rule: ['role:list'] }
+    //     }]
+    // }
 ]
 
 const router = createRouter({
@@ -73,8 +83,15 @@ const router = createRouter({
      * @returns 
      */
     scrollBehavior(to, from, savedPosition) {
-        // 始终滚动到顶部
-        return { top: 0 }
+        if (savedPosition) {
+            return savedPosition
+        } else {
+            // 滚动到顶部
+            return {
+                top: 0,
+                behavior: 'smooth',
+            }
+        }
     },
 })
 
@@ -94,11 +111,14 @@ router.beforeEach((to, from, next) => {
 })
 
 router.beforeResolve(async (to, from, next) => {
-
+    next()
 })
 
 router.afterEach((to, from, failure) => {
-    NProgress.stop()
+    if (isNavigationFailure(failure)) {
+        console.log('failed navigation', failure)
+    }
+    NProgress.done()
 })
 
 

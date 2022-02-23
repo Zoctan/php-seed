@@ -5,6 +5,5 @@ export default {
     token: state => state.member.token,
     member: state => state.member.member,
 
-    accessedRouters: state => state.router.accessedRouters,
-    accessedAuthRouters: state => state.router.accessedAuthRouters
+    routers: state => state.router.accessedRouters
 }

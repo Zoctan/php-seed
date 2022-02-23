@@ -1,19 +1,17 @@
 <template>
-  <section class="app-main">
+  <div class="app-main">
     <transition name="fade" mode="out-in">
       <router-view :key="key" />
     </transition>
-  </section>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'appMain',
+  name: 'AppMain',
   computed: {
     key() {
-      return this.$route.name !== undefined
-        ? this.$route.name + +new Date()
-        : this.$route + +new Date()
+      return this.$route.name
     }
   }
 }

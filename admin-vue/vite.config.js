@@ -1,13 +1,25 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { resolve } from 'path'
 
 let config = {
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    // 自动导入 Element
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
+    }),
+  ],
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      'components': resolve(__dirname, 'src/components'),
+      '@': resolve('src'),
+      'components': resolve('src/components'),
     }
   },
   server: {
@@ -18,7 +30,9 @@ let config = {
 }
 
 export default defineConfig(({ command, mode }) => {
+  console.debug('mode', mode)
   if (command === 'serve') {
+    //
   } else if (command === 'build') {
     config.base = '/php-seed/admin-vue/dist/'
   }

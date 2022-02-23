@@ -1,84 +1,97 @@
 <template>
   <div class="login-container">
-    <van-form @submit="onSubmit">
+    <el-form
+      class
+      autocomplete="on"
+      ref="loginFormRef"
+      :model="loginForm"
+      :rules="loginRules"
+      status-icon
+      label-position="left"
+      label-width="50px"
+    >
       <h3 class="title">后台登录</h3>
-      <van-cell-group inset>
-        <van-field
-          v-model="username"
-          left-icon="user-circle-o"
-          name="用户名"
-          label="用户名"
-          placeholder="请填写用户名"
-          maxlength="20"
-          show-word-limit
-          :rules="[{ required: true, validator: usernameValidator, message: '用户名长度必须在3或以上' }]"
-        />
-        <van-field
-          v-model="password"
-          type="password"
-          left-icon="closed-eye"
-          name="密码"
-          label="密码"
-          maxlength="20"
-          show-word-limit
-          placeholder="请填写密码"
-          :rules="[{ required: true, validator: passwordValidator, message: '密码长度必须在6或以上' }]"
-        />
-      </van-cell-group>
-      <div style="margin: 16px;">
-        <van-button round block type="primary" native-type="submit">提交</van-button>
-      </div>
-    </van-form>
+      <el-form-item label="用户名" prop="username" required>
+        <el-input type="text" autocomplete="on" :model="loginForm.username" placeholder="请输入用户名"></el-input>
+      </el-form-item>
+      <el-form-item label="password" prop="password" required>
+        <el-input type="password" autocomplete="on" :model="loginForm.password" placeholder="请输入密码"></el-input>
+      </el-form-item>
+      <el-form-item prop="remember">
+        <el-checkbox label="记住我" :model="loginForm.remember" name="remember"></el-checkbox>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" :loading="submitLoading" @click="handleLogin(loginFormRef)">登录</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
-import { Toast } from 'vant'
+import { ref, reactive } from 'vue'
 
 export default {
-  name: 'login',
+  name: 'MemberLogin',
   setup() {
-    const username = ref('admin')
-    const password = ref('admin123')
+    const submitLoading = ref(false)
 
-    const usernameValidator = (value) => value.length >= 3
+    const loginFormRef = ref(null)
 
-    const passwordValidator = (value) => value.length >= 6
+    const loginForm = reactive({
+      username: 'admin',
+      password: 'admin123',
+      remember: false,
+    })
 
-    const onSubmit = (values) => {
-      console.log('submit', values)
-      return
-      const account = {}
-
-      account.password = this.loginForm.password
-      this.loading = true
-      this.$store.dispatch('login', account).then(() => {
-        this.loading = false
-        this.$router.push({ path: '/home' })
-      })
+    const validateUsername = (rule, value, callback) => {
+      if (value.length < 3) callback(new Error('账户名长度必须在3或以上'))
+      else callback()
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) callback(new Error('密码长度必须在6或以上'))
+      else callback()
     }
 
-    return {
-      username,
-      password,
-      usernameValidator,
-      passwordValidator,
-      onSubmit,
-    }
-  },
-  data() {
-    return {
+    const loginRules = reactive({
+      username: [
+        { trigger: 'blur', validator: validateUsername }
+      ],
+      password: [
+        { trigger: 'blur', validator: validatePassword }
+      ]
+    })
 
+    return {
+      loginFormRef,
+      loginForm,
+      loginRules,
+      submitLoading,
     }
   },
   methods: {
-
+    handleLogin(form) {
+      if (!form) return
+      form.validate((valid) => {
+        if (!valid) {
+          ElNotification({
+            title: '错误',
+            message: '用户名或密码验证失败',
+            type: 'error',
+          })
+          console.log('error submit!')
+          return false
+        } else {
+          this.submitLoading = true
+          this.$store.dispatch('login', this.loginForm).then(() => {
+            this.submitLoading = false
+            this.$router.push({ path: '/dashboard' })
+          })
+        }
+      })
+    }
   }
 }
 </script>
 
-<style lang="less">
-.login-container {
-}
+<style lang="less" scoped>
 </style>

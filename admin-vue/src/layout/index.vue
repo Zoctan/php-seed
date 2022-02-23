@@ -1,27 +1,25 @@
 <template>
   <div class="app-wrapper" :class="{ hideSidebar: !sidebar.opened }">
     <div class="sidebar-wrapper">
-      <side-bar class="sidebar-container" />
+      <Side-Bar class="sidebar-container" />
     </div>
     <div class="main-container">
-      <nav-bar />
-      <app-main />
+      <Nav-Bar />
+      <App-Main />
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from './Navbar'
-import Sidebar from './Sidebar'
-import Levelbar from './Levelbar'
-import AppMain from './AppMain'
+import NavBar from './NavBar.vue'
+import SideBar from './SideBar.vue'
+import AppMain from './AppMain.vue'
 
 export default {
-  name: 'layout',
+  name: 'AppLayout',
   components: {
-    Navbar,
-    Sidebar,
-    Levelbar,
+    NavBar,
+    SideBar,
     AppMain
   },
   computed: {
