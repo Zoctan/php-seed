@@ -45,7 +45,10 @@ defineProps({
   },
 })
 
-const joinPath = (router) => router.children[0].path == '' ? router.path : `${router.path}/${router.children[0].path}`
+const joinPath = (router) => {
+  console.debug(router)
+  router.children[0].path == '' ? router.path : `${router.path}/${router.children[0].path}`
+}
 </script>
 
 <style lang="less" scoped>

@@ -9,11 +9,11 @@ const _import = (file) => modules[`/src/views/${file}.vue`]
 // console.debug('modules', modules)
 
 export const noAuthRouters = [
-    { path: '/:allMatch(.*)*', redirect: '/404' },
+    { path: '/:allMatch(.*)*', redirect: '/404', hidden: true },
     { path: '/404', component: _import('error/404'), hidden: true },
     { path: '/401', component: _import('error/401'), hidden: true },
     { path: '/login', name: '登录', component: _import('Login'), hidden: true },
-    { path: '/', name: '控制台', redirect: '/dashboard' },
+    { path: '/', redirect: '/dashboard', hidden: true },
     {
         path: '/dashboard',
         component: Layout,
