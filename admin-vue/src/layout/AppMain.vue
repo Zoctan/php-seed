@@ -1,18 +1,14 @@
 <template>
   <div class="app-main">
-    <transition name="fade" mode="out-in">
-      <router-view :key="key" />
-    </transition>
+    <router-view :key="$route.name" v-slot="{ Component }">
+      <transition name="fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+    <el-backtop />
   </div>
 </template>
 
-<script>
-export default {
-  name: 'AppMain',
-  computed: {
-    key() {
-      return this.$route.name
-    }
-  }
-}
+<script setup>
+
 </script>

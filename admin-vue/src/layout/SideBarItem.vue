@@ -1,46 +1,51 @@
-<template v-for="router in routers" v-if="!router.hidden">
-  <!-- 无子菜单 -->
-  <template v-if="!router.dropDown && router.children.length > 0">
-    <router-link :to="router.path + '/' + router.children[0].path" :key="router.name">
-      <el-menu-item :index="router.name">
-        <el-icon v-if="router.icon">{{ router.icon }}</el-icon>
-        <span>{{ router.children[0].name }}</span>
-      </el-menu-item>
-    </router-link>
-  </template>
-  <!-- 有子菜单 -->
-  <template v-if="router.dropDown && router.children.length > 0">
-    <el-sub-menu :index="router.name">
-      <el-icon v-if="router.icon">{{ router.icon }}</el-icon>
-      <span>{{ router.name }}</span>
-      <!-- 子菜单 -->
-      <template v-for="child in router.children">
-        <template v-if="!child.hidden">
-          <!-- 多重子菜单：调用自身组件 -->
-          <template v-if="child.children && child.children.length > 0">
-            <Sidebar-Item :routers="[child]" :key="child.name" />
-          </template>
-          <!-- 唯一子菜单 -->
-          <template v-else>
-            <router-link :to="router.path + '/' + child.path" :key="child.name">
-              <el-menu-item :index="name">{{ child.name }}</el-menu-item>
-            </router-link>
-          </template>
-        </template>
+<template>
+  <template v-for="router in routers" :key="router.name">
+    <template v-if="!router.hidden && router.children && router.children.length > 0">
+      <!-- 一级菜单 -->
+      <template v-if="!router.dropDown">
+        <!-- 当前路由路径就是该菜单路径，不重复进入 -->
+        <component
+          :is="$route.path !== joinPath(router) ? 'router-link' : 'div'"
+          :to="joinPath(router)"
+        >
+          <el-menu-item :index="router.name" :disabled="$route.path === joinPath(router)">
+            <template #title>
+              <el-icon v-if="router.icon">
+                <component :is="router.icon"></component>
+              </el-icon>
+              <span>{{ router.name }}</span>
+            </template>
+          </el-menu-item>
+        </component>
       </template>
-    </el-sub-menu>
+      <!-- 二级以上菜单 -->
+      <template v-else>
+        <el-sub-menu :index="router.name">
+          <template #title>
+            <el-icon v-if="router.icon">
+              <component :is="router.icon"></component>
+            </el-icon>
+            <span>{{ router.name }}</span>
+          </template>
+          <!-- 多重子菜单 -->
+          <template v-for="child in router.children" :key="child.name">
+            <SideBarItem :routers="[child]" />
+          </template>
+        </el-sub-menu>
+      </template>
+    </template>
   </template>
 </template>
 
-<script>
-export default {
-  name: 'SidebarItem',
-  props: {
-    routers: {
-      type: Array
-    }
-  }
-}
+<script setup>
+defineProps({
+  routers: {
+    type: Array,
+    required: true
+  },
+})
+
+const joinPath = (router) => router.children[0].path == '' ? router.path : `${router.path}/${router.children[0].path}`
 </script>
 
 <style lang="less" scoped>

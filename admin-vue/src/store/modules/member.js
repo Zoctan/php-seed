@@ -32,7 +32,6 @@ export default {
           if (response.code === 200) {
             commit('SET_TOKEN', response.data)
           }
-          // 传递给 /login/index.vue : store.dispatch('memberLogin').then(data)
           resolve(response)
         }).catch(error => {
           reject(error)

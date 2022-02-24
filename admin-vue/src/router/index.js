@@ -13,15 +13,33 @@ export const noAuthRouters = [
     { path: '/404', component: _import('error/404'), hidden: true },
     { path: '/401', component: _import('error/401'), hidden: true },
     { path: '/login', name: '登录', component: _import('Login'), hidden: true },
-    { path: '/', redirect: '/dashboard' },
+    { path: '/', name: '控制台', redirect: '/dashboard' },
     {
         path: '/dashboard',
         component: Layout,
         name: '控制台',
-        icon: '<house/>',
+        icon: 'house',
         children: [{
             path: '',
             component: _import('Dashboard')
+        }],
+    },
+    {
+        path: '/test',
+        component: Layout,
+        name: '测试',
+        icon: 'sunny',
+        dropDown: true,
+        children: [{
+            path: 'sub1',
+            name: '测试1',
+            icon: 'soccer',
+            component: _import('TestSub1')
+        }, {
+            path: 'sub2',
+            name: '测试2',
+            icon: 'star',
+            component: _import('TestSub2')
         }],
     },
 ]
@@ -31,7 +49,7 @@ export const authRouters = [
     //     path: '/member',
     //     component: Layout,
     //     redirect: '/member/list',
-    //     meta: { icon: 'name', noDropDown: true, },
+    //     meta: { icon: 'name', dropDown: false, },
     //     children: [{
     //         path: 'list',
     //         name: '账户管理',

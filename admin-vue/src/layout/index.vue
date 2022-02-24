@@ -1,33 +1,24 @@
 <template>
   <div class="app-wrapper" :class="{ hideSidebar: !sidebar.opened }">
     <div class="sidebar-wrapper">
-      <Side-Bar class="sidebar-container" />
+      <SideBar class="sidebar-container" />
     </div>
     <div class="main-container">
-      <Nav-Bar />
-      <App-Main />
+      <NavBar />
+      <AppMain />
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 import NavBar from './NavBar.vue'
 import SideBar from './SideBar.vue'
 import AppMain from './AppMain.vue'
 
-export default {
-  name: 'AppLayout',
-  components: {
-    NavBar,
-    SideBar,
-    AppMain
-  },
-  computed: {
-    sidebar() {
-      return this.$store.getters.sidebar
-    }
-  }
-}
+const store = useStore()
+const sidebar = computed(() => store.getters.sidebar)
 </script>
 
 <style lang="less" scoped>

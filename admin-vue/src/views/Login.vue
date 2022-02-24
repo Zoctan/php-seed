@@ -27,69 +27,68 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { useStore } from 'vuex'
+import { useRouter } from 'vue-router'
 import { ref, reactive } from 'vue'
 
-export default {
-  name: 'MemberLogin',
-  setup() {
-    const submitLoading = ref(false)
+let submitLoading = ref(false)
 
-    const loginFormRef = ref(null)
+const validateUsername = (rule, value, callback) => {
+  if (value.length < 3) callback(new Error('账户名长度必须在3或以上'))
+  else callback()
+}
+const validatePassword = (rule, value, callback) => {
+  if (value.length < 6) callback(new Error('密码长度必须在6或以上'))
+  else callback()
+}
 
-    const loginForm = reactive({
-      username: 'admin',
-      password: 'admin123',
-      remember: false,
-    })
+const loginFormRef = ref(null)
 
-    const validateUsername = (rule, value, callback) => {
-      if (value.length < 3) callback(new Error('账户名长度必须在3或以上'))
-      else callback()
-    }
-    const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) callback(new Error('密码长度必须在6或以上'))
-      else callback()
-    }
+const loginForm = reactive({
+  username: 'admin',
+  password: 'admin123',
+  remember: false,
+})
 
-    const loginRules = reactive({
-      username: [
-        { trigger: 'blur', validator: validateUsername }
-      ],
-      password: [
-        { trigger: 'blur', validator: validatePassword }
-      ]
-    })
+const loginRules = reactive({
+  username: [
+    { trigger: 'blur', validator: validateUsername }
+  ],
+  password: [
+    { trigger: 'blur', validator: validatePassword }
+  ]
+})
 
-    return {
-      loginFormRef,
-      loginForm,
-      loginRules,
-      submitLoading,
-    }
-  },
-  methods: {
-    handleLogin(form) {
-      if (!form) return
-      form.validate((valid) => {
-        if (!valid) {
+const store = useStore()
+const router = useRouter()
+const handleLogin = (form) => {
+  if (!form) return
+  form.validate((valid) => {
+    if (!valid) {
+      ElNotification({
+        title: '错误',
+        message: '用户名或密码验证失败',
+        type: 'error',
+      })
+      console.log('error submit!')
+      return false
+    } else {
+      submitLoading = true
+      store.dispatch('memberLogin', form).then(
+        () => {
+          submitLoading = false
+          router.push({ path: '/' })
+        },
+        (error) => {
           ElNotification({
             title: '错误',
-            message: '用户名或密码验证失败',
+            message: error,
             type: 'error',
           })
-          console.log('error submit!')
-          return false
-        } else {
-          this.submitLoading = true
-          this.$store.dispatch('login', this.loginForm).then(() => {
-            this.submitLoading = false
-            this.$router.push({ path: '/dashboard' })
-          })
-        }
-      })
+        })
     }
-  }
+  })
 }
 </script>
 

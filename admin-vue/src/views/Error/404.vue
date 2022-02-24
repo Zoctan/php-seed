@@ -9,32 +9,25 @@
       </div>
       <div class="tip-404">
         <h1>请检查您输入的网址是否正确</h1>
-        <van-button @click="onBack" icon="arrow-left">返回</van-button>
+        <el-button @click="onBack" type="primary" icon="arrow-left">返回</el-button>
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import error404 from '@/assets/404.png'
-import error404Cloud from '@/assets/404cloud.png'
+<script setup>
+import { useRouter, useRoute } from 'vue-router'
+import error404 from '@/assets/image/404.png'
+import error404Cloud from '@/assets/image/404cloud.png'
 
-export default {
-  name: 'error404',
-  data() {
-    return {
-      error404,
-      error404Cloud,
-    }
-  },
-  methods: {
-    onBack() {
-      if (this.$route.query.noGoBack) {
-        this.$router.push({ path: '/dashboard' })
-      } else {
-        this.$router.go(-1)
-      }
-    }
+const router = useRouter()
+const route = useRoute()
+
+const onBack = () => {
+  if (route.query.noGoBack) {
+    router.push({ path: '/' })
+  } else {
+    router.go(-1)
   }
 }
 </script>

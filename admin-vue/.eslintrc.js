@@ -107,6 +107,18 @@ module.exports = {
     ],
 
     /**
+     * 定义全局中的变量
+     * 在 script-setup 模式下，新增了 4 个全局编译器宏，他们无需 import 就可以直接使用
+     * defineProps、defineEmits、defineExpose、withDefaults
+     */
+    globals: {
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        defineExpose: 'readonly',
+        withDefaults: 'readonly',
+    },
+
+    /**
      * 规则继承
      * https://eslint.cn/docs/user-guide/configuring#extending-configuration-files
      *【】可继承的方式有以下几种

@@ -1,20 +1,23 @@
 <template>
-  <el-menu mode="vertical" :default-active="$route.path">
-    <SideBar-Item :routers="routers" />
+  <el-menu
+    text-color="#fff"
+    active-text-color="#ffd04b"
+    background-color="#545c64"
+    mode="vertical"
+    :default-active="$router.path"
+  >
+    <SideBarItem :routers="routers" />
   </el-menu>
 </template>
 
-<script>
-import { mapGetters } from 'vuex'
+<script setup>
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 import SideBarItem from './SideBarItem.vue'
 
-export default {
-  name: 'SideBar',
-  components: { SideBarItem },
-  computed: {
-    ...mapGetters(['routers'])
-  }
-}
+const store = useStore()
+
+const routers = computed(() => store.getters.routers)
 </script>
 
 <style lang="less" scoped>

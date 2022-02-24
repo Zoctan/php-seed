@@ -1,50 +1,37 @@
 <template>
   <el-menu class mode="horizontal">
-    <SideBar-Collapse class :toggleSideBar="toggleSideBar" :isActive="sidebar.opened" />
-    <Level-Bar />
-    <el-dropdown class>
+    <SideBarCollapse />
+    <LevelBar />
+
+    <!-- <el-dropdown class>
       <span class="el-dropdown-link">
-        {{ name }}
+        {{ member.name }}
         <el-icon class="el-icon--right">
           <arrow-down />
         </el-icon>
       </span>
       <el-dropdown-menu>
-        <el-dropdown-item>
+        <el-dropdown-item :icon="avatar">
           <router-link to="/member/detail">账户中心</router-link>
         </el-dropdown-item>
-        <el-dropdown-item divided @click="logout">注销</el-dropdown-item>
+        <el-dropdown-item divided :icon="back">
+          <span @click="logout">注销</span>
+        </el-dropdown-item>
       </el-dropdown-menu>
-    </el-dropdown>
+    </el-dropdown>-->
   </el-menu>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue'
-import { mapGetters } from 'vuex'
+import { useStore } from 'vuex'
 import LevelBar from './LevelBar.vue'
 import SideBarCollapse from './SideBarCollapse.vue'
 
-export default {
-  name: 'NavBar',
-  components: {
-    LevelBar,
-    SideBarCollapse
-  },
-  setup() {
-    const { member, sidebar } = computed(() => mapGetters(['member', 'sidebar']))
+const store = useStore()
+const member = computed(() => store.getters.member)
 
-    const toggleSideBar = () => this.$store.dispatch('toggleSideBar')
-
-    const logout = () => this.$store.dispatch('memberLogout').then(() => location.reload())
-
-    return {
-      member, sidebar,
-      toggleSideBar,
-      logout
-    }
-  }
-}
+const logout = () => store.dispatch('memberLogout').then(() => location.reload())
 </script>
 
 <style lang="less" scoped>

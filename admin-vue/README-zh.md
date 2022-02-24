@@ -25,3 +25,14 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 - [eslint-plugin-vue 是 Vue.js 的官方 ESLint 插件](https://eslint.vuejs.org)
 - [less 向后兼容的 CSS 语言扩展](https://lesscss.org)
 - [less-loader 将 Less 编译为 CSS]()
+
+## 安装第三方插件更新依赖
+
+// 安装第三方插件检查依赖最新版本
+npm install -g npm-check-updates
+// 查看可更新包
+ncu --packageFile package.json
+// 更新
+ncu -u --packageFile package.json
+// 升级到最新版本
+npm install

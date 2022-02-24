@@ -1,5 +1,5 @@
 <template>
-  <h1>Dashboard</h1>
+  <h1>TestSub2</h1>
 </template>
 
 <script setup>
