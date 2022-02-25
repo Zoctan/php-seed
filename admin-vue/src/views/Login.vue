@@ -4,7 +4,7 @@
       class
       autocomplete="on"
       ref="loginFormRef"
-      :model="loginForm"
+      v-model="loginForm"
       :rules="loginRules"
       status-icon
       label-position="left"
@@ -92,5 +92,5 @@ const handleLogin = (form) => {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 </style>

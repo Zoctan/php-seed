@@ -99,7 +99,7 @@
         label-position="left"
         label-width="75px"
         style="width: 300px; margin-left:50px;"
-        :model="tmpAccount"
+        v-model="tmpAccount"
         :rules="createRules"
         ref="tmpAccount"
       >

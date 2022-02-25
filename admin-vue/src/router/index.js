@@ -9,16 +9,16 @@ const _import = (file) => modules[`/src/views/${file}.vue`]
 // console.debug('modules', modules)
 
 export const noAuthRouters = [
-    { path: '/:allMatch(.*)*', redirect: '/404', hidden: true },
-    { path: '/404', component: _import('error/404'), hidden: true },
-    { path: '/401', component: _import('error/401'), hidden: true },
-    { path: '/login', name: '登录', component: _import('Login'), hidden: true },
-    { path: '/', redirect: '/dashboard', hidden: true },
+    { path: '/:allMatch(.*)*', redirect: '/404', meta: { hidden: true } },
+    { path: '/404', component: _import('error/404'), meta: { hidden: true } },
+    { path: '/401', component: _import('error/401'), meta: { hidden: true } },
+    { path: '/login', name: '登录', component: _import('Login'), meta: { hidden: true } },
+    { path: '/', redirect: '/dashboard', meta: { hidden: true } },
     {
         path: '/dashboard',
         component: Layout,
         name: '控制台',
-        icon: 'house',
+        meta: { icon: 'house', },
         children: [{
             path: '',
             component: _import('Dashboard')
@@ -28,17 +28,17 @@ export const noAuthRouters = [
         path: '/test',
         component: Layout,
         name: '测试',
-        icon: 'sunny',
-        dropDown: true,
+        meta: { icon: 'sunny', dropDown: true, },
         children: [{
             path: 'sub1',
-            name: '测试1',
+            name: '测试子页面1',
             icon: 'soccer',
+            meta: { icon: 'soccer' },
             component: _import('TestSub1')
         }, {
             path: 'sub2',
-            name: '测试2',
-            icon: 'star',
+            name: '测试子页面2',
+            meta: { icon: 'star' },
             component: _import('TestSub2')
         }],
     },
@@ -48,20 +48,18 @@ export const authRouters = [
     // {
     //     path: '/member',
     //     component: Layout,
-    //     redirect: '/member/list',
-    //     meta: { icon: 'name', dropDown: false, },
+    //     meta: { icon: 'name', requiresAuth: true, },
     //     children: [{
     //         path: 'list',
     //         name: '账户管理',
     //         component: _import('member/list'),
-    //         meta: { rule: ['member:list'] }
+    //         meta: { auth: ['member:list'] }
     //     }]
     // },
     // {
     //     path: '/member',
     //     component: Layout,
-    //     redirect: '/member/detail',
-    //     meta: { icon: 'name', hidden: true, },
+    //     meta: { icon: 'name', requiresAuth: true, },
     //     children: [{
     //         path: 'detail',
     //         name: '账户中心',
@@ -71,14 +69,12 @@ export const authRouters = [
     // {
     //     path: '/role',
     //     component: Layout,
-    //     redirect: '/role/list',
-    //     icon: 'role',
-    //     meta: { icon: 'role', noDropDown: true, },
+    //     meta: { icon: 'role', requiresAuth: true, },
     //     children: [{
     //         path: 'list',
     //         name: '角色管理',
     //         component: _import('role/list'),
-    //         meta: { rule: ['role:list'] }
+    //         meta: { auth: ['role:list'] }
     //     }]
     // }
 ]
@@ -117,14 +113,17 @@ const router = createRouter({
 // 顺序：beforeEach -> beforeResolve -> afterEach
 router.beforeEach((to, from, next) => {
     NProgress.start()
-    // 有 token
-    if (localStorage.getItem('token')) {
-        if (to.path !== '/login') next()
-        else next({ path: '/' })
+    if (!to.meta.requiresAuth) {
+        // 前往的路径无需认证，直接前往
+        next()
     } else {
-        // 如果前往的路径无需认证，直接前往
-        if (noAuthRouters.some(item => item.path === to.path)) next()
-        else next('/login')
+        if (!localStorage.getItem('token')) {
+            next({ path: '/login' })
+        } else {
+            // 有 token 的情况下不要重复访问 login 页面
+            if (to.path !== '/login') next()
+            else next({ path: '/' })
+        }
     }
 })
 

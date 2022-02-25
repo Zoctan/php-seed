@@ -1,12 +1,10 @@
 <template>
-  <div @click="toggleSideBar">
-    <el-icon v-if="sidebar.opened" color="#409EFF">
-      <arrow-left-bold />
-    </el-icon>
-    <el-icon v-else color="#409EFF">
-      <arrow-right-bold />
-    </el-icon>
-  </div>
+  <el-button
+    type="primary"
+    @click="toggleSideBar"
+    :icon="sidebar.opened ? 'expand' : 'fold'"
+    circle
+  ></el-button>
 </template>
 
 <script setup>
@@ -20,5 +18,5 @@ const sidebar = computed(() => store.getters.sidebar)
 const toggleSideBar = () => store.dispatch('toggleSideBar')
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 </style>

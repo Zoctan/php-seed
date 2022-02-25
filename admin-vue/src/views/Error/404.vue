@@ -32,7 +32,7 @@ const onBack = () => {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .error-404 {
   background: #f0f2f5;
   margin-top: -20px;

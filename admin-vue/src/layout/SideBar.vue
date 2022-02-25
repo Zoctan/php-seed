@@ -1,10 +1,10 @@
 <template>
+  <!-- 启用 vue-router 模式：在激活导航时以 index 作为 path 进行路由跳转 -->
   <el-menu
-    text-color="#fff"
-    active-text-color="#ffd04b"
-    background-color="#545c64"
+    :default-active="$route.path"
+    :collapse="sidebar.opened"
     mode="vertical"
-    :default-active="$router.path"
+    router
   >
     <SideBarItem :routers="routers" />
   </el-menu>
@@ -16,9 +16,13 @@ import { useStore } from 'vuex'
 import SideBarItem from './SideBarItem.vue'
 
 const store = useStore()
-
 const routers = computed(() => store.getters.routers)
+const sidebar = computed(() => store.getters.sidebar)
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
+.el-menu:not(.el-menu--collapse) {
+  width: 200px;
+  height: 100vh;
+}
 </style>

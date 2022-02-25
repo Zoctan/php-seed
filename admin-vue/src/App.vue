@@ -8,6 +8,6 @@ export default {
 }
 </script>
 
-<style lang="less">
-@import "@/assets/style/app.less";
+<style lang="scss">
+@import "@/assets/style/app.scss";
 </style>
