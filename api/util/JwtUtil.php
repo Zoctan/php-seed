@@ -94,9 +94,7 @@ class JwtUtil
         $jwtObj->withClaim("memberId", $memberId);
         // 不适合放操作权限列表，后期可能会非常长
         // 这里可能会有个疑惑，放不了什么东西，那为什么不用 UUID 这些做 token
-        // 因为 JWT 有私钥签名，安全性高，如果 APP 不涉及什么重要东西，仅当认证用，这个 JWT 还是很好的
-        // "role": "ADMIN"
-        // "operate": "article:add,article:delete"
+        // 因为 JWT 有私钥签名，安全性高，如果只是用作资源授权，这个 JWT 还是很好的
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
                 $jwtObj->withClaim($key, $value);

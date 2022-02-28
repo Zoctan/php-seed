@@ -16,22 +16,20 @@ class AuthenticationFilter implements Filter
      */
     private $routes;
     private $request;
-    private $response;
 
     public function __construct($routes)
     {
         $this->routes = $routes;
         $this->request = \App\DI()->request;
-        $this->response = \App\DI()->response;
     }
 
     public function doFilter()
     {
-
         // 需要认证的路由才检查
         $uri = $this->request->getPath();
-        $authOperate = $this->routes[$uri]->authOperate;
-        if ($authOperate) {
+        $requiresAuth = $this->routes[$uri]->requiresAuth;
+        if ($requiresAuth) {
+            $needPermissionList = $this->routes[$uri]->needPermissionList;
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
@@ -43,7 +41,7 @@ class AuthenticationFilter implements Filter
                 return false;
             }
             $authMember = $jwtUtil->getAuthMember($token);
-            if (!$authMember->has($authOperate)) {
+            if (!$authMember->has($needPermissionList)) {
                 throw new UnAuthorizedException("no auth operate");
                 return false;
             }

@@ -3,7 +3,7 @@ CREATE TABLE `rule`
 (
     `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '规则id',
     `description`  VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '说明',
-    `operate`      VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '操作',
+    `permission`   VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '权限',
     `created_at`   DATETIME DEFAULT NOW() COMMENT '创建于',
     `updated_at`   DATETIME DEFAULT NULL COMMENT '更新于',
     PRIMARY KEY (`id`)

@@ -41,7 +41,7 @@ class MemberRoleModel extends BaseModel
             [
                 "rule.id [Int]",
                 "rule.description",
-                "rule.operate"
+                "rule.permission"
             ],
             [
                 "member_role.member_id" => $memberId
@@ -49,12 +49,12 @@ class MemberRoleModel extends BaseModel
         );
     }
 
-    public function getOperate($rules)
+    public function getPermissionList($rules)
     {
-        $operate = [];
+        $permissionList = [];
         foreach ($rules as $rule) {
-            array_push($operate, $rule["operate"]);
+            array_push($permissionList, $rule["permission"]);
         }
-        return $operate;
+        return $permissionList;
     }
 }

@@ -14,7 +14,7 @@ class RuleModel extends BaseModel
         $this->listAll([
             "id [Int]",
             "description",
-            "operate"
+            "permission"
         ], [], function ($rule) use (&$rules)  {
             $rules[] = $rule;
         });

@@ -26,22 +26,25 @@ class AuthMember
      * 
      * @var array
      */
-    public $operate;
+    public $permissionList;
 
-    public function __construct($member, $role, $operate)
+    public function __construct($member, $role, $permissionList)
     {
         $this->member = $member;
         $this->role = $role;
-        $this->operate = $operate;
+        $this->permissionList = $permissionList;
     }
 
     /**
      * 是否有操作权限
      * 
-     * @param string $authOperate
+     * @param array $need
      */
-    public function has($authOperate)
+    public function has(array $need)
     {
-        return in_array($authOperate, $this->operate);
+        if (count($need) == 0) {
+            return true;
+        }
+        return count(array_diff($need, $this->permissionList)) == 0;
     }
 }

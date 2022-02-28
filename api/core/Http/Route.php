@@ -30,25 +30,48 @@ class Route
     public $action;
 
     /**
+     * 需要权限
+     * 
+     * @var boolean
+     */
+    public $requiresAuth = false;
+
+    /**
      * 需要的操作权限
      * 
-     * @var string
+     * @var array
      */
-    public $authOperate;
+    public $authOperate = [];
 
     /**
      * 返回的响应类型
      * 
      * @var string
      */
-    public $responseContentType;
+    public $responseContentType = "json";
 
-    public function __construct($methods, $uri, $action, string $authOperate = null, string $responseContentType = "json")
+    public function __construct($methods, $uri, $action)
     {
         $this->methods = $methods;
         $this->uri = $uri;
         $this->action = $action;
+    }
+
+    public function requiresAuth()
+    {
+        $this->requiresAuth = true;
+        return $this;
+    }
+
+    public function setAuthOperate(array $authOperate)
+    {
         $this->authOperate = $authOperate;
+        return $this;
+    }
+
+    public function setResponseContentType(string $responseContentType)
+    {
         $this->responseContentType = $responseContentType;
+        return $this;
     }
 }

@@ -21,8 +21,8 @@ class AuthMemberModel
         } else {
             $rules = $memberRoleModel->getRule($memberId);
         }
-        $operate = $memberRoleModel->getOperate($rules);
+        $permissionList = $memberRoleModel->getPermissionList($rules);
         
-        return new AuthMember($member, $role, $operate);
+        return new AuthMember($member, $role, $permissionList);
     }
 }

@@ -5,9 +5,13 @@ namespace App\Controller;
 use App\Util\JwtUtil;
 use App\Model\AuthMemberModel;
 use App\Model\MemberModel;
+use App\Model\MemberDataModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
+/**
+ * 成员控制器
+ */
 class MemberController extends BaseController
 {
     /**
@@ -15,14 +19,19 @@ class MemberController extends BaseController
      */
     private $memberModel;
     /**
+     * @var MemberDataModel
+     */
+    private $memberDataModel;
+    /**
      * @var JwtUtil
      */
     private $jwtUtil;
 
-    public function __construct(MemberModel $memberModel)
+    public function __construct(MemberModel $memberModel, MemberDataModel $memberDataModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
+        $this->memberDataModel = $memberDataModel;
         $this->jwtUtil = JwtUtil::getInstance();
     }
 
@@ -46,7 +55,7 @@ class MemberController extends BaseController
         $authMemberModel = new AuthMemberModel();
         $authMember = $authMemberModel->get($memberId);
 
-        $token = $this->jwtUtil->sign($memberId, ["role" => $authMember->role, "operate" => $authMember->operate]);
+        $token = $this->jwtUtil->sign($memberId);
 
         return ResultGenerator::successWithData($token);
     }
@@ -103,8 +112,18 @@ class MemberController extends BaseController
      */
     public function refreshToken()
     {
-        $token = $this->jwtUtil->sign($this->authMember->member["id"], ["role" => $this->authMember->role, "operate" => $this->authMember->operate]);
+        $token = $this->jwtUtil->sign($this->authMember->member["id"]);
         return ResultGenerator::successWithData($token);
+    }
+
+    /**
+     * 个人信息
+     */
+    public function profile()
+    {
+        $memberId = \App\DI()->authMember->member->id;
+        $memberData = $this->memberDataModel->getById("*", $memberId);
+        return ResultGenerator::success($memberData);
     }
 
     /**
@@ -153,7 +172,7 @@ class MemberController extends BaseController
      */
     public function delete()
     {
-        $memberId = \App\DI()->authMember->member->id;
+        $memberId = intval($this->request->get("memberId", 0));
         $this->memberModel->deleteById($memberId);
         return ResultGenerator::success();
     }

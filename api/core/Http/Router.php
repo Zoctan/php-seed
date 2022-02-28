@@ -26,7 +26,7 @@ class Router
     /**
      * 注册路由
      */
-    public function register($methods, string $uri, $callback, string $authOperate = null)
+    public function register($methods, string $uri, $callback)
     {
         if (isset($this->routes[$uri])) {
             return;
@@ -45,7 +45,11 @@ class Router
         // /member/login => member/login
         $uri = !str_starts_with($uri, "/") ? $uri : substr($uri, strlen("/"));
 
-        $this->routes[$uri] = new Route($methods, $uri, $callback, $authOperate);
+        $route = new Route($methods, $uri, $callback);
+
+        $this->routes[$uri] = $route;
+
+        return $route;
     }
 
     /**
