@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Util\JwtUtil;
-use App\Model\AuthMemberModel;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Core\BaseController;
@@ -52,9 +51,6 @@ class MemberController extends BaseController
             "password" => $password,
         ]);
 
-        $authMemberModel = new AuthMemberModel();
-        $authMember = $authMemberModel->get($memberId);
-
         $token = $this->jwtUtil->sign($memberId);
 
         return ResultGenerator::successWithData($token);
@@ -102,7 +98,7 @@ class MemberController extends BaseController
      */
     public function logout()
     {
-        $memberId = \App\DI()->authMember->member->id;
+        $memberId = \App\DI()->authMember->memberData["member_id"];
         $this->jwtUtil->invalidRedisToken($memberId);
         return ResultGenerator::success();
     }
@@ -112,8 +108,21 @@ class MemberController extends BaseController
      */
     public function refreshToken()
     {
-        $token = $this->jwtUtil->sign($this->authMember->member["id"]);
+        $token = $this->jwtUtil->sign($this->authMember->memberData["member_id"]);
         return ResultGenerator::successWithData($token);
+    }
+
+    /**
+     * 成员信息
+     */
+    public function detail()
+    {
+        $memberId = intval($this->request->get("memberId", 0));
+        $memberData = $this->memberDataModel->getById("*", $memberId);
+        if (empty($memberData)) {
+            return ResultGenerator::errorWithMsg("成员信息不存在");
+        }
+        return ResultGenerator::successWithData($memberData);
     }
 
     /**
@@ -121,9 +130,8 @@ class MemberController extends BaseController
      */
     public function profile()
     {
-        $memberId = \App\DI()->authMember->member->id;
-        $memberData = $this->memberDataModel->getById("*", $memberId);
-        return ResultGenerator::success($memberData);
+        $authMember = \App\DI()->authMember;
+        return ResultGenerator::successWithData($authMember);
     }
 
     /**
@@ -157,13 +165,23 @@ class MemberController extends BaseController
     }
 
     /**
+     * 更新个人信息
+     */
+    public function updateProfile()
+    {
+        $profile = $this->request->get("profile");
+        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $this->memberModel->updateById($profile, $memberId);
+        return ResultGenerator::success();
+    }
+
+    /**
      * 更新
      */
-    public function update()
+    public function updateDetail()
     {
-        $memberInfo = $this->request->get("memberInfo");
-        $memberId = \App\DI()->authMember->member->id;
-        $this->memberModel->updateById($memberInfo, $memberId);
+        $detail = $this->request->get("detail");
+        $this->memberModel->updateById($detail, $detail->id);
         return ResultGenerator::success();
     }
 

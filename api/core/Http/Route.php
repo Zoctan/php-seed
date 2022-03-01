@@ -41,7 +41,7 @@ class Route
      * 
      * @var array
      */
-    public $authOperate = [];
+    public $auth = [];
 
     /**
      * 返回的响应类型
@@ -63,9 +63,9 @@ class Route
         return $this;
     }
 
-    public function setAuthOperate(array $authOperate)
+    public function setAuth(array $auth)
     {
-        $this->authOperate = $authOperate;
+        $this->auth = $auth;
         return $this;
     }
 

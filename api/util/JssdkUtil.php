@@ -80,10 +80,10 @@ class JssdkUtil
         $accessToken = $this->getAccessToken();
 
         $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
-        
+
         // 使用证书访问：https://docs.guzzlephp.org/en/stable/request-options.html#verify
-        $response =  \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
-        $response =  json_decode($response->getBody());
+        $response = \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
+        $response = json_decode($response->getBody());
         if (empty($response) || (isset($response->errcode) && $response->errcode != 0)) {
             if ($tryTime == 3) {
                 throw new \Exception("内部服务器请求微信服务器 jsapi_ticket 出现错误，请联系管理员：" . json_encode($response));
@@ -115,9 +115,9 @@ class JssdkUtil
     private function updateAccessToken($tryTime = 0)
     {
         $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret";
-        
-        $response =  \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
-        $response =  json_decode($response->getBody());
+
+        $response = \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
+        $response = json_decode($response->getBody());
         if (empty($response) || (isset($response->errcode) && $response->errcode != 0)) {
             if ($tryTime == 3) {
                 throw new \Exception("内部服务器请求微信服务器 access_token 出现错误，请联系管理员：" . json_encode($response));

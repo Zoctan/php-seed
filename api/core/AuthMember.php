@@ -8,16 +8,16 @@ namespace App\Core;
 class AuthMember
 {
     /**
-     * 用户
+     * 用户信息
      * 
-     * @var 
+     * @var object
      */
-    public $member;
+    public $memberData;
 
     /**
      * 角色
      * 
-     * @var
+     * @var object
      */
     public $role;
 
@@ -28,9 +28,9 @@ class AuthMember
      */
     public $permissionList;
 
-    public function __construct($member, $role, $permissionList)
+    public function __construct($memberData, $role, $permissionList)
     {
-        $this->member = $member;
+        $this->memberData = $memberData;
         $this->role = $role;
         $this->permissionList = $permissionList;
     }
