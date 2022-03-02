@@ -41,13 +41,38 @@ class MemberController extends BaseController
     {
         $username = strval($this->request->get("username"));
 
+        if (empty($username)) {
+            return ResultGenerator::errorWithMsg("please input username");
+        }
+
         $existMember = $this->memberModel->count(["username" => $username]) === 1;
         if ($existMember) {
-            return ResultGenerator::errorWithMsg("用户名已存在");
+            return ResultGenerator::errorWithMsg("username already exists");
         }
 
         // 其他的唯一属性
         // ...
+
+        return ResultGenerator::success();
+    }
+
+    /**
+     * 检查旧密码是否正确
+     */
+    public function checkOldPassword()
+    {
+        $oldPassword = strval($this->request->get("oldPassword"));
+
+        if (empty($oldPassword)) {
+            return ResultGenerator::errorWithMsg("please input old password");
+        }
+
+        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $member = $this->memberModel->getById(["password"], $memberId);
+
+        if (!$this->memberModel->verifyPassword($oldPassword, $member["password"])) {
+            return ResultGenerator::errorWithMsg("old password error");
+        }
 
         return ResultGenerator::success();
     }
@@ -61,7 +86,7 @@ class MemberController extends BaseController
         $password = strval($this->request->get("password"));
 
         if (empty($username) || empty($password)) {
-            return ResultGenerator::errorWithMsg("请输入用户名和密码");
+            return ResultGenerator::errorWithMsg("please input username and password");
         }
 
         $memberId = $this->memberModel->add([
@@ -86,22 +111,22 @@ class MemberController extends BaseController
         $this->response->setDebug("password", $password);
 
         if (empty($username) || empty($password)) {
-            return ResultGenerator::errorWithMsg("请输入账户名和密码");
+            return ResultGenerator::errorWithMsg("please input username and password");
         }
 
         $member = $this->memberModel->getByUsername($username);
 
         $this->response->setDebug("member", $member);
         if (empty($member)) {
-            return ResultGenerator::errorWithMsg("账户名错误");
+            return ResultGenerator::errorWithMsg("username error");
         }
 
         if (!$this->memberModel->verifyPassword($password, $member["password"])) {
-            return ResultGenerator::errorWithMsg("密码错误");
+            return ResultGenerator::errorWithMsg("password error");
         }
 
         if ($member["status"] == 0) {
-            return ResultGenerator::errorWithMsg("成员状态异常");
+            return ResultGenerator::errorWithMsg("member status error");
         }
 
         $this->memberModel->updateLoginedAtById($member["id"]);
@@ -138,7 +163,7 @@ class MemberController extends BaseController
         $memberId = intval($this->request->get("memberId", 0));
         $memberData = $this->memberDataModel->getById("*", $memberId);
         if (empty($memberData)) {
-            return ResultGenerator::errorWithMsg("成员信息不存在");
+            return ResultGenerator::errorWithMsg("member data doesn't exist");
         }
         return ResultGenerator::successWithData($memberData);
     }
@@ -180,6 +205,17 @@ class MemberController extends BaseController
             "updated_at",
         ], $where);
         return ResultGenerator::successWithData($result);
+    }
+
+    /**
+     * 更新密码
+     */
+    public function updatePassword()
+    {
+        $password = $this->request->get("password");
+        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $this->memberModel->updateById(["password" => $password], $memberId);
+        return ResultGenerator::success();
     }
 
     /**
