@@ -20,7 +20,7 @@ class ExceptionHandler
     }
 
     /**
-     * 处理用户抛出的 Exception
+     * 处理自定义抛出的 Exception
      */
     private static function setExceptionHandler()
     {
@@ -53,7 +53,7 @@ class ExceptionHandler
     }
 
     /**
-     * 处理用户抛出的 Error
+     * 处理自定义抛出的 Error
      */
     private static function setErrorHandler()
     {

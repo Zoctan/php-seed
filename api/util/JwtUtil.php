@@ -120,7 +120,7 @@ class JwtUtil
         //      因为账户登出后 JWT 本身只要没过期就仍然有效，所以只能通过 redis 缓存来校验有无效
         //      校验时只要 redis 中的 token 无效即可（JWT 本身可以校验有无过期，而 redis 过期即被删除了）
         $this->cache->setex($token, $this->config->expiresMinutes * 60, 1);
-        // 用户无需重复请求签发 token
+        // 成员无需重复请求签发 token
         $this->cache->setex($memberId, $this->config->expiresMinutes * 60, $token);
     }
 

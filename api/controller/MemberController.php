@@ -35,6 +35,24 @@ class MemberController extends BaseController
     }
 
     /**
+     * 检查成员是否已存在
+     */
+    public function checkExist()
+    {
+        $username = strval($this->request->get("username"));
+
+        $existMember = $this->memberModel->count(["username" => $username]) === 1;
+        if ($existMember) {
+            return ResultGenerator::errorWithMsg("用户名已存在");
+        }
+
+        // 其他的唯一属性
+        // ...
+
+        return ResultGenerator::success();
+    }
+
+    /**
      * 注册
      */
     public function register()
@@ -43,7 +61,7 @@ class MemberController extends BaseController
         $password = strval($this->request->get("password"));
 
         if (empty($username) || empty($password)) {
-            return ResultGenerator::errorWithMsg("请输入账户名和密码");
+            return ResultGenerator::errorWithMsg("请输入用户名和密码");
         }
 
         $memberId = $this->memberModel->add([

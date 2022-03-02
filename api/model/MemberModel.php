@@ -23,6 +23,9 @@ class MemberModel extends BaseModel
         // 绑定默认角色
         $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->saveAsDefaultRole($memberId);
+        // 绑定默认数据
+        $memberDataModel = new MemberDataModel();
+        $memberDataModel->saveDefault($memberId);
         return $memberId;
     }
 

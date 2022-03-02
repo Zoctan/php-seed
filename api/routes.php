@@ -6,6 +6,7 @@ use App\Core\Http\Router;
 
 $router = new Router();
 
+$router->register("POST", "/member/checkExist", "MemberController@checkExist");
 $router->register("POST", "/member/register", "MemberController@register");
 $router->register(["GET", "POST"], "/member/login", "MemberController@login");
 $router->register("DELETE", "/member/logout", "MemberController@logout")->requiresAuth();

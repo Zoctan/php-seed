@@ -3,12 +3,12 @@
 namespace App\Core;
 
 /**
- * 认证用户
+ * 认证成员
  */
 class AuthMember
 {
     /**
-     * 用户信息
+     * 成员信息
      * 
      * @var object
      */

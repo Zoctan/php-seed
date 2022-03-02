@@ -10,8 +10,3 @@ CREATE TABLE `role_rule`
     KEY `K_RUID` (`rule_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='角色规则表';
-
-INSERT INTO `role_rule` VALUES
-(1, 2, 1, '2022-01-01 00:00:00'),
-(2, 2, 2, '2022-01-01 00:00:00'),
-(3, 2, 3, '2022-01-01 00:00:00');
