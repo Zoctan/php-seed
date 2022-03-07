@@ -15,4 +15,4 @@ CREATE TABLE `member_data`
 
 INSERT INTO `member_data` VALUES
 (1, 1, '', 'USER', 1, '2022-01-01 00:00:00', NULL),
-(2, 2, '', 'ADMIN', 1, '2022-01-01 00:00:00', NULL);
+(2, 2, 'http://127.0.0.1/php-seed/upload/image/avatar.jpg', 'ADMIN', 1, '2022-01-01 00:00:00', NULL);

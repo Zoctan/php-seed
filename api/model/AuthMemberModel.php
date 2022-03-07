@@ -8,8 +8,11 @@ class AuthMemberModel
 {
     public function get($memberId)
     {
+        $memberModel = new MemberModel();
+        $member = $memberModel->getBy(["id [Int]", "username", "status [Int]", "logined_at", "created_at", "updated_at"], ["id" => $memberId]);
+
         $memberDataModel = new MemberDataModel();
-        $memberData = $memberDataModel->getBy(["member_id [Int]", "avatar", "nickname", "gender [Int]"], ["member_id" => $memberId]);
+        $memberData = $memberDataModel->getBy(["avatar", "nickname", "gender [Int]"], ["member_id" => $memberId]);
 
         $memberRoleModel = new MemberRoleModel();
         $role = $memberRoleModel->getRole($memberId);
@@ -23,6 +26,6 @@ class AuthMemberModel
         }
         $permissionList = $memberRoleModel->getPermissionList($rules);
 
-        return new AuthMember($memberData, $role, $permissionList);
+        return new AuthMember($member, $memberData, $role, $permissionList);
     }
 }
