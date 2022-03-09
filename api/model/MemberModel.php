@@ -38,7 +38,10 @@ class MemberModel extends BaseModel
             "id [Int]",
             "username",
             "password",
-            "status [Int]"
+            "status [Int]",
+            "logined_at",
+            "created_at",
+            "updated_at"
         ]
     ) {
         return $this->getBy(

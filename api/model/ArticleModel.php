@@ -10,9 +10,6 @@ class ArticleModel extends BaseModel
 {
     protected $table = "article";
 
-    /**
-     * 添加
-     */
     public function add($article)
     {
         $articleId = $this->insert($article);

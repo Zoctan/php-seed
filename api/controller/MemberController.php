@@ -67,7 +67,7 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg("please input old password");
         }
 
-        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $memberId = $this->authMember->member["id"];
         $member = $this->memberModel->getById(["password"], $memberId);
 
         if (!$this->memberModel->verifyPassword($oldPassword, $member["password"])) {
@@ -141,7 +141,7 @@ class MemberController extends BaseController
      */
     public function logout()
     {
-        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $memberId = $this->authMember->member["id"];
         $this->jwtUtil->invalidRedisToken($memberId);
         return ResultGenerator::success();
     }
@@ -151,7 +151,7 @@ class MemberController extends BaseController
      */
     public function refreshToken()
     {
-        $token = $this->jwtUtil->sign($this->authMember->memberData["member_id"]);
+        $token = $this->jwtUtil->sign($this->authMember->member["id"]);
         return ResultGenerator::successWithData($token);
     }
 
@@ -173,7 +173,7 @@ class MemberController extends BaseController
      */
     public function profile()
     {
-        $authMember = \App\DI()->authMember;
+        $authMember = $this->authMember;
         return ResultGenerator::successWithData($authMember);
     }
 
@@ -213,7 +213,7 @@ class MemberController extends BaseController
     public function updatePassword()
     {
         $password = $this->request->get("password");
-        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $memberId = $this->authMember->member["id"];
         $this->memberModel->updateById(["password" => $password], $memberId);
         return ResultGenerator::success();
     }
@@ -224,7 +224,7 @@ class MemberController extends BaseController
     public function updateProfile()
     {
         $profile = $this->request->get("profile");
-        $memberId = \App\DI()->authMember->memberData["member_id"];
+        $memberId = $this->authMember->member["id"];
         $this->memberModel->updateById($profile, $memberId);
         return ResultGenerator::success();
     }
