@@ -178,7 +178,7 @@ abstract class MedooModel
      * @param array $where
      * @param callback $callback
      */
-    public function listAll($columns = "*", array $where, callable $callback)
+    public function listBy($columns = "*", array $where, callable $callback)
     {
         $this->read = true;
         $this->connection()->select($this->table, $columns, $where, $callback);

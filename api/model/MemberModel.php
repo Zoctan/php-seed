@@ -67,4 +67,22 @@ class MemberModel extends BaseModel
     {
         return password_verify($password, $passwordDB);
     }
+
+    public function getRule($memberId)
+    {
+        return $this->select(
+            [
+                "[>]role_rule" => ["role_id" => "role_id"],
+                "[>]rule" => ["role_rule.rule_id" => "id"],
+            ],
+            [
+                "rule.id [Int]",
+                "rule.description",
+                "rule.permission"
+            ],
+            [
+                "member_role.member_id" => $memberId
+            ]
+        );
+    }
 }

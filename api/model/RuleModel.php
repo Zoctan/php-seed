@@ -20,7 +20,7 @@ class RuleModel extends BaseModel
     public function listAllWithoutCondition()
     {
         $ruleList = [];
-        $this->listAll([
+        $this->listBy([
             "id [Int]",
             "description",
             "permission"

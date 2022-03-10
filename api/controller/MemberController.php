@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Util\JwtUtil;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
+use App\Model\RoleModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
@@ -22,15 +23,20 @@ class MemberController extends BaseController
      */
     private $memberDataModel;
     /**
+     * @var RoleModel
+     */
+    private $roleModel;
+    /**
      * @var JwtUtil
      */
     private $jwtUtil;
 
-    public function __construct(MemberModel $memberModel, MemberDataModel $memberDataModel)
+    public function __construct(MemberModel $memberModel, MemberDataModel $memberDataModel, RoleModel $roleModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
         $this->memberDataModel = $memberDataModel;
+        $this->roleModel = $roleModel;
         $this->jwtUtil = JwtUtil::getInstance();
     }
 
@@ -185,17 +191,73 @@ class MemberController extends BaseController
         $currentPage = intval($this->request->get("currentPage", 0));
         $pageSize = intval($this->request->get("pageSize", 20));
 
-        $username = strval($this->request->get("username"));
-        $status = intval($this->request->get("status"));
+        $member = $this->request->get("member");
+        $memberData = $this->request->get("memberData");
+        $role = $this->request->get("role");
 
-        $where = [];
-        if ($username) {
-            $where["username[~]"] = $username;
-        }
-        if ($status) {
-            $where["status"] = $status;
-        }
+        // 先查询其他表，根据其他表的结果再查主表
+        $memberDataList = [];
+        if ($memberData) {
+            $memberDataWhere = [];
+            if ($memberData["nickname"]) {
+                $memberDataWhere["nickname[~]"] = $memberData["nickname"];
+            }
+            if ($memberData["gender"]) {
+                $memberDataWhere["gender"] = $memberData["gender"];
+            }
 
+            if ($memberDataWhere) {
+                $this->memberDataModel->listBy(
+                    [
+                        "id [Int]",
+                        "member_id [Int]",
+                        "avatar",
+                        "nickname",
+                        "gender [Int]",
+                        "created_at",
+                        "updated_at",
+                    ],
+                    $memberDataWhere,
+                    function ($_memberData) use (&$memberDataList) {
+                        $memberDataList[] = $_memberData;
+                    }
+                );
+            }
+        }
+        $roleList = [];
+        if ($role) {
+            $roleWhere = [];
+            if ($role["name"]) {
+                $roleWhere["name[~]"] = $role["name"];
+            }
+
+            if ($roleWhere) {
+                $this->roleModel->listBy(
+                    [
+                        "id [Int]",
+                        "name",
+                        "has_all_rule [Int]",
+                        "lock [Int]",
+                        "created_at",
+                        "updated_at",
+                    ],
+                    $roleWhere,
+                    function ($_role) use (&$roleList) {
+                        $roleList[] = $_role;
+                    }
+                );
+            }
+        }
+        $memberWhere = [];
+        if ($member) {
+            if ($member["username"]) {
+                $memberWhere["username[~]"] = $member["username"];
+            }
+            if ($member["status"]) {
+                $memberWhere["status"] = $member["status"];
+            }
+        }
+        // todo
         $result =  $this->memberModel->page($currentPage, $pageSize, [
             "id [Int]",
             "username",
@@ -203,7 +265,8 @@ class MemberController extends BaseController
             "logined_at",
             "created_at",
             "updated_at",
-        ], $where);
+        ], $memberWhere);
+
         return ResultGenerator::successWithData($result);
     }
 
