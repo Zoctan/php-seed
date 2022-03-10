@@ -16,10 +16,6 @@ class RoleRuleModel extends BaseModel
         foreach ($oldRuleList as $oldRule) {
             array_push($oldRuleIdList, $oldRule->rule_id);
         }
-        // 原来规则和新规则都有的，不用管
-        // 原来规则没有的，新规则有的，要添加
-        // 原来规则有的，新规则没有的，要删除
-
         // 在 原来规则，但不在 新规则，要删除
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //    ruleIdList: [1, 3, 5, 6, 7]

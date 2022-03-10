@@ -134,7 +134,7 @@ abstract class MedooModel
     public function __construct(array $config)
     {
         if (empty($config)) {
-            throw new \Exception("配置不能为空");
+            throw new \Exception("empty database config");
         }
         $this->config = $config;
 
@@ -194,7 +194,7 @@ abstract class MedooModel
      */
     public function getBy($columns = "*", array $where)
     {
-        if (empty($where)) throw new \Exception("条件为空，查询单条数据失败");
+        if (empty($where)) throw new \Exception("empty condition, get one error");
 
         $this->read = true;
         return $this->connection()->get($this->table, $columns, $where);
@@ -236,11 +236,11 @@ abstract class MedooModel
      */
     public function deleteBy(array $where): void
     {
-        if (empty($where)) throw new \Exception("条件为空，删除失败");
+        if (empty($where)) throw new \Exception("empty condition, delete error");
 
         $result = $this->connection()->delete($this->table, $where);
         if (empty($result)) {
-            throw new \Exception("删除失败");
+            throw new \Exception("delete error");
         }
     }
 
@@ -265,12 +265,12 @@ abstract class MedooModel
      */
     public function updateBy($values, array $where): void
     {
-        if (empty($where)) throw new \Exception("条件为空，更新失败");
+        if (empty($where)) throw new \Exception("empty condition, update error");
 
         $this->write = true;
         $result = $this->connection()->update($this->table, $values, $where);
         if (empty($result)) {
-            throw new \Exception("更新失败");
+            throw new \Exception("update error");
         }
     }
 

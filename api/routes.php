@@ -20,4 +20,14 @@ $router->register("PUT", "/member/updateProfile", "MemberController@updateProfil
 $router->register("PUT", "/member/updateDetail", "MemberController@updateDetail")->requiresAuth();
 $router->register("DELETE", "/member/delete", "MemberController@delete")->requiresAuth();
 
+$router->register("POST", "/role/add", "RoleController@addRole")->requiresAuth();
+$router->register("POST", "/rule/add", "RoleController@addRule")->requiresAuth();
+$router->register("POST", "/role/list", "RoleController@listRole")->requiresAuth();
+$router->register("POST", "/rule/list", "RoleController@listRule")->requiresAuth();
+$router->register(["GET", "POST"], "/role/detail", "RoleController@detail")->requiresAuth();
+$router->register("PUT", "/role/update", "RoleController@updateRole")->requiresAuth();
+$router->register("PUT", "/rule/update", "RoleController@updateRule")->requiresAuth();
+$router->register("PUT", "/memberRole/update", "RoleController@updateMemberRole")->requiresAuth();
+$router->register("DELETE", "/role/delete", "RoleController@delete")->requiresAuth();
+
 return $router;

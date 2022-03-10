@@ -8,16 +8,25 @@ class RuleModel extends BaseModel
 {
     protected $table = "rule";
 
+    public function add($rule)
+    {
+        $ruleId = $this->insert($rule);
+        if (!$ruleId) {
+            throw new \Exception("insert rule error");
+        }
+        return $ruleId;
+    }
+
     public function listAllWithoutCondition()
     {
-        $rules = [];
+        $ruleList = [];
         $this->listAll([
             "id [Int]",
             "description",
             "permission"
-        ], [], function ($rule) use (&$rules)  {
-            $rules[] = $rule;
+        ], [], function ($rule) use (&$ruleList) {
+            $ruleList[] = $rule;
         });
-        return $rules;
+        return $ruleList;
     }
 }
