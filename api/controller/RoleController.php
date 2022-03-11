@@ -124,7 +124,7 @@ class RoleController extends BaseController
         if (empty($role)) {
             return ResultGenerator::errorWithMsg("role doesn't exist");
         }
-        $ruleList = $this->roleModel->getRule($roleId);
+        $ruleList = $this->roleModel->getRuleById($roleId);
         return ResultGenerator::successWithData([
             "role" => $role,
             "ruleList" => $ruleList,

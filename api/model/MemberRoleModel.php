@@ -17,7 +17,7 @@ class MemberRoleModel extends BaseModel
     {
         return $this->get(
             [
-                "[>]role" => ["role_id" => "id"],
+                "[>]role" => ["member_role.role_id" => "id"],
             ],
             [
                 "role.id [Int]",
@@ -35,7 +35,7 @@ class MemberRoleModel extends BaseModel
     {
         return $this->select(
             [
-                "[>]role_rule" => ["role_id" => "role_id"],
+                "[>]role_rule" => ["member_role.role_id" => "role_id"],
                 "[>]rule" => ["role_rule.rule_id" => "id"],
             ],
             [

@@ -314,6 +314,51 @@ abstract class MedooModel
     }
 
     /**
+     * 联表分页
+     *
+     * @param int $currentPage
+     * @param int $pageSize
+     * @param array $join
+     * @param string|array $columns
+     * @param array $where
+     *
+     * @return array
+     */
+    public function pageJoin(int $currentPage = 0, int $pageSize = 20, array $join = [], $columns = "*", array $where = []): array
+    {
+        $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
+        $where["LIMIT"] = [$limitStart, $pageSize];
+        $idList = [];
+        $this->connection()->select(
+            $this->table,
+            $join,
+            "$this->table.$this->primary",
+            $where,
+            function ($_id) use (&$idList) {
+                $idList[] = $_id;
+            }
+        );
+        $total = count($idList);
+        $list = [];
+        $this->connection()->select(
+            $this->table,
+            $join,
+            $columns,
+            ["$this->table.$this->primary" => $idList],
+            function ($_data) use (&$list) {
+                $list[] = $_data;
+            }
+        );
+        return [
+            "list" => $list,
+            "total" => $total,
+            "currentPage" => $currentPage,
+            "pageSize" => $pageSize,
+            "totalPage" => ceil($total / $pageSize),
+        ];
+    }
+
+    /**
      * 获取 sql 执行记录
      *
      * @return array
@@ -404,7 +449,6 @@ abstract class MedooModel
     public function debug()
     {
         $this->connection()->debug();
-
         return $this;
     }
 

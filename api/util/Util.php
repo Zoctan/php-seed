@@ -4,7 +4,18 @@ namespace App\Util;
 
 class Util
 {
-    
+    public static function value2Array($array, $key)
+    {
+        if (empty($array)) {
+            return [];
+        }
+        $valueArray = [];
+        for ($i = 0; $i < count($array); $i++) {
+            $valueArray[] =  $array[$i][$key];
+        }
+        return $valueArray;
+    }
+
     /*
      * 当前文件名
      */
@@ -72,7 +83,7 @@ class Util
         }
         return $afterArray;
     }
-    
+
     /**
      * 生成随机字符串
      * @param $length

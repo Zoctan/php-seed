@@ -17,11 +17,11 @@ class RoleModel extends BaseModel
         return $roleId;
     }
 
-    public function getRule($roleId)
+    public function getRuleById($roleId)
     {
         return $this->select(
             [
-                "[>]role_rule" => ["role_id" => "id"],
+                "[>]role_rule" => ["role.id" => "role_id"],
                 "[>]rule" => ["role_rule.rule_id" => "id"],
             ],
             [

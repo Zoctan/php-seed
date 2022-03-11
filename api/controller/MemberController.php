@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Util\Util;
 use App\Util\JwtUtil;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
@@ -199,23 +200,17 @@ class MemberController extends BaseController
         $memberDataList = [];
         if ($memberData) {
             $memberDataWhere = [];
-            if ($memberData["nickname"]) {
+            if ($memberData["nickname"] !== null) {
                 $memberDataWhere["nickname[~]"] = $memberData["nickname"];
             }
-            if ($memberData["gender"]) {
+            if ($memberData["gender"] !== null) {
                 $memberDataWhere["gender"] = $memberData["gender"];
             }
 
             if ($memberDataWhere) {
                 $this->memberDataModel->listBy(
                     [
-                        "id [Int]",
                         "member_id [Int]",
-                        "avatar",
-                        "nickname",
-                        "gender [Int]",
-                        "created_at",
-                        "updated_at",
                     ],
                     $memberDataWhere,
                     function ($_memberData) use (&$memberDataList) {
@@ -224,48 +219,109 @@ class MemberController extends BaseController
                 );
             }
         }
-        $roleList = [];
+        $memberRoleList = [];
         if ($role) {
             $roleWhere = [];
-            if ($role["name"]) {
-                $roleWhere["name[~]"] = $role["name"];
+            if ($role["name"] !== null) {
+                $roleWhere["role.name[~]"] = $role["name"];
             }
 
             if ($roleWhere) {
-                $this->roleModel->listBy(
+                $memberRoleList = $this->roleModel->select(
                     [
-                        "id [Int]",
-                        "name",
-                        "has_all_rule [Int]",
-                        "lock [Int]",
-                        "created_at",
-                        "updated_at",
+                        "[>]member_role" => ["role_id" => "id"],
                     ],
-                    $roleWhere,
-                    function ($_role) use (&$roleList) {
-                        $roleList[] = $_role;
+                    [
+                        "member_role.member_id [Int]",
+                    ],
+                    $roleWhere
+                );
+            }
+        }
+        $memberList = [];
+        if ($member) {
+            $memberWhere = [];
+            if ($member["username"] !== null) {
+                $memberWhere["username[~]"] = $member["username"];
+            }
+            if ($member["status"] !== null) {
+                $memberWhere["status"] = $member["status"];
+            }
+
+            if ($memberWhere) {
+                $this->memberModel->listBy(
+                    [
+                        "id (member_id) [Int]",
+                    ],
+                    $memberWhere,
+                    function ($_member) use (&$memberList) {
+                        $memberList[] = $_member;
                     }
                 );
             }
         }
-        $memberWhere = [];
-        if ($member) {
-            if ($member["username"]) {
-                $memberWhere["username[~]"] = $member["username"];
+        // 所有表的 memberId 交集，再做分页查询
+        // memberDataList: [1, 2, 3, 4, 5]
+        // memberRoleList: []
+        // memberList: [1, 2, 3, 4, 5]
+        $intersect = [];
+        if (!empty($memberDataList) || !empty($memberRoleList) || !empty($memberList)) {
+            if (!empty($memberDataList)) {
+                $intersect = Util::value2Array($memberDataList, "member_id");
             }
-            if ($member["status"]) {
-                $memberWhere["status"] = $member["status"];
+            if (!empty($memberRoleList)) {
+                $intersect = Util::value2Array($memberRoleList, "member_id");
+            }
+            if (!empty($memberList)) {
+                $intersect = Util::value2Array($memberList, "member_id");
+            }
+            if (!empty($memberDataList) && !empty($memberRoleList)) {
+                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberRoleList, "member_id"));
+            }
+            if (!empty($memberDataList) && !empty($memberList)) {
+                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberList, "member_id"));
+            }
+            if (!empty($memberRoleList) && !empty($memberList)) {
+                $intersect = array_intersect(Util::value2Array($memberRoleList, "member_id"), Util::value2Array($memberList, "member_id"));
+            }
+            if (!empty($memberDataList) && !empty($memberRoleList) && !empty($memberList)) {
+                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberRoleList, "member_id"),  Util::value2Array($memberList, "member_id"));
             }
         }
-        // todo
-        $result =  $this->memberModel->page($currentPage, $pageSize, [
-            "id [Int]",
-            "username",
-            "status [Int]",
-            "logined_at",
-            "created_at",
-            "updated_at",
-        ], $memberWhere);
+
+        $memberPageWhere = [];
+        if (!empty($intersect)) {
+            $memberPageWhere = ["member.id" => $intersect];
+        }
+        $result =  $this->memberModel->pageJoin(
+            $currentPage,
+            $pageSize,
+            [
+                "[>]member_data" => ["member.id" => "member_id"],
+                "[>]member_role" => ["member_data.member_id" => "member_id"],
+                "[>]role" => ["member_role.role_id" => "id"],
+            ],
+            [
+                "member" => [
+                    "member.id [Int]",
+                    "member.username",
+                    "member.status [Int]",
+                    "member.logined_at",
+                    "member.created_at",
+                    "member.updated_at",
+                ],
+                "memberData" => [
+                    "member_data.avatar",
+                    "member_data.nickname",
+                    "member_data.gender [Int]",
+                ],
+                "role" => [
+                    "role.id [Int]",
+                    "role.name",
+                ],
+            ],
+            $memberPageWhere
+        );
 
         return ResultGenerator::successWithData($result);
     }
