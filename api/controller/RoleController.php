@@ -155,13 +155,13 @@ class RoleController extends BaseController
     public function updateMemberRole()
     {
         $memberId = intval($this->request->get("memberId"));
-        $roleId = intval($this->request->get("roleId"));
-        if (empty($memberId) || empty($roleId)) {
+        $role = $this->request->get("role");
+        if (empty($memberId) || empty($role)) {
             return ResultGenerator::errorWithMsg("member id or role id doesn't exist");
         }
         $this->memberRoleModel->updateBy(
             [
-                "role_id" => $roleId,
+                "role_id" => $role["id"],
             ],
             [
                 "member_id" => $memberId,

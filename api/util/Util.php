@@ -4,6 +4,11 @@ namespace App\Util;
 
 class Util
 {
+
+    /*
+     * 1D array: [1, 2, 3] => [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
+     * 2D array: [[1], [2], [3]] => [[[1], [2], [3]], [[1, 2], [1, 3], [2, 3]], [[1, 2, 3]]]
+     */
     public static function subsets($array, $needEmpty = false)
     {
         $result = [];
@@ -23,6 +28,47 @@ class Util
         return $result;
     }
 
+    /**
+     * 1D array: [[1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
+     * 2D array: [[[1], [2], [3]], [[1, 2], [1, 3], [2, 3]], [[1, 2, 3]]]
+     * 目前只用在二维数组
+     */
+    public static function subsetsIntersect($array)
+    {
+        $subsets = self::subsets($array);
+        $intersect = [];
+        // set first intersect
+        if (count($subsets) > 0) {
+            // [[[1], [2]], ...]
+            if (count($subsets[0]) > 1 && is_array($subsets[0][0])) {
+                $intersect = array_intersect(...$subsets[0]);
+            }
+            // [[[1]], ... ]
+            if (count($subsets[0]) == 1 && is_array($subsets[0][0])) {
+                $intersect = $subsets[0][0];
+            }
+        }
+
+        for ($i = 1; $i < count($subsets); $i++) {
+            $subset = $subsets[$i];
+            $intersect = array_intersect($intersect, ...$subset);
+        }
+        return $intersect;
+    }
+
+    /*
+     * [
+     *   [
+     *    "id" => 18,
+     *    "title" => "test",
+     *   ],
+     *   [
+     *    "id" => 19,
+     *    "title" => "demo",
+     *   ]
+     * ]
+     * only keep id value => [18, 19]
+     */
     public static function value2Array($array, $key)
     {
         if (empty($array)) {
@@ -30,7 +76,7 @@ class Util
         }
         $valueArray = [];
         for ($i = 0; $i < count($array); $i++) {
-            $valueArray[] =  $array[$i][$key];
+            $valueArray[] = $array[$i][$key];
         }
         return $valueArray;
     }

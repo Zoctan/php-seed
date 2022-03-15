@@ -263,31 +263,9 @@ class MemberController extends BaseController
             }
         }
         // 数组所有可能的子集，并对这些子集做相交运算，再做分页查询
-        // [[1, 2, 3, 4, 5], [], [1, 2, 5]]
-        // 所有可能的子集（不要空子集，[[]]不是空子集）：
-        // [[1, 2, 3, 4, 5]]、[[]]、[[1, 2, 5]]
-        // [[1, 2, 3, 4, 5], []]、[[1, 2, 3, 4, 5], [1, 2, 5]]、[[], [1, 2, 5]]
-        // [[1, 2, 3, 4, 5], [], [1, 2, 5]]
-        //Util::debug("conditionList", $conditionList);
-        $subsets = Util::subsets($conditionList);
-        // Util::debug("subsets", $subsets);
-        $intersect = [];
-        if (count($subsets) > 0) {
-            if (count($subsets[0]) > 1) {
-                $intersect = array_intersect(...$subsets[0]);
-            } else {
-                $intersect = $subsets[0][0];
-            }
-        }
-        for ($i = 1; $i < count($subsets); $i++) {
-            $subset = $subsets[$i];
-            // Util::debug("subset", ...$subset);
-            $intersect = array_intersect($intersect, ...$subset);
-            // Util::debug("intersect", $intersect);
-        }
         $memberPageWhere = [];
         if (!empty($conditionList)) {
-            $memberPageWhere = ["member.id" => $intersect];
+            $memberPageWhere = ["member.id" => Util::subsetsIntersect($conditionList)];
         }
         $result =  $this->memberModel->pageJoin(
             $currentPage,
@@ -302,6 +280,7 @@ class MemberController extends BaseController
                     "member.id (member_id) [Int]",
                     "member.username",
                     "member.status [Int]",
+                    "member.lock [Int]",
                     "member.logined_at",
                     "member.created_at",
                     "member.updated_at",
@@ -349,8 +328,18 @@ class MemberController extends BaseController
      */
     public function updateDetail()
     {
-        $detail = $this->request->get("detail");
-        $this->memberModel->updateById($detail, $detail->id);
+        $member = $this->request->get("member");
+        $memberData = $this->request->get("memberData");
+        if (empty($member) || empty($memberData)) {
+            return ResultGenerator::errorWithMsg("member or memberData doesn't exist");
+        }
+        if (!empty($member)) {
+            $this->memberModel->updateByMemberId($member);
+        }
+        if (!empty($memberData)) {
+            $memberDataModel = new MemberDataModel();
+            $memberDataModel->updateBy($memberData, ["member_id" => $member["id"]]);
+        }
         return ResultGenerator::success();
     }
 

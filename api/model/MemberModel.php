@@ -9,10 +9,7 @@ use App\Core\BaseModel;
 class MemberModel extends BaseModel
 {
     protected $table = "member";
-
-    /**
-     * 添加
-     */
+    
     public function add($member)
     {
         $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
@@ -27,6 +24,14 @@ class MemberModel extends BaseModel
         $memberDataModel = new MemberDataModel();
         $memberDataModel->saveDefault($memberId);
         return $memberId;
+    }
+
+    public function updateByMemberId($member)
+    {
+        if ($member["password"] != null) {
+            $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
+        }
+        $this->updateById($member, $member["id"]);
     }
 
     /**
