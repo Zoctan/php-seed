@@ -12,5 +12,6 @@ CREATE TABLE `role`
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='角色表';
 
 INSERT INTO `role` VALUES
-(1, '普通账户', 0, 0, '2022-01-01 00:00:00', NULL),
-(2, '超级管理员', 1, 1, '2022-01-01 00:00:00', NULL);
+(1, 'SuperAdmin', 1, 1, '2022-01-01 00:00:00', NULL),
+(2, 'NormalUser', 0, 0, '2022-01-01 00:00:00', NULL),
+(3, 'BlackUser', 0, 1, '2022-01-01 00:00:00', NULL);

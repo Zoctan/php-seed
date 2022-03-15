@@ -6,7 +6,7 @@ use App\Util\Util;
 use App\Util\JwtUtil;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
-use App\Model\RoleModel;
+use App\Model\MemberRoleModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
@@ -20,24 +20,14 @@ class MemberController extends BaseController
      */
     private $memberModel;
     /**
-     * @var MemberDataModel
-     */
-    private $memberDataModel;
-    /**
-     * @var RoleModel
-     */
-    private $roleModel;
-    /**
      * @var JwtUtil
      */
     private $jwtUtil;
 
-    public function __construct(MemberModel $memberModel, MemberDataModel $memberDataModel, RoleModel $roleModel)
+    public function __construct(MemberModel $memberModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
-        $this->memberDataModel = $memberDataModel;
-        $this->roleModel = $roleModel;
         $this->jwtUtil = JwtUtil::getInstance();
     }
 
@@ -100,6 +90,8 @@ class MemberController extends BaseController
             "username" => $username,
             "password" => $password,
         ]);
+
+        $this->memberModel->updateLoginedAtById($memberId);
 
         $token = $this->jwtUtil->sign($memberId);
 
@@ -167,8 +159,12 @@ class MemberController extends BaseController
      */
     public function detail()
     {
-        $memberId = intval($this->request->get("memberId", 0));
-        $memberData = $this->memberDataModel->getById("*", $memberId);
+        $memberId = intval($this->request->get("memberId"));
+        if (empty($memberId)) {
+            return ResultGenerator::errorWithMsg("member id doesn't exist");
+        }
+        $memberDataModel = new MemberDataModel();
+        $memberData = $memberDataModel->getById("*", $memberId);
         if (empty($memberData)) {
             return ResultGenerator::errorWithMsg("member data doesn't exist");
         }
@@ -196,6 +192,7 @@ class MemberController extends BaseController
         $memberData = $this->request->get("memberData");
         $role = $this->request->get("role");
 
+        $conditionList = [];
         // 先查询其他表，根据其他表的结果再查主表
         $memberDataList = [];
         if ($memberData) {
@@ -208,7 +205,8 @@ class MemberController extends BaseController
             }
 
             if ($memberDataWhere) {
-                $this->memberDataModel->listBy(
+                $memberDataModel = new MemberDataModel();
+                $memberDataModel->listBy(
                     [
                         "member_id [Int]",
                     ],
@@ -217,25 +215,28 @@ class MemberController extends BaseController
                         $memberDataList[] = $_memberData;
                     }
                 );
+                array_push($conditionList, Util::value2Array($memberDataList, "member_id"));
             }
         }
         $memberRoleList = [];
         if ($role) {
-            $roleWhere = [];
-            if ($role["name"] !== null) {
-                $roleWhere["role.name[~]"] = $role["name"];
+            $memberRoleWhere = [];
+            if ($role["id"] !== null) {
+                $memberRoleWhere["role_id"] = $role["id"];
             }
 
-            if ($roleWhere) {
-                $memberRoleList = $this->roleModel->select(
+            if ($memberRoleWhere) {
+                $memberRoleModel = new MemberRoleModel();
+                $memberRoleModel->listBy(
                     [
-                        "[>]member_role" => ["role_id" => "id"],
+                        "member_id [Int]",
                     ],
-                    [
-                        "member_role.member_id [Int]",
-                    ],
-                    $roleWhere
+                    $memberRoleWhere,
+                    function ($_memberRole) use (&$memberRoleList) {
+                        $memberRoleList[] = $_memberRole;
+                    }
                 );
+                array_push($conditionList, Util::value2Array($memberRoleList, "member_id"));
             }
         }
         $memberList = [];
@@ -258,39 +259,34 @@ class MemberController extends BaseController
                         $memberList[] = $_member;
                     }
                 );
+                array_push($conditionList, Util::value2Array($memberList, "member_id"));
             }
         }
-        // 所有表的 memberId 交集，再做分页查询
-        // memberDataList: [1, 2, 3, 4, 5]
-        // memberRoleList: []
-        // memberList: [1, 2, 3, 4, 5]
+        // 数组所有可能的子集，并对这些子集做相交运算，再做分页查询
+        // [[1, 2, 3, 4, 5], [], [1, 2, 5]]
+        // 所有可能的子集（不要空子集，[[]]不是空子集）：
+        // [[1, 2, 3, 4, 5]]、[[]]、[[1, 2, 5]]
+        // [[1, 2, 3, 4, 5], []]、[[1, 2, 3, 4, 5], [1, 2, 5]]、[[], [1, 2, 5]]
+        // [[1, 2, 3, 4, 5], [], [1, 2, 5]]
+        //Util::debug("conditionList", $conditionList);
+        $subsets = Util::subsets($conditionList);
+        // Util::debug("subsets", $subsets);
         $intersect = [];
-        if (!empty($memberDataList) || !empty($memberRoleList) || !empty($memberList)) {
-            if (!empty($memberDataList)) {
-                $intersect = Util::value2Array($memberDataList, "member_id");
-            }
-            if (!empty($memberRoleList)) {
-                $intersect = Util::value2Array($memberRoleList, "member_id");
-            }
-            if (!empty($memberList)) {
-                $intersect = Util::value2Array($memberList, "member_id");
-            }
-            if (!empty($memberDataList) && !empty($memberRoleList)) {
-                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberRoleList, "member_id"));
-            }
-            if (!empty($memberDataList) && !empty($memberList)) {
-                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberList, "member_id"));
-            }
-            if (!empty($memberRoleList) && !empty($memberList)) {
-                $intersect = array_intersect(Util::value2Array($memberRoleList, "member_id"), Util::value2Array($memberList, "member_id"));
-            }
-            if (!empty($memberDataList) && !empty($memberRoleList) && !empty($memberList)) {
-                $intersect = array_intersect(Util::value2Array($memberDataList, "member_id"), Util::value2Array($memberRoleList, "member_id"),  Util::value2Array($memberList, "member_id"));
+        if (count($subsets) > 0) {
+            if (count($subsets[0]) > 1) {
+                $intersect = array_intersect(...$subsets[0]);
+            } else {
+                $intersect = $subsets[0][0];
             }
         }
-
+        for ($i = 1; $i < count($subsets); $i++) {
+            $subset = $subsets[$i];
+            // Util::debug("subset", ...$subset);
+            $intersect = array_intersect($intersect, ...$subset);
+            // Util::debug("intersect", $intersect);
+        }
         $memberPageWhere = [];
-        if (!empty($intersect)) {
+        if (!empty($conditionList)) {
             $memberPageWhere = ["member.id" => $intersect];
         }
         $result =  $this->memberModel->pageJoin(
@@ -303,7 +299,7 @@ class MemberController extends BaseController
             ],
             [
                 "member" => [
-                    "member.id [Int]",
+                    "member.id (member_id) [Int]",
                     "member.username",
                     "member.status [Int]",
                     "member.logined_at",
@@ -331,7 +327,7 @@ class MemberController extends BaseController
      */
     public function updatePassword()
     {
-        $password = $this->request->get("password");
+        $password = strval($this->request->get("password"));
         $memberId = $this->authMember->member["id"];
         $this->memberModel->updateById(["password" => $password], $memberId);
         return ResultGenerator::success();
@@ -363,8 +359,11 @@ class MemberController extends BaseController
      */
     public function delete()
     {
-        $memberId = intval($this->request->get("memberId", 0));
-        $this->memberModel->deleteById($memberId);
+        $memberId = intval($this->request->get("memberId"));
+        if (empty($memberId)) {
+            return ResultGenerator::errorWithMsg("member id doesn't exist");
+        }
+        $this->memberModel->deleteByMemberId($memberId);
         return ResultGenerator::success();
     }
 }

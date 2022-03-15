@@ -67,4 +67,17 @@ class MemberModel extends BaseModel
     {
         return password_verify($password, $passwordDB);
     }
+
+    public function deleteByMemberId($memberId)
+    {
+        $this->deleteById($memberId);
+        $memberDataModel = new MemberDataModel();
+        $memberDataModel->deleteBy(["member_id" => $memberId]);
+
+        $memberRoleModel = new MemberRoleModel();
+        $memberRoleModel->deleteBy(["member_id" => $memberId]);
+
+        $memberOauthModel = new MemberOauthModel();
+        $memberOauthModel->deleteBy(["member_id" => $memberId]);
+    }
 }

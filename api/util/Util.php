@@ -4,6 +4,25 @@ namespace App\Util;
 
 class Util
 {
+    public static function subsets($array, $needEmpty = false)
+    {
+        $result = [];
+        $result[] = [];
+        $arrayCount = count($array);
+        for ($i = 0; $i < $arrayCount; $i++) {
+            $resultCount = count($result);
+            for ($j = 0; $j < $resultCount; $j++) {
+                $tmp = $result[$j];
+                $tmp[] = $array[$i];
+                $result[] = $tmp;
+            }
+        }
+        if (!$needEmpty) {
+            array_shift($result);
+        }
+        return $result;
+    }
+
     public static function value2Array($array, $key)
     {
         if (empty($array)) {
@@ -16,12 +35,16 @@ class Util
         return $valueArray;
     }
 
+    public static function debug($title, $obj)
+    {
+        print_r("$title => " . json_encode($obj) . "     ");
+    }
+
     /*
      * 当前文件名
      */
     public static function phpSelfName()
     {
-
         return substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/') + 1);
     }
 

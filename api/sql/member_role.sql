@@ -14,4 +14,5 @@ CREATE TABLE `member_role`
 
 INSERT INTO `member_role` VALUES
 (1, 1, 1, '2022-01-01 00:00:00', NULL),
-(2, 2, 2, '2022-01-01 00:00:00', NULL);
+(2, 2, 2, '2022-01-01 00:00:00', NULL),
+(3, 3, 3, '2022-01-01 00:00:00', NULL);

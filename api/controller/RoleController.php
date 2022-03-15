@@ -112,7 +112,10 @@ class RoleController extends BaseController
 
     public function detail()
     {
-        $roleId = intval($this->request->get("roleId", 0));
+        $roleId = intval($this->request->get("roleId"));
+        if (empty($roleId)) {
+            return ResultGenerator::errorWithMsg("role id doesn't exist");
+        }
         $role = $this->roleModel->getById([
             "id [Int]",
             "name",
@@ -141,6 +144,9 @@ class RoleController extends BaseController
     public function updateRule()
     {
         $roleId = intval($this->request->get("roleId"));
+        if (empty($roleId)) {
+            return ResultGenerator::errorWithMsg("role id doesn't exist");
+        }
         $ruleIdList = $this->request->get("ruleIdList");
         $this->roleRuleModel->updateRuleById($ruleIdList, $roleId);
         return ResultGenerator::success();
@@ -148,8 +154,11 @@ class RoleController extends BaseController
 
     public function updateMemberRole()
     {
-        $memberId = intval($this->request->get("memberId", 0));
-        $roleId = intval($this->request->get("roleId", 0));
+        $memberId = intval($this->request->get("memberId"));
+        $roleId = intval($this->request->get("roleId"));
+        if (empty($memberId) || empty($roleId)) {
+            return ResultGenerator::errorWithMsg("member id or role id doesn't exist");
+        }
         $this->memberRoleModel->updateBy(
             [
                 "role_id" => $roleId,
@@ -163,7 +172,10 @@ class RoleController extends BaseController
 
     public function delete()
     {
-        $roleId = intval($this->request->get("roleId", 0));
+        $roleId = intval($this->request->get("roleId"));
+        if (empty($roleId)) {
+            return ResultGenerator::errorWithMsg("role id doesn't exist");
+        }
         $this->roleModel->deleteById($roleId);
         return ResultGenerator::success();
     }
