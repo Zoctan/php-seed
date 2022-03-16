@@ -2,20 +2,18 @@
 
 namespace App\Model;
 
+use App\Util\Util;
 use App\Core\BaseModel;
 
 class RoleRuleModel extends BaseModel
 {
     protected $table = "role_rule";
 
-    public function updateRuleById($ruleIdList, $roleId)
+    public function updateRuleByRoleId($ruleIdList, $roleId)
     {
         // 先找到原来的规则列表
-        $oldRuleList = $this->listByRoleId($roleId);
-        $oldRuleIdList = [];
-        foreach ($oldRuleList as $oldRule) {
-            array_push($oldRuleIdList, $oldRule->rule_id);
-        }
+        $oldRuleList = $this->listByRoleId($roleId, ["rule_id [Int]"]);
+        $oldRuleIdList = Util::value2Array($oldRuleList, "rule_id");
         // 在 原来规则，但不在 新规则，要删除
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //    ruleIdList: [1, 3, 5, 6, 7]
@@ -51,7 +49,7 @@ class RoleRuleModel extends BaseModel
             "created_at"
         ]
     ) {
-        return $this->getBy(
+        return $this->select(
             $column,
             [
                 "role_id" => $roleId

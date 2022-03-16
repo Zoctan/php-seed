@@ -23,18 +23,13 @@ class RoleController extends BaseController
      * @var RoleRuleModel
      */
     private $roleRuleModel;
-    /**
-     * @var MemberRoleModel
-     */
-    private $memberRoleModel;
 
-    public function __construct(RoleModel $roleModel, RuleModel $ruleModel, RoleRuleModel $roleRuleModel, MemberRoleModel $memberRoleModel)
+    public function __construct(RoleModel $roleModel, RuleModel $ruleModel, RoleRuleModel $roleRuleModel)
     {
         parent::__construct();
         $this->roleModel = $roleModel;
         $this->ruleModel = $ruleModel;
         $this->roleRuleModel = $roleRuleModel;
-        $this->memberRoleModel = $memberRoleModel;
     }
 
     public function addRole()
@@ -93,14 +88,19 @@ class RoleController extends BaseController
             $where["lock"] = $lock;
         }
 
-        $result = $this->roleModel->page($currentPage, $pageSize, [
-            "id [Int]",
-            "name",
-            "has_all_rule [Int]",
-            "lock [Int]",
-            "created_at",
-            "updated_at",
-        ], $where);
+        $result = $this->roleModel->page(
+            $currentPage,
+            $pageSize,
+            [
+                "id [Int]",
+                "name",
+                "has_all_rule [Int]",
+                "lock [Int]",
+                "created_at",
+                "updated_at",
+            ],
+            $where
+        );
         return ResultGenerator::successWithData($result);
     }
 
@@ -128,6 +128,9 @@ class RoleController extends BaseController
             return ResultGenerator::errorWithMsg("role doesn't exist");
         }
         $ruleList = $this->roleModel->getRuleById($roleId);
+        if (!empty($ruleList) && $ruleList[0]["id"] === null) {
+            $ruleList = [];
+        }
         return ResultGenerator::successWithData([
             "role" => $role,
             "ruleList" => $ruleList,
@@ -137,7 +140,13 @@ class RoleController extends BaseController
     public function updateRole()
     {
         $role = $this->request->get("role");
-        $this->roleModel->updateById($role, $role->id);
+        if (empty($role)) {
+            return ResultGenerator::errorWithMsg("role doesn't exist");
+        }
+        $ruleList = $this->request->get("ruleList");
+
+        $this->roleModel->updateById($role, $role["id"]);
+        $this->roleRuleModel->updateRuleByRoleId($ruleList, $role["id"]);
         return ResultGenerator::success();
     }
 
@@ -159,7 +168,8 @@ class RoleController extends BaseController
         if (empty($memberId) || empty($role)) {
             return ResultGenerator::errorWithMsg("member id or role id doesn't exist");
         }
-        $this->memberRoleModel->updateBy(
+        $memberRoleModel = new  MemberRoleModel();
+        $memberRoleModel->updateBy(
             [
                 "role_id" => $role["id"],
             ],
