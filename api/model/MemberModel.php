@@ -15,7 +15,7 @@ class MemberModel extends BaseModel
         $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
         $memberId = $this->insert($member);
         if (!$memberId) {
-            throw new \Exception("成员创建失败");
+            throw new \Exception("insert member error");
         }
         // 绑定默认角色
         $memberRoleModel = new MemberRoleModel();

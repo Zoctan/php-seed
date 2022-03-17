@@ -34,20 +34,16 @@ class RoleController extends BaseController
 
     public function addRole()
     {
-        $name = strval($this->request->get("name"));
-        $hasAllRule = intval($this->request->get("hasAllRule", 0));
-        $lock = intval($this->request->get("lock", 0));
+        $role = $this->request->get("role");
+        $ruleList = $this->request->get("ruleList");
 
-        if (empty($name)) {
-            return ResultGenerator::errorWithMsg("please input role name");
+        if (empty($role)) {
+            return ResultGenerator::errorWithMsg("role doesn't exist");
         }
 
-        $roleId = $this->roleModel->add([
-            "name" => $name,
-            "has_all_rule" => $hasAllRule,
-            "lock" => $lock,
-        ]);
+        $roleId = $this->roleModel->add($role);
 
+        $this->roleRuleModel->updateRuleByRoleId($ruleList, $roleId);
         return ResultGenerator::successWithData($roleId);
     }
 
@@ -73,19 +69,22 @@ class RoleController extends BaseController
         $currentPage = intval($this->request->get("currentPage", 0));
         $pageSize = intval($this->request->get("pageSize", 20));
 
-        $name = strval($this->request->get("name"));
-        $hasAllRule = intval($this->request->get("hasAllRule", 0));
-        $lock = intval($this->request->get("lock", 0));
+        $role = $this->request->get("role");
 
         $where = [];
-        if ($name) {
-            $where["name[~]"] = $name;
-        }
-        if ($hasAllRule) {
-            $where["has_all_rule"] = $hasAllRule;
-        }
-        if ($lock) {
-            $where["lock"] = $lock;
+        if ($role) {
+            if (is_numeric($role["id"])) {
+                $where["id"] = $role["id"];
+            }
+            if (!empty($role["name"])) {
+                $where["name[~]"] = $role["name"];
+            }
+            if (is_numeric($role["has_all_rule"])) {
+                $where["has_all_rule"] = $role["has_all_rule"];
+            }
+            if (is_numeric($role["lock"])) {
+                $where["lock"] = $role["lock"];
+            }
         }
 
         $result = $this->roleModel->page(
@@ -168,14 +167,10 @@ class RoleController extends BaseController
         if (empty($memberId) || empty($role)) {
             return ResultGenerator::errorWithMsg("member id or role id doesn't exist");
         }
-        $memberRoleModel = new  MemberRoleModel();
+        $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->updateBy(
-            [
-                "role_id" => $role["id"],
-            ],
-            [
-                "member_id" => $memberId,
-            ]
+            ["role_id" => $role["id"]],
+            ["member_id" => $memberId]
         );
         return ResultGenerator::success();
     }

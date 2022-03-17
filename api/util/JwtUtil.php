@@ -70,11 +70,14 @@ class JwtUtil
         $token = $this->cache->get($memberId);
         if ($token) {
             $ttl = $this->cache->ttl($memberId);
-            // 如果 redis 存在，并且有超过15分钟的有效期，就不签发新 token
+            // 如果 redis 存在，并且有超过X分钟的有效期，就不签发新 token
             if ($ttl > $this->config->refreshMinutes * 60) {
-                return $token;
-            } else if (0 < $ttl &&  $ttl <= $this->config->refreshMinutes * 60) {
-                // 最后15分钟有效期，使原先的 token 无效，重新签发
+                return [
+                    "token" => $token,
+                    "expired" => floor($ttl / 60)
+                ];
+            } else if (0 < $ttl && $ttl <= $this->config->refreshMinutes * 60) {
+                // 最后X分钟有效期，使原先的 token 无效，重新签发
                 $this->invalidRedisToken($memberId);
             }
         }
@@ -108,7 +111,10 @@ class JwtUtil
 
         $this->save2Redis($memberId, $token);
 
-        return $token;
+        return [
+            "token" => $token,
+            "expired" => $this->config->expiresMinutes
+        ];
     }
 
     /**

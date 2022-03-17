@@ -95,7 +95,7 @@ $config = [
         // 请求头或请求参数的key
         "header" => "Authorization",
         // 刷新时间（分钟）：这段时间内可以获取新 token
-        "refreshMinutes" => "5",
+        "refreshMinutes" => 20,
         // 签发人
         "issuedBy" => "seed",
         // 受众
@@ -103,7 +103,7 @@ $config = [
         // 签发id
         "identifiedBy" => "123",
         // 多久过期（分钟）
-        "expiresMinutes" => "30",
+        "expiresMinutes" => 30,
         // 私钥
         "signingKey" => __DIR__ . "/rsa/private-key.pem",
         // 公钥
