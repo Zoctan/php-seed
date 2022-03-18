@@ -94,14 +94,14 @@ $config = [
     "jwt" => [
         // 请求头或请求参数的key
         "header" => "Authorization",
-        // 刷新时间（分钟）：这段时间内可以获取新 token
-        "refreshMinutes" => 20,
         // 签发人
         "issuedBy" => "seed",
         // 受众
         "permittedFor" => "member",
         // 签发id
         "identifiedBy" => "123",
+        // 刷新时间（分钟）：这段时间内可以获取新 token
+        "refreshMinutes" => 180,
         // 多久过期（分钟）
         "expiresMinutes" => 30,
         // 私钥

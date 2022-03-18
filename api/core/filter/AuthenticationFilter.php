@@ -32,17 +32,17 @@ class AuthenticationFilter implements Filter
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
-                throw new UnAuthorizedException("空 token");
+                throw new UnAuthorizedException("empty token");
                 return false;
             }
             if (!$jwtUtil->validateTokenRedis($token)) {
-                throw new UnAuthorizedException("无效 token");
+                throw new UnAuthorizedException("invalidate token");
                 return false;
             }
             $needPermissionList = $this->routes[$uri]->auth;
             $authMember = $jwtUtil->getAuthMember($token);
             if (!$authMember->has($needPermissionList)) {
-                throw new UnAuthorizedException("无权访问该接口");
+                throw new UnAuthorizedException("no permission to visit this route");
                 return false;
             }
             // 注入已认证的成员信息

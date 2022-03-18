@@ -63,25 +63,38 @@ class JwtUtil
     }
 
     /**
-     * 签发 token
+     * 签发 accessToken 和 refreshToken
      */
     public function sign($memberId, array $payload = [])
     {
-        $token = $this->cache->get($memberId);
-        if ($token) {
-            $ttl = $this->cache->ttl($memberId);
-            // 如果 redis 存在，并且有超过X分钟的有效期，就不签发新 token
-            if ($ttl > $this->config->refreshMinutes * 60) {
-                return [
-                    "token" => $token,
-                    "expired" => floor($ttl / 60)
-                ];
-            } else if (0 < $ttl && $ttl <= $this->config->refreshMinutes * 60) {
-                // 最后X分钟有效期，使原先的 token 无效，重新签发
-                $this->invalidRedisToken($memberId);
-            }
+        $accessToken = $this->cache->get($memberId);
+        if (empty($accessToken)) {
+            $accessToken = $this->signToken($memberId, $this->config->expiresMinutes, $payload);
+            $this->save2Redis($memberId, $accessToken);
         }
+        $refreshToken = $this->signRefreshToken($memberId,  $payload);
 
+        return [
+            "accessToken" => $accessToken,
+            "refreshToken" => $refreshToken,
+            // 不要用具体过期时间，如果前后端跨时区，或者前端时间被更改，这个时间还需要校正，容易出错
+            //"expired" => $this->config->expiresMinutes,
+        ];
+    }
+
+    /**
+     * 签发 refreshToken
+     */
+    public function signRefreshToken($memberId, array $payload = [])
+    {
+        return $this->signToken($memberId, $this->config->refreshMinutes, $payload);
+    }
+
+    /**
+     * 签发 token
+     */
+    public function signToken($memberId, $expiresMinutes, array $payload = [])
+    {
         $now = new \DateTimeImmutable();
 
         $jwtObj = $this->jwtConfig->builder()
@@ -91,13 +104,13 @@ class JwtUtil
             ->issuedAt($now)
             // 在1分钟后才可使用
             // ->canOnlyBeUsedAfter($now->modify("+1 minute"))
-            ->expiresAt($now->modify("+" . $this->config->expiresMinutes . " minute"));
+            ->expiresAt($now->modify("+" . $expiresMinutes . " minute"));
 
         // 装载 payload
         $jwtObj->withClaim("memberId", $memberId);
-        // 不适合放操作权限列表，后期可能会非常长
+        // 不适合放操作权限列表，token 后期可能会非常长
         // 这里可能会有个疑惑，放不了什么东西，那为什么不用 UUID 这些做 token
-        // 因为 JWT 有私钥签名，安全性高，如果只是用作资源授权，这个 JWT 还是很好的
+        // 因为 JWT 有私钥签名，安全性高，如果只是用作资源授权（到时即过期），这个 JWT 还是很好的
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
                 $jwtObj->withClaim($key, $value);
@@ -109,12 +122,7 @@ class JwtUtil
             ->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey())
             ->toString();
 
-        $this->save2Redis($memberId, $token);
-
-        return [
-            "token" => $token,
-            "expired" => $this->config->expiresMinutes
-        ];
+        return $token;
     }
 
     /**

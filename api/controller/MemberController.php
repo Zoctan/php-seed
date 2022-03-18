@@ -150,7 +150,7 @@ class MemberController extends BaseController
      */
     public function refreshToken()
     {
-        $result = $this->jwtUtil->sign($this->authMember->member["id"]);
+        $result = $this->jwtUtil->signRefreshToken($this->authMember->member["id"]);
         return ResultGenerator::successWithData($result);
     }
 
