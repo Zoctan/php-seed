@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Model\RoleModel;
-use App\Model\RuleModel;
 use App\Model\RoleRuleModel;
 use App\Model\MemberRoleModel;
 use App\Core\BaseController;
@@ -16,23 +15,18 @@ class RoleController extends BaseController
      */
     private $roleModel;
     /**
-     * @var RuleModel
-     */
-    private $ruleModel;
-    /**
      * @var RoleRuleModel
      */
     private $roleRuleModel;
 
-    public function __construct(RoleModel $roleModel, RuleModel $ruleModel, RoleRuleModel $roleRuleModel)
+    public function __construct(RoleModel $roleModel, RoleRuleModel $roleRuleModel)
     {
         parent::__construct();
         $this->roleModel = $roleModel;
-        $this->ruleModel = $ruleModel;
         $this->roleRuleModel = $roleRuleModel;
     }
 
-    public function addRole()
+    public function add()
     {
         $role = $this->request->get("role");
         $ruleList = $this->request->get("ruleList");
@@ -47,24 +41,7 @@ class RoleController extends BaseController
         return ResultGenerator::successWithData($roleId);
     }
 
-    public function addRule()
-    {
-        $description = strval($this->request->get("description"));
-        $permission = strval($this->request->get("permission"));
-
-        if (empty($description) || empty($permission)) {
-            return ResultGenerator::errorWithMsg("please input description and permission");
-        }
-
-        $ruleId = $this->ruleModel->add([
-            "description" => $description,
-            "permission" => $permission,
-        ]);
-
-        return ResultGenerator::successWithData($ruleId);
-    }
-
-    public function listRole()
+    public function list()
     {
         $currentPage = intval($this->request->get("currentPage", 0));
         $pageSize = intval($this->request->get("pageSize", 20));
@@ -103,12 +80,6 @@ class RoleController extends BaseController
         return ResultGenerator::successWithData($result);
     }
 
-    public function listRule()
-    {
-        $ruleList = $this->ruleModel->listAllWithoutCondition();
-        return ResultGenerator::successWithData($ruleList);
-    }
-
     public function detail()
     {
         $roleId = intval($this->request->get("roleId"));
@@ -136,7 +107,7 @@ class RoleController extends BaseController
         ]);
     }
 
-    public function updateRole()
+    public function update()
     {
         $role = $this->request->get("role");
         if (empty($role)) {
@@ -146,17 +117,6 @@ class RoleController extends BaseController
 
         $this->roleModel->updateById($role, $role["id"]);
         $this->roleRuleModel->updateRuleByRoleId($ruleList, $role["id"]);
-        return ResultGenerator::success();
-    }
-
-    public function updateRule()
-    {
-        $roleId = intval($this->request->get("roleId"));
-        if (empty($roleId)) {
-            return ResultGenerator::errorWithMsg("role id doesn't exist");
-        }
-        $ruleIdList = $this->request->get("ruleIdList");
-        $this->roleRuleModel->updateRuleById($ruleIdList, $roleId);
         return ResultGenerator::success();
     }
 

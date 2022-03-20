@@ -171,7 +171,8 @@ class JwtUtil
         try {
             $token = $this->jwtConfig->parser()->parse($token);
         } catch (Exception $e) {
-            throw new UnAuthorizedException("token 解析错误：" . $e->getMessage());
+            // throw new UnAuthorizedException("token parse error: " . $e->getMessage());
+            return false;
         }
 
         $this->jwtConfig->setValidationConstraints(new IdentifiedBy($this->config->identifiedBy));
@@ -185,7 +186,8 @@ class JwtUtil
             $this->jwtConfig->validator()->assert($token, ...$validationConstraints);
             return true;
         } catch (RequiredConstraintsViolated $e) {
-            throw new UnAuthorizedException("token 解析错误：" . $e->getMessage());
+            // throw new UnAuthorizedException("token parse error: " . $e->getMessage());
+            return false;
         }
     }
 
