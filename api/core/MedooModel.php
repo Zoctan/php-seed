@@ -257,6 +257,20 @@ abstract class MedooModel
     }
 
     /**
+     * 根据主键列表删除多条数据
+     *
+     * @param array $idList
+     *
+     * @return void
+     */
+    public function deleteByIdList(array $idList): void
+    {
+        foreach ($idList as $id) {
+            $this->deleteBy([$this->primary => $id]);
+        }
+    }
+
+    /**
      * 根据条件更新数据
      *
      * @param array $where
@@ -284,6 +298,20 @@ abstract class MedooModel
     public function updateById($values, $id): void
     {
         $this->updateBy($values, [$this->primary => $id]);
+    }
+
+    /**
+     * 根据主键更新数据列表
+     *
+     * @param array $valuesList
+     *
+     * @return void
+     */
+    public function updateListById(array $valuesList): void
+    {
+        foreach ($valuesList as $values) {
+            $this->updateBy($values, [$this->primary => $values["id"]]);
+        }
     }
 
     /**

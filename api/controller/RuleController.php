@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Util\Util;
 use App\Model\RuleModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
@@ -48,13 +49,13 @@ class RuleController extends BaseController
         if (empty($ruleList)) {
             return ResultGenerator::errorWithMsg("ruleList doesn't exist");
         }
-        //
+        $this->ruleModel->updateListById($ruleList);
         return ResultGenerator::success();
     }
 
     public function update()
     {
-        $ruleId = intval($this->request->get("ruleId"));
+        $ruleId = intval($this->request->get("id"));
         $description = strval($this->request->get("description"));
         $permission = strval($this->request->get("permission"));
         if (empty($ruleId)) {
@@ -68,6 +69,17 @@ class RuleController extends BaseController
             "description" => $description,
             "permission" => $permission,
         ], $ruleId);
+        return ResultGenerator::success();
+    }
+
+    public function deleteList()
+    {
+        $ruleList = $this->request->get("ruleList");
+        if (empty($ruleList)) {
+            return ResultGenerator::errorWithMsg("ruleList doesn't exist");
+        }
+        $ruleIdList = Util::value2Array($ruleList, "id");
+        $this->ruleModel->deleteByIdList($ruleIdList);
         return ResultGenerator::success();
     }
 

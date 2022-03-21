@@ -103,7 +103,7 @@ $config = [
         // 刷新时间（分钟）：这段时间内可以获取新 token
         "refreshMinutes" => 180,
         // 多久过期（分钟）
-        "expiresMinutes" => 30,
+        "expiresMinutes" => 5,
         // 私钥
         "signingKey" => __DIR__ . "/rsa/private-key.pem",
         // 公钥

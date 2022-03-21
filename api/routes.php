@@ -32,5 +32,6 @@ $router->register("POST", "/rule/add", "RuleController@add")->requiresAuth();
 $router->register("POST", "/rule/list", "RuleController@list")->requiresAuth();
 $router->register("PUT", "/rule/updateList", "RuleController@updateList")->requiresAuth();
 $router->register("PUT", "/rule/update", "RuleController@update")->requiresAuth();
+$router->register("DELETE", "/rule/deleteList", "RuleController@deleteList")->requiresAuth();
 $router->register("DELETE", "/rule/delete", "RuleController@delete")->requiresAuth();
 return $router;
