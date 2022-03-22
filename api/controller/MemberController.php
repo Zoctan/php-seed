@@ -157,10 +157,11 @@ class MemberController extends BaseController
         if (!$this->jwtUtil->validateToken($refreshToken)) {
             return ResultGenerator::errorWithMsg("invalidate refreshToken");
         }
-        if (empty($this->authMember) || empty($this->authMember->member["id"])) {
+        $authMember = $this->jwtUtil->getAuthMember($refreshToken);
+        if (empty($authMember) || empty($authMember->member["id"])) {
             return ResultGenerator::errorWithMsg("authMember doesn't exist");
         }
-        $result = $this->jwtUtil->signRefreshToken($this->authMember->member["id"]);
+        $result = $this->jwtUtil->signRefreshToken($authMember->member["id"]);
         return ResultGenerator::successWithData($result);
     }
 
