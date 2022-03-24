@@ -150,6 +150,16 @@ class MemberController extends BaseController
      */
     public function refreshToken()
     {
+        // 先检查旧 accessToken 是否正常
+        $oldAccessToken = $this->jwtUtil->getTokenFromRequest($this->request);
+        if (empty($oldAccessToken)) {
+            return ResultGenerator::errorWithMsg("old accessToken doesn't exist");
+        }
+        $oldAuthMember = $this->jwtUtil->getAuthMember($oldAccessToken);
+        if (empty($oldAuthMember) || empty($oldAuthMember->member["id"])) {
+            return ResultGenerator::errorWithMsg("old authMember doesn't exist");
+        }
+        // 再检查 refreshToken 是否正常
         $refreshToken = strval($this->request->get("refreshToken"));
         if (empty($refreshToken)) {
             return ResultGenerator::errorWithMsg("refreshToken doesn't exist");
@@ -161,7 +171,11 @@ class MemberController extends BaseController
         if (empty($authMember) || empty($authMember->member["id"])) {
             return ResultGenerator::errorWithMsg("authMember doesn't exist");
         }
-        $result = $this->jwtUtil->signRefreshToken($authMember->member["id"]);
+        // accessToken 和 refreshToken 是否为同一用户的
+        if ($oldAuthMember->member["id"] !== $authMember->member["id"]) {
+            return ResultGenerator::errorWithMsg("accessToken does not match the refreshToken");
+        }
+        $result = $this->jwtUtil->signAccessToken($authMember->member["id"]);
         return ResultGenerator::successWithData($result);
     }
 

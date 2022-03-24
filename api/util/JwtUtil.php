@@ -67,19 +67,26 @@ class JwtUtil
      */
     public function sign($memberId, array $payload = [])
     {
-        $accessToken = $this->cache->get($memberId);
-        if (empty($accessToken)) {
-            $accessToken = $this->signToken($memberId, $this->config->expiresMinutes, $payload);
-            $this->save2Redis($memberId, $accessToken);
-        }
+        $accessToken  = $this->signAccessToken($memberId,  $payload);
         $refreshToken = $this->signRefreshToken($memberId,  $payload);
 
         return [
             "accessToken" => $accessToken,
             "refreshToken" => $refreshToken,
-            // 不要用具体过期时间，如果前后端跨时区，或者前端时间被更改，这个时间还需要校正，容易出错
-            //"expired" => $this->config->expiresMinutes,
         ];
+    }
+
+    /**
+     * 签发 accessToken
+     */
+    public function signAccessToken($memberId, array $payload = [])
+    {
+        $accessToken = $this->cache->get($memberId);
+        if (empty($accessToken)) {
+            $accessToken = $this->signToken($memberId, $this->config->expiresMinutes, $payload);
+            $this->save2Redis($memberId, $accessToken);
+        }
+        return $accessToken;
     }
 
     /**
@@ -186,7 +193,7 @@ class JwtUtil
             $this->jwtConfig->validator()->assert($token, ...$validationConstraints);
             return true;
         } catch (RequiredConstraintsViolated $e) {
-            // throw new UnAuthorizedException("token parse error: " . $e->getMessage());
+            // throw new UnAuthorizedException("token validate error: " . $e->getMessage());
             return false;
         }
     }
@@ -211,7 +218,7 @@ class JwtUtil
             // 包的问题，能读取
             $claims = json_decode(base64_decode($token->claims()->toString()), true);
         } catch (Exception $e) {
-            throw new UnAuthorizedException("token 解析错误：" . $e->getMessage());
+            throw new UnAuthorizedException("token parse error: " . $e->getMessage());
         }
         return $claims;
     }
