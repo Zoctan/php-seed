@@ -73,7 +73,7 @@ abstract class MedooModel
      *
      * @var string
      */
-    protected $database = "phpseed";
+    protected $database = 'phpseed';
 
     /**
      * 表名
@@ -87,14 +87,14 @@ abstract class MedooModel
      *
      * @var string
      */
-    protected $primary = "id";
+    protected $primary = 'id';
 
     /**
      * 表主键类型
      *
      * @var string
      */
-    protected $primaryType = "int";
+    protected $primaryType = 'int';
 
     /**
      * 自动维护 created_at 和 updated_at，或其他指定字段
@@ -115,7 +115,7 @@ abstract class MedooModel
      *
      * @var string
      */
-    protected $place = "MedooModel";
+    protected $place = 'MedooModel';
 
     /**
      * 是否是读操作
@@ -134,10 +134,11 @@ abstract class MedooModel
     public function __construct(array $config)
     {
         if (empty($config)) {
-            throw new \Exception("empty database config");
+            throw new \Exception('empty database config');
         }
         $this->config = $config;
-
+        $this->database = $config['master']['database'];
+        
         return $this;
     }
 
@@ -178,7 +179,7 @@ abstract class MedooModel
      * @param array $where
      * @param callback $callback
      */
-    public function listBy($columns = "*", array $where, callable $callback)
+    public function listBy($columns = '*', array $where, callable $callback)
     {
         $this->read = true;
         $this->connection()->select($this->table, $columns, $where, $callback);
@@ -192,9 +193,9 @@ abstract class MedooModel
      *
      * @return 
      */
-    public function getBy($columns = "*", array $where)
+    public function getBy($columns = '*', array $where)
     {
-        if (empty($where)) throw new \Exception("empty condition, get one error");
+        if (empty($where)) throw new \Exception('empty condition, get one error');
 
         $this->read = true;
         return $this->connection()->get($this->table, $columns, $where);
@@ -208,7 +209,7 @@ abstract class MedooModel
      *
      * @return 
      */
-    public function getById($columns = "*", $id)
+    public function getById($columns = '*', $id)
     {
         return $this->getBy($columns, [$this->primary => $id]);
     }
@@ -236,11 +237,11 @@ abstract class MedooModel
      */
     public function deleteBy(array $where): void
     {
-        if (empty($where)) throw new \Exception("empty condition, delete error");
+        if (empty($where)) throw new \Exception('empty condition, delete error');
 
         $result = $this->connection()->delete($this->table, $where);
         if (empty($result)) {
-            throw new \Exception("delete error");
+            throw new \Exception('delete error');
         }
     }
 
@@ -279,12 +280,12 @@ abstract class MedooModel
      */
     public function updateBy($values, array $where): void
     {
-        if (empty($where)) throw new \Exception("empty condition, update error");
+        if (empty($where)) throw new \Exception('empty condition, update error');
 
         $this->write = true;
         $result = $this->connection()->update($this->table, $values, $where);
         if (empty($result)) {
-            throw new \Exception("update error");
+            throw new \Exception('update error');
         }
     }
 
@@ -310,7 +311,7 @@ abstract class MedooModel
     public function updateListById(array $valuesList): void
     {
         foreach ($valuesList as $values) {
-            $this->updateBy($values, [$this->primary => $values["id"]]);
+            $this->updateBy($values, [$this->primary => $values['id']]);
         }
     }
 
@@ -324,20 +325,20 @@ abstract class MedooModel
      *
      * @return array
      */
-    public function page(int $currentPage = 0, int $pageSize = 20, $columns = "*", array $where = []): array
+    public function page(int $currentPage = 0, int $pageSize = 20, $columns = '*', array $where = []): array
     {
         $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
         // 根据分页获取id
-        $where["LIMIT"] = [$limitStart, $pageSize];
+        $where['LIMIT'] = [$limitStart, $pageSize];
         $ids = $this->connection()->select($this->table, $this->primary, $where);
         $total = count($ids);
         $list = $this->connection()->select($this->table, $columns, [$this->primary => $ids]);
         return [
-            "list" => $list,
-            "total" => $total,
-            "currentPage" => $currentPage,
-            "pageSize" => $pageSize,
-            "totalPage" => ceil($total / $pageSize),
+            'list' => $list,
+            'total' => $total,
+            'currentPage' => $currentPage,
+            'pageSize' => $pageSize,
+            'totalPage' => ceil($total / $pageSize),
         ];
     }
 
@@ -352,15 +353,15 @@ abstract class MedooModel
      *
      * @return array
      */
-    public function pageJoin(int $currentPage = 0, int $pageSize = 20, array $join = [], $columns = "*", array $where = []): array
+    public function pageJoin(int $currentPage = 0, int $pageSize = 20, array $join = [], $columns = '*', array $where = []): array
     {
         $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
-        $where["LIMIT"] = [$limitStart, $pageSize];
+        $where['LIMIT'] = [$limitStart, $pageSize];
         $idList = [];
         $this->connection()->select(
             $this->table,
             $join,
-            "$this->table.$this->primary",
+            '$this->table.$this->primary',
             $where,
             function ($_id) use (&$idList) {
                 $idList[] = $_id;
@@ -372,17 +373,17 @@ abstract class MedooModel
             $this->table,
             $join,
             $columns,
-            ["$this->table.$this->primary" => $idList],
+            ['$this->table.$this->primary' => $idList],
             function ($_data) use (&$list) {
                 $list[] = $_data;
             }
         );
         return [
-            "list" => $list,
-            "total" => $total,
-            "currentPage" => $currentPage,
-            "pageSize" => $pageSize,
-            "totalPage" => ceil($total / $pageSize),
+            'list' => $list,
+            'total' => $total,
+            'currentPage' => $currentPage,
+            'pageSize' => $pageSize,
+            'totalPage' => ceil($total / $pageSize),
         ];
     }
 
@@ -487,7 +488,7 @@ abstract class MedooModel
      */
     public function getTable()
     {
-        return $this->config[$this->database][$this->read ? "master" : "slave"][0]["prefix"] . $this->table;
+        return $this->config[$this->database][$this->read ? 'master' : 'slave'][0]['prefix'] . $this->table;
     }
 
     /**
@@ -497,7 +498,7 @@ abstract class MedooModel
      */
     public function setTable($table)
     {
-        $this->table = ltrim($table, $this->config[$this->database][$this->read ? "master" : "slave"][0]["prefix"]);
+        $this->table = ltrim($table, $this->config[$this->database][$this->read ? 'master' : 'slave'][0]['prefix']);
     }
 
     /**
@@ -511,10 +512,10 @@ abstract class MedooModel
     public function __call($method, $arguments)
     {
         // 是否是读操作
-        $this->read = in_array($method, ["select", "get", "has", "count",  "sum", "max", "min", "avg"]);
+        $this->read = in_array($method, ['select', 'get', 'has', 'count',  'sum', 'max', 'min', 'avg']);
 
         // 是否是写操作
-        $this->write = in_array($method, ["insert", "update", "replace"]);
+        $this->write = in_array($method, ['insert', 'update', 'replace']);
 
         // 第一个是表名
         $arguments = array_merge([$this->table], $arguments);
@@ -540,8 +541,8 @@ abstract class MedooModel
 
         if ($this->write && $this->timestamps) {
             if (is_bool($this->timestamps)) {
-                $times = ["updated_at" => $timestamp];
-                $method == "insert" && $times["created_at"] = $timestamp;
+                $times = ['updated_at' => $timestamp];
+                $method == 'insert' && $times['created_at'] = $timestamp;
             } elseif (is_array($this->timestamps)) {
                 foreach ($this->timestamps as $item) {
                     $times[$item] = $timestamp;
@@ -551,7 +552,7 @@ abstract class MedooModel
             }
         }
 
-        $multi = $method == "insert" && is_array($data) && is_numeric(array_keys($data)[0]);
+        $multi = $method == 'insert' && is_array($data) && is_numeric(array_keys($data)[0]);
         if ($times) {
             if ($multi) {
                 foreach ($data as &$item) {
@@ -573,26 +574,26 @@ abstract class MedooModel
     protected function connection()
     {
         if (!isset($_ENV[$this->place]) || !isset($_ENV[$this->place][$this->database])) {
-            $master = $this->config["master"];
+            $master = $this->config['master'];
             $master = $master[array_rand($master)];
-            $master["database"] = $this->database;
+            $master['database'] = $this->database;
 
-            $_ENV[$this->place][$this->database]["master"] = new Medoo($master);
+            $_ENV[$this->place][$this->database]['master'] = new Medoo($master);
 
-            $slave = $this->config["slave"];
+            $slave = $this->config['slave'];
             $slave = $slave[array_rand($slave)];
             if (!empty($slave)) {
-                $slave["database"] = $this->database;
+                $slave['database'] = $this->database;
             }
 
             if (empty($slave) || empty(array_diff($master, $slave))) {
-                $_ENV[$this->place][$this->database]["slave"] = &$_ENV[$this->place][$this->database]["master"];
+                $_ENV[$this->place][$this->database]['slave'] = &$_ENV[$this->place][$this->database]['master'];
             } else {
-                $_ENV[$this->place][$this->database]["slave"] = new Medoo($slave);
+                $_ENV[$this->place][$this->database]['slave'] = new Medoo($slave);
             }
         }
 
-        return $_ENV[$this->place][$this->database][$this->read ? "slave" : "master"];
+        return $_ENV[$this->place][$this->database][$this->read ? 'slave' : 'master'];
     }
 
     /**

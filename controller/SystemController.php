@@ -24,9 +24,9 @@ class SystemController extends BaseController
      */
     public function getValue()
     {
-        $key = strval($this->request->get("key"));
+        $key = strval($this->request->get('key'));
         if (empty($key)) {
-            return ResultGenerator::errorWithMsg("key doesn't exist");
+            return ResultGenerator::errorWithMsg('key doesn't exist');
         }
         $result = $this->systemModel->getValue($key);
         return ResultGenerator::successWithData($result);
@@ -37,9 +37,9 @@ class SystemController extends BaseController
      */
     public function add()
     {
-        $system = $this->request->get("system");
+        $system = $this->request->get('system');
         if (empty($system)) {
-            return ResultGenerator::errorWithMsg("system doesn't exist");
+            return ResultGenerator::errorWithMsg('system doesn't exist');
         }
         $this->systemModel->insert($system);
         return ResultGenerator::success();
@@ -50,11 +50,11 @@ class SystemController extends BaseController
      */
     public function update()
     {
-        $system = $this->request->get("system");
+        $system = $this->request->get('system');
         if (empty($system)) {
-            return ResultGenerator::errorWithMsg("system doesn't exist");
+            return ResultGenerator::errorWithMsg('system doesn't exist');
         }
-        $this->systemModel->updateById($system, $system["id"]);
+        $this->systemModel->updateById($system, $system['id']);
         return ResultGenerator::success();
     }
 
@@ -63,9 +63,9 @@ class SystemController extends BaseController
      */
     public function delete()
     {
-        $systemId = intval($this->request->get("systemId"));
+        $systemId = intval($this->request->get('systemId'));
         if (empty($systemId)) {
-            return ResultGenerator::errorWithMsg("system id doesn't exist");
+            return ResultGenerator::errorWithMsg('system id doesn't exist');
         }
         $this->systemModel->deleteById($systemId);
         return ResultGenerator::success();

@@ -28,7 +28,7 @@ class AuthenticationFilter implements Filter
         // 需要认证的路由才检查
         $uri = $this->request->getPath();
         // fixme暂时这样处理upload接口
-        if (strpos($uri, "upload") === 0) {
+        if (strpos($uri, 'upload') === 0) {
             $requiresAuth = false;
         } else {
             $requiresAuth = $this->routes[$uri]->requiresAuth;
@@ -37,17 +37,17 @@ class AuthenticationFilter implements Filter
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
-                throw new UnAuthorizedException("empty token");
+                throw new UnAuthorizedException('empty token');
                 return false;
             }
             if (!$jwtUtil->validateTokenRedis($token)) {
-                throw new UnAuthorizedException("invalidate token");
+                throw new UnAuthorizedException('invalidate token');
                 return false;
             }
             $needPermissionList = $this->routes[$uri]->auth;
             $authMember = $jwtUtil->getAuthMember($token);
             if (!$authMember->has($needPermissionList)) {
-                throw new UnAuthorizedException("no permission to visit this route");
+                throw new UnAuthorizedException('no permission to visit this route');
                 return false;
             }
             // 注入已认证的成员信息

@@ -6,10 +6,10 @@ use App\Core\BaseModel;
 
 class MemberDataModel extends BaseModel
 {
-    protected $table = "member_data";
+    protected $table = 'member_data';
     
     public function saveDefault($memberId)
     {
-        return $this->insert(["member_id" => $memberId]);
+        return $this->insert(['member_id' => $memberId]);
     }
 }

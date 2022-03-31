@@ -11,7 +11,7 @@ use App\Core\Response\ResultCode;
 class RouterException extends BaseException
 {
 
-    public function __construct($msg = "")
+    public function __construct($msg = '')
     {
         parent::__construct(ResultCode::ROUTER_EXCEPTION, $msg);
     }

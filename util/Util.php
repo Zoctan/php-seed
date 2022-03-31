@@ -59,12 +59,12 @@ class Util
     /*
      * [
      *   [
-     *    "id" => 18,
-     *    "title" => "test",
+     *    'id' => 18,
+     *    'title' => 'test',
      *   ],
      *   [
-     *    "id" => 19,
-     *    "title" => "demo",
+     *    'id' => 19,
+     *    'title' => 'demo',
      *   ]
      * ]
      * only keep id value => [18, 19]
@@ -83,7 +83,7 @@ class Util
 
     public static function debug($title, $obj)
     {
-        print_r("$title => " . json_encode($obj) . "     ");
+        print_r('$title => ' . json_encode($obj) . '     ');
     }
 
     /*
@@ -108,8 +108,8 @@ class Util
      */
     public static function isToday($dateString)
     {
-        $today = date("Y-m-d", time());
-        $day = date("Y-m-d", strtotime($dateString));
+        $today = date('Y-m-d', time());
+        $day = date('Y-m-d', strtotime($dateString));
         return $day == $today;
     }
 
@@ -159,8 +159,8 @@ class Util
      */
     public static function randomStr($length = 16)
     {
-        $string = "";
-        $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        $string = '';
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         mt_srand((float) microtime() * 1000000);
         for ($i = 0; $i < $length; $i++) {
             $string .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
@@ -171,9 +171,9 @@ class Util
     /*
      * 删除空白字符
      */
-    public static function deleteSpace($str, $defaultValue = "")
+    public static function deleteSpace($str, $defaultValue = '')
     {
-        $str = preg_replace("/\s+/", "", $str);
+        $str = preg_replace('/\s+/', '', $str);
         $value = $defaultValue;
         if (!empty($str)) {
             $value = $str;
@@ -186,7 +186,7 @@ class Util
      */
     public static function getFileExt($filename)
     {
-        return substr(strrchr($filename, "."), 1);
+        return substr(strrchr($filename, '.'), 1);
     }
 
     /*
@@ -211,9 +211,9 @@ class Util
      * @param string $prefix 自定义前缀：TSBWP-TaiShanWechatPrize
      * @param int $length 随机的字符串长度
      */
-    public static function getRandomOrderId($prefix = "TSBWP", $length = 10)
+    public static function getRandomOrderId($prefix = 'TSBWP', $length = 10)
     {
-        $string = "";
+        $string = '';
         for ($i = 0; $i < $length; $i++) {
             $string .= mt_rand(0, 9);
         }

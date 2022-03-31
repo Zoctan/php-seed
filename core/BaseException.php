@@ -9,7 +9,7 @@ class BaseException extends \Exception
 {
     private $resultCode;
 
-    public function __construct(array $resultCode, $msg = "")
+    public function __construct(array $resultCode, $msg = '')
     {
         parent::__construct($msg);
         $this->resultCode = $resultCode;

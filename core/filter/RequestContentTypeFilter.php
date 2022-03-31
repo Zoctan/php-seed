@@ -20,10 +20,10 @@ class RequestContentTypeFilter implements Filter
         }
 
         switch ($request->getContentType()) {
-            case "":
+            case '':
                 return false;
             default:
-            case "json":
+            case 'json':
                 $this->transformJsonBody($request);
                 return true;
         }
@@ -33,7 +33,7 @@ class RequestContentTypeFilter implements Filter
     {
         $data = json_decode($request->getContent(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception("JSON 无法解析");
+            throw new \Exception('JSON 无法解析');
         }
         if ($data === null) {
             return;

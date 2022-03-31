@@ -35,7 +35,7 @@ class ExceptionHandler
             }
             if (self::$showFileLine) {
                 $message = sprintf(
-                    "%s => %s[%s] => %s",
+                    '%s => %s[%s] => %s',
                     $resultCode[1],
                     $exception->getFile(),
                     $exception->getLine(),
@@ -43,7 +43,7 @@ class ExceptionHandler
                 );
             } else {
                 $message = sprintf(
-                    "%s => %s",
+                    '%s => %s',
                     $resultCode[1],
                     $exception->getMessage()
                 );
@@ -61,7 +61,7 @@ class ExceptionHandler
             $resultCode = ResultCode::FAILED;
             if (self::$showFileLine) {
                 $message = sprintf(
-                    "%s => %s[%s] => %s",
+                    '%s => %s[%s] => %s',
                     $resultCode[1],
                     $errfile,
                     $errline,
@@ -69,7 +69,7 @@ class ExceptionHandler
                 );
             } else {
                 $message = sprintf(
-                    "%s => %s",
+                    '%s => %s',
                     $resultCode[1],
                     $errstr
                 );

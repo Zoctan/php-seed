@@ -6,7 +6,7 @@ use App\Core\BaseModel;
 
 class SystemModel extends BaseModel
 {
-    protected $table = "system";
+    protected $table = 'system';
 
     /**
      * 获取值
@@ -17,8 +17,8 @@ class SystemModel extends BaseModel
      */
     public function getValue($key)
     {
-        $method = is_array($key) ? "select" : "getBy";
-        return $this->$method(["value [JSON]"], ["key" => $key]);
+        $method = is_array($key) ? 'select' : 'getBy';
+        return $this->$method(['value [JSON]'], ['key' => $key]);
     }
 
     /*
@@ -27,9 +27,9 @@ class SystemModel extends BaseModel
     public function add($description, $key, $value)
     {
         return $this->insert([
-            "description" => $description,
-            "key" => $key,
-            "value [JSON]" => $value
+            'description' => $description,
+            'key' => $key,
+            'value [JSON]' => $value
         ]);
     }
 
@@ -38,7 +38,7 @@ class SystemModel extends BaseModel
      */
     public function updateValue($key, $value)
     {
-        $this->updateBy(["value [JSON]" => $value], ["key" => $key]);
+        $this->updateBy(['value [JSON]' => $value], ['key' => $key]);
     }
 
     /*
@@ -47,9 +47,9 @@ class SystemModel extends BaseModel
     public function updateById($values, $id): void
     {
         $this->updateById([
-            "key" => $values["key"],
-            "value [JSON]" => $values["value"],
-            "description" => $values["description"],
+            'key' => $values['key'],
+            'value [JSON]' => $values['value'],
+            'description' => $values['description'],
         ], $id);
     }
 }

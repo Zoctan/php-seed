@@ -32,18 +32,18 @@ class Router
             return;
         }
 
-        // "GET" => ["GET"]
+        // 'GET' => ['GET']
         if (is_string($methods)) {
             $methods = [$methods];
         }
 
-        // ["GET","POST"] => ["get","post"]
+        // ['GET','POST'] => ['get','post']
         foreach ($methods as $key => $value) {
             $methods[$key] = strtolower($value);
         }
 
         // /member/login => member/login
-        $uri = !str_starts_with($uri, "/") ? $uri : substr($uri, strlen("/"));
+        $uri = !str_starts_with($uri, '/') ? $uri : substr($uri, strlen('/'));
 
         $route = new Route($methods, $uri, $callback);
 
@@ -60,28 +60,28 @@ class Router
         $uri = $request->getPath();
 
         // fixme暂时这样处理upload接口
-        if (strpos($uri, "upload") === 0 && (!(strpos($uri, "upload/add") === 0) && !(strpos($uri, "upload/delete") === 0))) {
-            $route = $this->routes["upload"];
+        if (strpos($uri, 'upload') === 0 && (!(strpos($uri, 'upload/add') === 0) && !(strpos($uri, 'upload/delete') === 0))) {
+            $route = $this->routes['upload'];
         } else {
             if (!isset($this->routes[$uri])) {
-                throw new RouterException("未知路由错误");
+                throw new RouterException('未知路由错误');
             }
 
             $route = $this->routes[$uri];
             if (!in_array(strtolower($request->getMethod()), $route->methods)) {
-                throw new RouterException("路由请求方法错误");
+                throw new RouterException('路由请求方法错误');
             }
         }
 
         $callback = $route->action;
         if (is_callable($callback)) {
             // 通过匿名函数注册的路由回调
-            // 比如：$router->register("get", "/", function () use ($container,  $request) { xxx });
+            // 比如：$router->register('get', '/', function () use ($container,  $request) { xxx });
             call_user_func($callback, $request);
-        } elseif (is_string($callback) && strpos($callback, "@") !== FALSE) {
+        } elseif (is_string($callback) && strpos($callback, '@') !== FALSE) {
             // 通过控制器方法注册的路由回调
-            list($controllerClass, $controllerMethod) = explode("@", $callback);
-            $controllerNamespace = \App\DI()->config->app->controllerNamespace;
+            list($controllerClass, $controllerMethod) = explode('@', $callback);
+            $controllerNamespace = \App\DI()->config['app']['controllerNamespace'];
             // App\Controller\XXController
             $controllerClass = $controllerNamespace . $controllerClass;
             // 创建控制器实例
@@ -89,7 +89,7 @@ class Router
             // 调用控制器方法
             $controllerInstance->$controllerMethod();
         } else {
-            throw new RouterException("路由内部回调书写错误，请联系管理员处理");
+            throw new RouterException('路由内部回调书写错误，请联系管理员处理');
         }
     }
 }

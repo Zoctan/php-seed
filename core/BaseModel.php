@@ -10,6 +10,6 @@ class BaseModel extends MedooModel
 
     public function __construct()
     {
-        parent::__construct(json_decode(json_encode(\App\DI()->config->datasource->mysql), true));
+        parent::__construct(\App\DI()->config['datasource']['mysql']);
     }
 }

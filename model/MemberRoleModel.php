@@ -6,27 +6,27 @@ use App\Core\BaseModel;
 
 class MemberRoleModel extends BaseModel
 {
-    protected $table = "member_role";
+    protected $table = 'member_role';
 
     public function saveAsDefaultRole($memberId)
     {
-        return $this->insert(["member_id" => $memberId]);
+        return $this->insert(['member_id' => $memberId]);
     }
 
     public function getRole($memberId)
     {
         return $this->get(
             [
-                "[>]role" => ["member_role.role_id" => "id"],
+                '[>]role' => ['member_role.role_id' => 'id'],
             ],
             [
-                "role.id [Int]",
-                "role.name",
-                "role.has_all_rule [Int]",
-                "role.lock [Int]",
+                'role.id [Int]',
+                'role.name',
+                'role.has_all_rule [Int]',
+                'role.lock [Int]',
             ],
             [
-                "member_role.member_id" => $memberId
+                'member_role.member_id' => $memberId
             ]
         );
     }
@@ -35,16 +35,16 @@ class MemberRoleModel extends BaseModel
     {
         return $this->select(
             [
-                "[>]role_rule" => ["member_role.role_id" => "role_id"],
-                "[>]rule" => ["role_rule.rule_id" => "id"],
+                '[>]role_rule' => ['member_role.role_id' => 'role_id'],
+                '[>]rule' => ['role_rule.rule_id' => 'id'],
             ],
             [
-                "rule.id [Int]",
-                "rule.description",
-                "rule.permission"
+                'rule.id [Int]',
+                'rule.description',
+                'rule.permission'
             ],
             [
-                "member_role.member_id" => $memberId
+                'member_role.member_id' => $memberId
             ]
         );
     }
@@ -53,7 +53,7 @@ class MemberRoleModel extends BaseModel
     {
         $permissionList = [];
         foreach ($rules as $rule) {
-            array_push($permissionList, $rule["permission"]);
+            array_push($permissionList, $rule['permission']);
         }
         return $permissionList;
     }

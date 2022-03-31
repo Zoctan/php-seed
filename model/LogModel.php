@@ -7,7 +7,7 @@ use APP\Util\Ipv4Location;
 
 class LogModel extends BaseModel
 {
-    protected $table = "log";
+    protected $table = 'log';
 
     /*
      * 添加
@@ -17,7 +17,7 @@ class LogModel extends BaseModel
         $ip = Ipv4Location::getIp();
         $ipInfo = Ipv4Location::getLocation($ip);
 
-        $ipAddress = [$ipInfo["country"], $ipInfo["province"], $ipInfo["city"]];
+        $ipAddress = [$ipInfo['country'], $ipInfo['province'], $ipInfo['city']];
         $ipCity = [];
         for ($i = 0; $i < count($ipAddress); $i++) {
             if (!empty($ipAddress[$i])) {
@@ -26,10 +26,10 @@ class LogModel extends BaseModel
         }
 
         $data =  array_merge($data, [
-            "member_id" => \App\DI()->authMember->id,
-            "member_name" => \App\DI()->authMember->nickname,
-            "ip" => ip2long($ip),
-            "ip_city" => implode("-", $ipCity),
+            'member_id' => \App\DI()->authMember->id,
+            'member_name' => \App\DI()->authMember->nickname,
+            'ip' => ip2long($ip),
+            'ip_city' => implode('-', $ipCity),
         ]);
 
         return $this->insert($data);
@@ -38,9 +38,9 @@ class LogModel extends BaseModel
     public function asInfo($content, $extra = null)
     {
         return $this->add([
-            "level" => 0,
-            "content" => $content,
-            "extra" => $extra,
+            'level' => 0,
+            'content' => $content,
+            'extra' => $extra,
         ]);
     }
 
@@ -48,9 +48,9 @@ class LogModel extends BaseModel
     public function asWarn($content, $extra = null)
     {
         return $this->add([
-            "level" => 1,
-            "content" => $content,
-            "extra" => $extra,
+            'level' => 1,
+            'content' => $content,
+            'extra' => $extra,
         ]);
     }
 
@@ -58,9 +58,9 @@ class LogModel extends BaseModel
     public function asError($content, $extra = null)
     {
         return $this->add([
-            "level" => 2,
-            "content" => $content,
-            "extra" => $extra,
+            'level' => 2,
+            'content' => $content,
+            'extra' => $extra,
         ]);
     }
 }

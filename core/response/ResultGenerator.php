@@ -25,7 +25,7 @@ class ResultGenerator
      * @param $msg 消息
      * @return string 响应结果
      */
-    public static function successWithMsg($msg = "")
+    public static function successWithMsg($msg = '')
     {
         return self::successWithMsgData($msg);
     }
@@ -36,9 +36,9 @@ class ResultGenerator
      * @param $data 数据
      * @return string 响应结果
      */
-    public static function successWithData($data = "")
+    public static function successWithData($data = '')
     {
-        return self::successWithMsgData("", $data);
+        return self::successWithMsgData('', $data);
     }
 
     /**
@@ -48,7 +48,7 @@ class ResultGenerator
      * @param $data 数据
      * @return string 响应结果
      */
-    public static function successWithMsgData($msg = "", $data = null)
+    public static function successWithMsgData($msg = '', $data = null)
     {
         return (new Result())
             ->setErrno(ResultCode::SUCCEED[0])
@@ -75,7 +75,7 @@ class ResultGenerator
      * @param $msg 消息
      * @return string 响应结果
      */
-    public static function errorWithMsg($msg = "")
+    public static function errorWithMsg($msg = '')
     {
         return self::errorWithCodeMsgData(ResultCode::FAILED, $msg);
     }
@@ -98,7 +98,7 @@ class ResultGenerator
      * @param $msg 消息
      * @return string 响应结果
      */
-    public static function errorWithCodeMsg(array $resultCode, $msg = "")
+    public static function errorWithCodeMsg(array $resultCode, $msg = '')
     {
         return self::errorWithCodeMsgData($resultCode, $msg);
     }
@@ -111,7 +111,7 @@ class ResultGenerator
      * @param $data 数据
      * @return string 响应结果
      */
-    public static function errorWithCodeMsgData(array $resultCode, $msg = "", $data = null)
+    public static function errorWithCodeMsgData(array $resultCode, $msg = '', $data = null)
     {
         return (new Result())
             ->setErrno($resultCode[0])

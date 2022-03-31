@@ -26,16 +26,16 @@ class JssdkUtil
     private $appId;
     private $appSecret;
 
-    private $jssdkTicketKey = "jssdk_ticket";
-    private $accessTokenKey = "jssdk_access_token";
+    private $jssdkTicketKey = 'jssdk_ticket';
+    private $accessTokenKey = 'jssdk_access_token';
 
     private function __construct()
     {
-        $this->config = \App\DI()->config->wechat;
+        $this->config = \App\DI()->config['wechat'];
         $this->cache = \App\DI()->cache;
 
-        $this->appId = $this->config->credential->appId;
-        $this->appSecret = $this->config->credential->appSecret;
+        $this->appId = $this->config['credential']['appId'];
+        $this->appSecret = $this->config['credential']['appSecret'];
     }
 
     public function getSignPackage()
@@ -46,22 +46,22 @@ class JssdkUtil
         }
 
         // 注意 URL 一定要动态获取，不能 hardcode.
-        $protocol = (!empty($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off" || $_SERVER["SERVER_PORT"] == 443) ? "https://" : "http://";
-        $url = "$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+        $url = '$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]';
 
         $timestamp = time();
         $nonceStr = Util::randomStr();
 
         // 这里参数的顺序要按照 key 值 ASCII 码升序排序
-        $rawString = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
+        $rawString = 'jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url';
         $signature = sha1($rawString);
         return [
-            "appId" => $this->appId,
-            "nonceStr" => $nonceStr,
-            "timestamp" => $timestamp,
-            "url" => $url,
-            "signature" => $signature,
-            "rawString" => $rawString,
+            'appId' => $this->appId,
+            'nonceStr' => $nonceStr,
+            'timestamp' => $timestamp,
+            'url' => $url,
+            'signature' => $signature,
+            'rawString' => $rawString,
         ];
     }
 
@@ -79,14 +79,14 @@ class JssdkUtil
 
         $accessToken = $this->getAccessToken();
 
-        $url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken";
+        $url = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?type=jsapi&access_token=$accessToken';
 
         // 使用证书访问：https://docs.guzzlephp.org/en/stable/request-options.html#verify
-        $response = \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
+        $response = \App\DI()->curl->request('GET', $url, ['verify' => $this->config['sslCert']]);
         $response = json_decode($response->getBody());
         if (empty($response) || (isset($response->errcode) && $response->errcode != 0)) {
             if ($tryTime == 3) {
-                throw new \Exception("内部服务器请求微信服务器 jsapi_ticket 出现错误，请联系管理员：" . json_encode($response));
+                throw new \Exception('内部服务器请求微信服务器 jsapi_ticket 出现错误，请联系管理员：' . json_encode($response));
             }
 
             $tryTime++;
@@ -114,13 +114,13 @@ class JssdkUtil
      */
     private function updateAccessToken($tryTime = 0)
     {
-        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret";
+        $url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=$this->appId&secret=$this->appSecret';
 
-        $response = \App\DI()->curl->request("GET", $url, ["verify" => $this->config->sslCert]);
+        $response = \App\DI()->curl->request('GET', $url, ['verify' => $this->config['sslCert']]);
         $response = json_decode($response->getBody());
         if (empty($response) || (isset($response->errcode) && $response->errcode != 0)) {
             if ($tryTime == 3) {
-                throw new \Exception("内部服务器请求微信服务器 access_token 出现错误，请联系管理员：" . json_encode($response));
+                throw new \Exception('内部服务器请求微信服务器 access_token 出现错误，请联系管理员：' . json_encode($response));
             }
 
             $tryTime++;

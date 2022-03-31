@@ -6,5 +6,5 @@ use App\Core\BaseModel;
 
 class MemberOauthModel extends BaseModel
 {
-    protected $table = "member_oauth";
+    protected $table = 'member_oauth';
 }

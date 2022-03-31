@@ -1,10 +1,9 @@
 <?php
 
-//ini_set("display_errors", false);
+//ini_set('display_errors', false);
 
-require_once __DIR__ . "/vendor/autoload.php";
+require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Core\Http\Session;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Filter;
@@ -22,28 +21,24 @@ function bootApp()
     ExceptionHandler::register();
 
     // 设置时区
-    date_default_timezone_set("prc");
+    date_default_timezone_set('prc');
 
     $di = \App\DI();
 
     // 初始化配置
-    $di->config = require_once __DIR__ . "/config.php";
+    $di->config = require_once __DIR__ . '/config.php';
 
     // 捕获全局请求
-    $di->request = Request::capture();
+    $di->request = new Request();
 
     // 注册响应
     $di->response = new Response();
 
     // 注册缓存工具
-    $di->cache = new Predis\Client((array) $di->config->datasource->redis);
-
-    // 注册数据检查工具
-    // 规则：https://respect-validation.readthedocs.io/en/latest/list-of-rules/
-    $di->validator = new Respect\Validation\Validator();
+    $di->cache = new Predis\Client($di->config['datasource']['redis']);
 
     // 注册伪造数据工具
-    $di->faker = Faker\Factory::create("zh_CN");
+    $di->faker = Faker\Factory::create('zh_CN');
 
     // 注册 HTTP 客户端
     $di->curl = new GuzzleHttp\Client();
@@ -51,14 +46,6 @@ function bootApp()
     // 注册图片处理工具
     $di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
     return $di;
-}
-
-// restful api 用不上 session
-function initSession($di)
-{
-    $session = new Session();
-    $session->start();
-    $di->session = $session;
 }
 
 // 执行过滤链
@@ -75,7 +62,7 @@ function doFilterChain(Filter ...$filters)
 $di = bootApp();
 
 // 注册路由
-$router = require_once __DIR__ . "/routes.php";
+$router = require_once __DIR__ . '/routes.php';
 
 // var_dump($router->getRoutes());
 // var_dump($di->request->headers->all());

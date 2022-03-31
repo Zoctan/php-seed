@@ -136,7 +136,7 @@ class DependencyInjection implements \ArrayAccess
             return $this->get($key, isset($arguments[0]) ? $arguments[0] : null);
         }
 
-        throw new \Exception("Call to undefined method DI::$name()");
+        throw new \Exception('Call to undefined method DI::$name()');
     }
 
     public function __set($name, $value)

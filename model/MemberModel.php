@@ -8,11 +8,11 @@ use App\Core\BaseModel;
 
 class MemberModel extends BaseModel
 {
-    protected $table = "member";
+    protected $table = 'member';
     
     public function add($member)
     {
-        $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
+        $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
         $memberId = $this->insert($member);
         
         // 绑定默认角色
@@ -26,10 +26,10 @@ class MemberModel extends BaseModel
 
     public function updateByMemberId($member)
     {
-        if ($member["password"] != null) {
-            $member["password"] = password_hash($member["password"], PASSWORD_DEFAULT);
+        if ($member['password'] != null) {
+            $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
         }
-        $this->updateById($member, $member["id"]);
+        $this->updateById($member, $member['id']);
     }
 
     /**
@@ -38,19 +38,19 @@ class MemberModel extends BaseModel
     public function getByUsername(
         $username,
         $column = [
-            "id [Int]",
-            "username",
-            "password",
-            "status [Int]",
-            "logined_at",
-            "created_at",
-            "updated_at"
+            'id [Int]',
+            'username',
+            'password',
+            'status [Int]',
+            'logined_at',
+            'created_at',
+            'updated_at'
         ]
     ) {
         return $this->getBy(
             $column,
             [
-                "username" => $username
+                'username' => $username
             ]
         );
     }
@@ -60,7 +60,7 @@ class MemberModel extends BaseModel
      */
     public function updateLoginedAtById($id)
     {
-        $this->updateBy(["logined_at" => Medoo::raw("NOW()")], ["id" => $id]);
+        $this->updateBy(['logined_at' => Medoo::raw('NOW()')], ['id' => $id]);
     }
 
     /**
@@ -75,9 +75,9 @@ class MemberModel extends BaseModel
     {
         $this->deleteById($memberId);
         $memberDataModel = new MemberDataModel();
-        $memberDataModel->deleteBy(["member_id" => $memberId]);
+        $memberDataModel->deleteBy(['member_id' => $memberId]);
 
         $memberRoleModel = new MemberRoleModel();
-        $memberRoleModel->deleteBy(["member_id" => $memberId]);
+        $memberRoleModel->deleteBy(['member_id' => $memberId]);
     }
 }

@@ -23,7 +23,7 @@ class Route
 
     /**
      * 处理方法
-     * function | "XXController@Method"
+     * function | 'XXController@Method'
      * 
      * @var callback|string
      */
@@ -48,7 +48,7 @@ class Route
      * 
      * @var string
      */
-    public $responseContentType = "json";
+    public $responseContentType = 'json';
 
     public function __construct($methods, $uri, $action)
     {

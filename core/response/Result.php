@@ -10,29 +10,17 @@ use App\Core\Http\Response;
 class Result
 {
     // 状态码
-    private $errno = 0;
+    private $errno;
     // 消息
-    private $msg = "";
+    private $msg;
     // 数据
-    private $data = null;
+    private $data;
     // 响应结构字段映射
-    private $structureMap = [
-        "errno" => "errno",
-        "data"  => "data",
-        "msg"   => "msg",
-        "debug" => "debug",
-    ];
+    private $structureMap;
 
     public function __construct()
     {
-        $this->structureMap = (object) $this->structureMap;
-        try {
-            $structureMap = \App\DI()->config->app->response->structureMap;
-            if (!empty($structureMap)) {
-                $this->structureMap = $structureMap;
-            }
-        } catch (\Exception $exception) {
-        }
+        $this->structureMap = \App\DI()->config['app']['response']['structureMap'];
     }
 
     public function setErrno($errno)
@@ -68,7 +56,7 @@ class Result
 
     public function response()
     {
-        $response = \App\DI()->get("response", new Response());
+        $response = \App\DI()->get('response', new Response());
         $response->setData($this->get());
         $response->send();
     }

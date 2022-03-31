@@ -130,7 +130,7 @@ class Ipv4Location
         }
 
         if (!file_exists($filename)) {
-            trigger_error("Failed open ip database file!");
+            trigger_error('Failed open ip database file!');
             return;
         }
 
@@ -420,14 +420,14 @@ class Ipv4Location
                 break;
         }
 
-        $location['country'] = iconv("GBK", "UTF-8", $location['country']);
-        $location['area']    = iconv("GBK", "UTF-8", $location['area']);
+        $location['country'] = iconv('GBK', 'UTF-8', $location['country']);
+        $location['area']    = iconv('GBK', 'UTF-8', $location['area']);
 
-        if ($location['country'] == " CZ88.NET" || $location['country'] == "纯真网络") { // CZ88.NET表示没有有效信息
-            $location['country'] = "无数据";
+        if ($location['country'] == ' CZ88.NET' || $location['country'] == '纯真网络') { // CZ88.NET表示没有有效信息
+            $location['country'] = '无数据';
         }
-        if ($location['area'] == " CZ88.NET") {
-            $location['area'] = "";
+        if ($location['area'] == ' CZ88.NET') {
+            $location['area'] = '';
         }
 
         return $location;
@@ -484,7 +484,7 @@ class Ipv4Location
      * @param string $data
      * @return string
      */
-    private function getstring($data = "")
+    private function getstring($data = '')
     {
         $char = fread($this->fp, 1);
         while (ord($char) > 0) { // 字符串按照C格式保存，以\0结束
@@ -506,7 +506,7 @@ class Ipv4Location
         $byte = fread($this->fp, 1); // 标志字节
         switch (ord($byte)) {
             case 0: // 没有区域信息
-                $area = "";
+                $area = '';
                 break;
             case 1:
             case 2: // 标志字节为1或2，表示区域信息被重定向
