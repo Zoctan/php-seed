@@ -43,13 +43,6 @@ class Route
      */
     public $auth = [];
 
-    /**
-     * 返回的响应类型
-     * 
-     * @var string
-     */
-    public $responseContentType = 'json';
-
     public function __construct($methods, $uri, $action)
     {
         $this->methods = $methods;
@@ -66,12 +59,6 @@ class Route
     public function setAuth(array $auth)
     {
         $this->auth = $auth;
-        return $this;
-    }
-
-    public function setResponseContentType(string $responseContentType)
-    {
-        $this->responseContentType = $responseContentType;
         return $this;
     }
 }

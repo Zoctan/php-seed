@@ -42,8 +42,8 @@ class Router
             $methods[$key] = strtolower($value);
         }
 
-        // /member/login => member/login
-        $uri = !str_starts_with($uri, '/') ? $uri : substr($uri, strlen('/'));
+        // member/login => /member/login
+        $uri = strpos($uri, '/') === false ? '/' . $uri : $uri;
 
         $route = new Route($methods, $uri, $callback);
 
@@ -57,19 +57,19 @@ class Router
      */
     public function dispatch(Request $request)
     {
-        $uri = $request->getPath();
+        $uri = $request->uri;
 
         // fixme暂时这样处理upload接口
-        if (strpos($uri, 'upload') === 0 && (!(strpos($uri, 'upload/add') === 0) && !(strpos($uri, 'upload/delete') === 0))) {
+        if (strpos($uri, '/upload') === 0 && (strpos($uri, '/upload/add') === false && strpos($uri, '/upload/delete') === false)) {
             $route = $this->routes['upload'];
         } else {
             if (!isset($this->routes[$uri])) {
-                throw new RouterException('未知路由错误');
+                throw new RouterException('unknown router');
             }
 
             $route = $this->routes[$uri];
             if (!in_array(strtolower($request->getMethod()), $route->methods)) {
-                throw new RouterException('路由请求方法错误');
+                throw new RouterException('router method error');
             }
         }
 

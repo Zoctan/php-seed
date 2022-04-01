@@ -44,12 +44,12 @@ class Result
     public function get()
     {
         $result = [];
-        $result[$this->structureMap->errno] = $this->errno;
+        $result[$this->structureMap['errno']] = $this->errno;
         if (!empty($this->msg)) {
-            $result[$this->structureMap->msg] = $this->msg;
+            $result[$this->structureMap['msg']] = $this->msg;
         }
         if (!empty($this->data)) {
-            $result[$this->structureMap->data] = $this->data;
+            $result[$this->structureMap['data']] = $this->data;
         }
         return $result;
     }

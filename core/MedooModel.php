@@ -137,7 +137,7 @@ abstract class MedooModel
             throw new \Exception('empty database config');
         }
         $this->config = $config;
-        $this->database = $config['master']['database'];
+        $this->database = $config['master'][0]['database'];
         
         return $this;
     }

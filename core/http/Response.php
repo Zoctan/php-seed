@@ -2,10 +2,10 @@
 
 namespace App\Core\Http;
 
+use App\Util\Array2Xml;
+
 class Response
 {
-    public bool $contentLength = true;
-
     public static array $codes = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -20,7 +20,6 @@ class Response
         206 => 'Partial Content',
         207 => 'Multi-Status',
         208 => 'Already Reported',
-
         226 => 'IM Used',
 
         300 => 'Multiple Choices',
@@ -51,16 +50,12 @@ class Response
         415 => 'Unsupported Media Type',
         416 => 'Range Not Satisfiable',
         417 => 'Expectation Failed',
-
         422 => 'Unprocessable Entity',
         423 => 'Locked',
         424 => 'Failed Dependency',
-
         426 => 'Upgrade Required',
-
         428 => 'Precondition Required',
         429 => 'Too Many Requests',
-
         431 => 'Request Header Fields Too Large',
 
         500 => 'Internal Server Error',
@@ -72,26 +67,57 @@ class Response
         506 => 'Variant Also Negotiates',
         507 => 'Insufficient Storage',
         508 => 'Loop Detected',
-
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
     ];
-    
-    protected int $status = 200;
 
-    protected array $headers = [];
+    protected int $code = 200;
+
+    protected array $header = [];
 
     protected string $content = '';
 
     protected bool $sent = false;
 
-    protected $config;
-    protected $debug = [];
-    protected $data = [];
+    protected bool $isDebug;
 
-    public function setDebug($key, $value)
+    protected string $debugKey;
+
+    protected array $debugData = [];
+
+    protected string $responseType;
+
+    protected array $mimeTypes = [
+        'txt' => 'text/plain; charset=utf-8',
+        'xml' => 'application/xml; charset=utf-8',
+        'html' => 'application/html; charset=utf-8',
+        'json' => 'application/json; charset=utf-8',
+        'stream' => 'application/octet-stream',
+    ];
+
+    protected array $data = [];
+
+    public function isDebug(bool $isDebug = false)
     {
-        $this->debug[$key] = $value;
+        $this->isDebug = $isDebug;
+        return $this;
+    }
+
+    public function setDebugKey(string $debugKey = 'debug')
+    {
+        $this->debugKey = $debugKey;
+        return $this;
+    }
+
+    public function setResponseType(string $responseType = 'json')
+    {
+        $this->responseType = $responseType;
+        return $this;
+    }
+
+    public function appendDebug($key, $value)
+    {
+        $this->debugData[$key] = $value;
         return $this;
     }
 
@@ -106,14 +132,14 @@ class Response
         return $this->data;
     }
 
-    public function status(?int $code = null)
+    public function setCode(?int $code = null)
     {
         if (null === $code) {
-            return $this->status;
+            return $this->code;
         }
 
-        if (\array_key_exists($code, self::$codes)) {
-            $this->status = $code;
+        if (array_key_exists($code, self::$codes)) {
+            $this->code = $code;
         } else {
             throw new \Exception('Invalid status code.');
         }
@@ -121,22 +147,36 @@ class Response
         return $this;
     }
 
-    public function header($name, ?string $value = null)
+    public function appendHeader($data, ?string $value = null)
     {
-        if (\is_array($name)) {
-            foreach ($name as $k => $v) {
-                $this->headers[$k] = $v;
+        if (is_array($data)) {
+            foreach ($data as $k => $v) {
+                $this->header[$k] = $v;
             }
         } else {
-            $this->headers[$name] = $value;
+            $this->header[$data] = $value;
         }
 
         return $this;
     }
 
-    public function headers()
+    public function getHeader()
     {
-        return $this->headers;
+        return $this->header;
+    }
+
+    public function setContentType(?string $type): self
+    {
+        $this->appendHeader('Content-type', $type);
+
+        return $this;
+    }
+
+    public function appendContent(?string $content): self
+    {
+        $this->content .= $content ?? '';
+
+        return $this;
     }
 
     public function setContent(?string $content): self
@@ -148,44 +188,52 @@ class Response
 
     public function clear(): self
     {
-        $this->status = 200;
-        $this->headers = [];
+        $this->code = 200;
+        $this->header = [];
         $this->content = '';
 
         return $this;
     }
 
-    public function cache($expires): self
+    public function allowCache($allowCache = true): self
     {
-        if (false === $expires) {
-            $this->headers['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
-            $this->headers['Cache-Control'] = [
+        if (!$allowCache) {
+            $this->header['Expires'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+            $this->header['Cache-Control'] = [
                 'no-store, no-cache, must-revalidate',
                 'post-check=0, pre-check=0',
                 'max-age=0',
             ];
-            $this->headers['Pragma'] = 'no-cache';
+            $this->header['Pragma'] = 'no-cache';
+        }
+        return $this;
+    }
+
+    public function cache($expires): self
+    {
+        if ($expires <= 0) {
+            return $this->allowCache(false);
         } else {
-            $expires = \is_int($expires) ? $expires : strtotime($expires);
-            $this->headers['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
-            $this->headers['Cache-Control'] = 'max-age=' . ($expires - time());
-            if (isset($this->headers['Pragma']) && 'no-cache' == $this->headers['Pragma']) {
-                unset($this->headers['Pragma']);
+            $expires = is_int($expires) ? $expires : strtotime($expires);
+            $this->header['Expires'] = gmdate('D, d M Y H:i:s', $expires) . ' GMT';
+            $this->header['Cache-Control'] = 'max-age=' . ($expires - time());
+            if (isset($this->header['Pragma']) && 'no-cache' == $this->header['Pragma']) {
+                unset($this->header['Pragma']);
             }
         }
 
         return $this;
     }
 
-    public function sendHeaders(): self
+    public function sendHeader(): self
     {
         // Send status code header
-        if (false !== strpos(\PHP_SAPI, 'cgi')) {
+        if (false !== strpos(PHP_SAPI, 'cgi')) {
             header(
                 sprintf(
                     'Status: %d %s',
-                    $this->status,
-                    self::$codes[$this->status]
+                    $this->code,
+                    self::$codes[$this->code]
                 ),
                 true
             );
@@ -194,17 +242,17 @@ class Response
                 sprintf(
                     '%s %d %s',
                     $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1',
-                    $this->status,
-                    self::$codes[$this->status]
+                    $this->code,
+                    self::$codes[$this->code]
                 ),
                 true,
-                $this->status
+                $this->code
             );
         }
 
-        // Send other headers
-        foreach ($this->headers as $field => $value) {
-            if (\is_array($value)) {
+        // Send other header
+        foreach ($this->header as $field => $value) {
+            if (is_array($value)) {
                 foreach ($value as $v) {
                     header($field . ': ' . $v, false);
                 }
@@ -213,23 +261,20 @@ class Response
             }
         }
 
-        if ($this->contentLength) {
-            // Send content length
-            $length = $this->getContentLength();
+        // Send content length
+        $length = $this->getContentLength();
 
-            if ($length > 0) {
-                header('Content-Length: ' . $length);
-            }
+        if ($length > 0) {
+            header('Content-Length: ' . $length);
         }
-
         return $this;
     }
 
     public function getContentLength(): int
     {
-        return \extension_loaded('mbstring') ?
+        return extension_loaded('mbstring') ?
             mb_strlen($this->content, 'UTF8') :
-            \strlen($this->content);
+            strlen($this->content);
     }
 
     public function sent(): bool
@@ -243,23 +288,27 @@ class Response
             ob_end_clean();
         }
 
-        if (!headers_sent()) {
-            $this->sendHeaders();
-        }
-
-        $this->config = \App\DI()->config;
-
         // 发送前再装载 debug 信息
-        if ($this->config['app']['debug'] && !empty($this->debug)) {
-            $this->data[$this->config['app']['response']['structureMap']['debug']] = $this->debug;
+        if ($this->isDebug && !empty($this->debugData)) {
+            $this->data[$this->debugKey] = $this->debugData;
         }
 
-        switch ($this->config['app']['response']['type']) {
+        switch ($this->responseType) {
+            case 'html':
+                break;
+            case 'xml':
+                $this->setContent(Array2Xml::convert($this->data));
+                break;
             default:
             case 'json':
                 // JSON_UNESCAPED_UNICODE 中文也能显示
                 $this->setContent(json_encode($this->data, JSON_UNESCAPED_UNICODE));
                 break;
+        }
+
+        if (!headers_sent()) {
+            $this->setContentType($this->mimeTypes[$this->responseType]);
+            $this->sendHeader();
         }
 
         echo $this->content;

@@ -32,7 +32,7 @@ class RoleController extends BaseController
         $ruleList = $this->request->get('ruleList');
 
         if (empty($role)) {
-            return ResultGenerator::errorWithMsg('role doesn't exist');
+            return ResultGenerator::errorWithMsg('role does not exist');
         }
 
         $roleId = $this->roleModel->insert($role);
@@ -84,7 +84,7 @@ class RoleController extends BaseController
     {
         $roleId = intval($this->request->get('roleId'));
         if (empty($roleId)) {
-            return ResultGenerator::errorWithMsg('role id doesn't exist');
+            return ResultGenerator::errorWithMsg('role id does not exist');
         }
         $role = $this->roleModel->getById([
             'id [Int]',
@@ -95,7 +95,7 @@ class RoleController extends BaseController
             'updated_at',
         ], $roleId);
         if (empty($role)) {
-            return ResultGenerator::errorWithMsg('role doesn't exist');
+            return ResultGenerator::errorWithMsg('role does not exist');
         }
         $ruleList = $this->roleModel->getRuleById($roleId);
         if (!empty($ruleList) && $ruleList[0]['id'] === null) {
@@ -111,7 +111,7 @@ class RoleController extends BaseController
     {
         $role = $this->request->get('role');
         if (empty($role)) {
-            return ResultGenerator::errorWithMsg('role doesn't exist');
+            return ResultGenerator::errorWithMsg('role does not exist');
         }
         $ruleList = $this->request->get('ruleList');
 
@@ -125,7 +125,7 @@ class RoleController extends BaseController
         $memberId = intval($this->request->get('memberId'));
         $role = $this->request->get('role');
         if (empty($memberId) || empty($role)) {
-            return ResultGenerator::errorWithMsg('member id or role id doesn't exist');
+            return ResultGenerator::errorWithMsg('member id or role id does not exist');
         }
         $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->updateBy(
@@ -139,7 +139,7 @@ class RoleController extends BaseController
     {
         $roleId = intval($this->request->get('roleId'));
         if (empty($roleId)) {
-            return ResultGenerator::errorWithMsg('role id doesn't exist');
+            return ResultGenerator::errorWithMsg('role id does not exist');
         }
         $this->roleModel->deleteById($roleId);
         return ResultGenerator::success();

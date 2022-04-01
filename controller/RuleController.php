@@ -47,7 +47,7 @@ class RuleController extends BaseController
     {
         $ruleList = $this->request->get('ruleList');
         if (empty($ruleList)) {
-            return ResultGenerator::errorWithMsg('ruleList doesn't exist');
+            return ResultGenerator::errorWithMsg('ruleList does not exist');
         }
         $this->ruleModel->updateListById($ruleList);
         return ResultGenerator::success();
@@ -59,7 +59,7 @@ class RuleController extends BaseController
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($ruleId)) {
-            return ResultGenerator::errorWithMsg('rule id doesn't exist');
+            return ResultGenerator::errorWithMsg('rule id does not exist');
         }
         if (empty($description) && empty($permission)) {
             return ResultGenerator::errorWithMsg('please input description or permission');
@@ -76,7 +76,7 @@ class RuleController extends BaseController
     {
         $ruleList = $this->request->get('ruleList');
         if (empty($ruleList)) {
-            return ResultGenerator::errorWithMsg('ruleList doesn't exist');
+            return ResultGenerator::errorWithMsg('ruleList does not exist');
         }
         $ruleIdList = Util::value2Array($ruleList, 'id');
         $this->ruleModel->deleteByIdList($ruleIdList);
@@ -87,7 +87,7 @@ class RuleController extends BaseController
     {
         $ruleId = intval($this->request->get('ruleId'));
         if (empty($ruleId)) {
-            return ResultGenerator::errorWithMsg('rule id doesn't exist');
+            return ResultGenerator::errorWithMsg('rule id does not exist');
         }
         $this->ruleModel->deleteById($ruleId);
         return ResultGenerator::success();

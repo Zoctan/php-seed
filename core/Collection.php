@@ -16,26 +16,52 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
         $this->data = $data;
     }
 
-    public function __get(string $key)
+    public function get(string $key, $default = null)
     {
-        return $this->data[$key] ?? null;
+        return $this->data[$key] ?? $default;
     }
 
-    public function __set(string $key, $value): void
+    public function set(string $key, $value): void
     {
         $this->data[$key] = $value;
     }
 
-    public function __isset(string $key): bool
+    public function has(string $key): bool
     {
         return isset($this->data[$key]);
     }
 
-    public function __unset(string $key): void
+    public function unset(string $key): void
     {
         unset($this->data[$key]);
     }
 
+    public function keyExists($key): bool
+    {
+        return array_key_exists($key, $this->data);
+    }
+
+    public function keys(): array
+    {
+        return array_keys($this->data);
+    }
+
+    public function setData(array $data): void
+    {
+        $this->data = $data;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    public function clearData(): void
+    {
+        $this->data = [];
+    }
+
+    // ----------------------- ArrayAccess start ---------------------------------
     public function offsetGet($offset)
     {
         return $this->data[$offset] ?? null;
@@ -60,12 +86,9 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
     {
         unset($this->data[$offset]);
     }
+    // ----------------------- ArrayAccess start ---------------------------------
 
-    public function rewind(): void
-    {
-        reset($this->data);
-    }
-
+    // ----------------------- Iterator start ---------------------------------
     #[\ReturnTypeWillChange]
     public function current()
     {
@@ -84,40 +107,31 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
         return next($this->data);
     }
 
+    public function rewind(): void
+    {
+        reset($this->data);
+    }
+
     public function valid(): bool
     {
         $key = key($this->data);
 
         return null !== $key && false !== $key;
     }
+    // ----------------------- Iterator end ---------------------------------
 
+    // ----------------------- Countable start ---------------------------------
     public function count(): int
     {
         return count($this->data);
     }
+    // ----------------------- Countable end ---------------------------------
 
-    public function keys(): array
-    {
-        return array_keys($this->data);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
-    }
-
-    public function setData(array $data): void
-    {
-        $this->data = $data;
-    }
-
+    // ----------------------- JsonSerializable end ---------------------------------
     public function jsonSerialize(): array
     {
         return $this->data;
     }
+    // ----------------------- JsonSerializable end ---------------------------------
 
-    public function clear(): void
-    {
-        $this->data = [];
-    }
 }

@@ -22,18 +22,18 @@ class UploadController extends BaseController
 
     public function download()
     {
-        $path = $this->request->getPath();
-        $pathList = explode('/', $path);
-        $fileName = end($pathList);
-        if (!file_exists($path)) {
+        $uri = $this->request->uri;
+        $uriList = explode('/', $uri);
+        $fileName = end($uriList);
+        if (!file_exists($uri)) {
             header('HTTP/1.1 404 NOT FOUND');
         } else {
-            $file = fopen($path, 'rb');
-            Header('Content-type: application/octet-stream');
+            $this->response->setResponseType('stream');
+            $file = fopen($uri, 'rb');
             Header('Accept-Ranges: bytes');
-            Header('Accept-Length: ' . filesize($path));
+            Header('Accept-Length: ' . filesize($uri));
             Header('Content-Disposition: attachment; filename=' . $fileName);
-            echo fread($file, filesize($path));
+            echo fread($file, filesize($uri));
             fclose($file);
             exit();
         }
@@ -113,7 +113,7 @@ class UploadController extends BaseController
             } else {
                 while (file_exists($realUploadFile)) {
                     if (!$useRandomName) {
-                        return ResultGenerator::errorWithMsg(sprintf("File name already existed: %s. If you want to replace it, please post { replace: true }. If you don't, please post { useRandomName: true } to use random file name.", $fileNameWithExt));
+                        return ResultGenerator::errorWithMsg(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
                     }
                     // 设置随机文件名
                     // test.jpg -> asdfghjkl.jpg

@@ -26,9 +26,10 @@ class AuthenticationFilter implements Filter
     public function doFilter()
     {
         // 需要认证的路由才检查
-        $uri = $this->request->getPath();
+        $uri = $this->request->uri;
+
         // fixme暂时这样处理upload接口
-        if (strpos($uri, 'upload') === 0) {
+        if (strpos($uri, '/upload') === 0) {
             $requiresAuth = false;
         } else {
             $requiresAuth = $this->routes[$uri]->requiresAuth;

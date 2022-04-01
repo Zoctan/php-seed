@@ -58,7 +58,7 @@ class JwtUtil
     public function getTokenFromRequest(Request $request)
     {
         $headerKey = $this->config['header'];
-        $token = $request->headers->get($headerKey);
+        $token = $request->header->get($headerKey);
         return !empty($token) ? $token : $request->get($headerKey);
     }
 
