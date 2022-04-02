@@ -8,7 +8,7 @@ class RoleModel extends BaseModel
 {
     protected $table = 'role';
     
-    public function getRuleById($roleId)
+    public function listRuleByRoleId($roleId)
     {
         return $this->select(
             [

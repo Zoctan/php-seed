@@ -39,13 +39,13 @@ class RuleController extends BaseController
 
     public function list()
     {
-        $ruleList = $this->ruleModel->listAllWithoutCondition();
+        $ruleList = $this->ruleModel->_listBy();
         return ResultGenerator::successWithData($ruleList);
     }
 
     public function updateList()
     {
-        $ruleList = $this->request->get('ruleList');
+        $ruleList = (array) $this->request->get('ruleList');
         if (empty($ruleList)) {
             return ResultGenerator::errorWithMsg('ruleList does not exist');
         }

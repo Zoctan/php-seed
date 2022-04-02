@@ -1,78 +1,136 @@
 <?php
 
-ini_set('display_errors', false);
+ini_set('display_errors', true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Filter;
 use App\Core\Collection;
+use App\Core\Filter;
 use App\Core\Filter\CorsFilter;
 use App\Core\Filter\AuthenticationFilter;
 use App\Core\Exception\ExceptionHandler;
 
-/**
- * 启动应用
- */
-function bootApp()
+class Bootstrap
 {
-    // 注册全局异常处理器
-    ExceptionHandler::register();
+    private $di;
+    private $timezoneId = 'prc';
+    private $configPath = __DIR__ . '/config.php';
+    private $routerPath = __DIR__ . '/routes.php';
 
-    // 设置时区
-    date_default_timezone_set('prc');
+    public function __construct()
+    {
+        $this->di = \App\DI();
+    }
 
-    $di = \App\DI();
+    public function init()
+    {
+        $this->initTimezone();
 
-    // 初始化配置
-    $di->config = new Collection(require_once __DIR__ . '/config.php');
+        $this->initConfig();
 
-    // 捕获全局请求
-    $di->request = new Request();
+        $this->initRequest();
 
-    // 注册响应
-    $di->response = (new Response())
-        ->isDebug($di->config['app']['debug'])
-        ->setDebugKey($di->config['app']['response']['structureMap']['debug'])
-        ->setResponseType($di->config['app']['response']['type']);
+        $this->initResponse();
 
-    // 注册缓存工具
-    $di->cache = new Predis\Client($di->config['datasource']['redis']);
+        $this->initCache();
 
-    // 注册伪造数据工具
-    $di->faker = Faker\Factory::create('zh_CN');
+        $this->initRouter();
 
-    // 注册 HTTP 客户端
-    $di->curl = new GuzzleHttp\Client();
+        // 注册全局异常处理器
+        ExceptionHandler::register();
 
-    // 注册图片处理工具
-    $di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
+        return $this;
+    }
 
-    return $di;
-}
+    public function setTimezone(string $timezoneId)
+    {
+        $this->timezoneId = $timezoneId;
+        return $this;
+    }
 
-// 执行过滤链
-function doFilterChain(Filter ...$filters)
-{
-    foreach ($filters as $filter) {
-        if (!$filter->doFilter()) {
-            break;
+    public function initTimezone()
+    {
+        date_default_timezone_set($this->timezoneId);
+    }
+
+    public function setConfig($path)
+    {
+        $this->configPath = $path;
+        return $this;
+    }
+
+    public function initConfig()
+    {
+        $this->di->config = new Collection(require_once $this->configPath);
+    }
+
+    public function setRouter($path)
+    {
+        $this->routerPath = $path;
+        return $this;
+    }
+
+    public function initRouter()
+    {
+        $this->di->router = require_once $this->routerPath;
+        return $this;
+    }
+
+    public function initUtil()
+    {
+        // 注册伪造数据工具
+        $this->di->faker = Faker\Factory::create('zh_CN');
+
+        // 注册 HTTP 客户端
+        $this->di->curl = new GuzzleHttp\Client();
+
+        // 注册图片处理工具
+        $this->di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
+    }
+
+    private function initRequest()
+    {
+        $this->di->request = new Request();
+    }
+
+    private function initResponse()
+    {
+        $this->di->response = (new Response())
+            ->setDebug($this->di->config['app']['debug'])
+            ->setDebugKey($this->di->config['app']['response']['structureMap']['debug'])
+            ->setResponseType($this->di->config['app']['response']['type']);
+    }
+
+    private function initCache()
+    {
+        $this->di->cache = new Predis\Client($this->di->config['datasource']['redis']);
+    }
+
+    public function doFilterChain(Filter ...$filters)
+    {
+        foreach ($filters as $filter) {
+            if (!$filter->doFilter()) {
+                break;
+            }
         }
+        return $this;
+    }
+
+    public function start()
+    {
+        // 路由分发、处理请求、返回响应
+        $this->di->router->dispatch($this->di->request);
     }
 }
 
-// 启动应用
-$di = bootApp();
+$bootstrap = (new Bootstrap())
+    ->init();
 
-// 注册路由
-$router = require_once __DIR__ . '/routes.php';
-
-// 按顺序执行过滤链
-doFilterChain(
-    new CorsFilter(),
-    new AuthenticationFilter($router->getRoutes()),
-);
-
-// 路由分发、处理请求、返回响应
-$router->dispatch($di->request);
+$bootstrap
+    ->doFilterChain(
+        new CorsFilter(),
+        new AuthenticationFilter()
+    )
+    ->start();

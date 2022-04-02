@@ -34,7 +34,7 @@ class Route
      * 
      * @var boolean
      */
-    public $requiresAuth = false;
+    public $requiresAuth = true;
 
     /**
      * 需要的操作权限
@@ -53,6 +53,12 @@ class Route
     public function requiresAuth()
     {
         $this->requiresAuth = true;
+        return $this;
+    }
+
+    public function notRequiresAuth()
+    {
+        $this->requiresAuth = false;
         return $this;
     }
 

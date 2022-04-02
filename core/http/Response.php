@@ -79,13 +79,13 @@ class Response
 
     protected bool $sent = false;
 
-    protected bool $isDebug;
+    protected bool $isDebug = false;
 
-    protected string $debugKey;
+    protected string $debugKey = 'debug';
 
     protected array $debugData = [];
 
-    protected string $responseType;
+    protected string $responseType = 'json';
 
     protected array $mimeTypes = [
         'txt' => 'text/plain; charset=utf-8',
@@ -97,19 +97,19 @@ class Response
 
     protected array $data = [];
 
-    public function isDebug(bool $isDebug = false)
+    public function setDebug(bool $isDebug)
     {
         $this->isDebug = $isDebug;
         return $this;
     }
 
-    public function setDebugKey(string $debugKey = 'debug')
+    public function setDebugKey(string $debugKey)
     {
         $this->debugKey = $debugKey;
         return $this;
     }
 
-    public function setResponseType(string $responseType = 'json')
+    public function setResponseType(string $responseType)
     {
         $this->responseType = $responseType;
         return $this;

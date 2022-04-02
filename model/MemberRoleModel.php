@@ -40,8 +40,11 @@ class MemberRoleModel extends BaseModel
             ],
             [
                 'rule.id [Int]',
+                'rule.parent_id [Int]',
                 'rule.description',
-                'rule.permission'
+                'rule.permission',
+                'rule.created_at',
+                'rule.updated_at'
             ],
             [
                 'member_role.member_id' => $memberId
@@ -49,11 +52,18 @@ class MemberRoleModel extends BaseModel
         );
     }
 
-    public function getPermissionList($rules)
+    public function getPermissionList($ruleTree)
     {
         $permissionList = [];
-        foreach ($rules as $rule) {
-            array_push($permissionList, $rule['permission']);
+        \App\debug('ruleTree', $ruleTree);
+        foreach ($ruleTree as $rule) {
+            if (isset($rule['children'])) {
+                foreach ($rule['children'] as $child) {
+                    // resource:handle, like:
+                    // member:add, member:delete
+                    array_push($permissionList, sprintf('%s:%s', $rule['permission'], $child['permission']));
+                }
+            }
         }
         return $permissionList;
     }

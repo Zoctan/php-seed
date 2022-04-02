@@ -9,13 +9,9 @@ use App\Core\Http\Response;
  */
 class Result
 {
-    // 状态码
     private $errno;
-    // 消息
     private $msg;
-    // 数据
     private $data;
-    // 响应结构字段映射
     private $structureMap;
 
     public function __construct()

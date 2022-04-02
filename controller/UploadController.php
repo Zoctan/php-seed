@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Util\Util;
+use App\Util\FileUtil;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
@@ -16,26 +17,15 @@ class UploadController extends BaseController
     {
         parent::__construct();
         $this->basePath = \App\DI()->config['app']['projectPath'];
-        $this->baseUrl = \App\DI()->config['app']['url'];
+        $this->baseUrl = \App\DI()->config['app']['baseUrl'];
         $this->config = \App\DI()->config['app']['upload'];
     }
 
     public function download()
     {
-        $uri = $this->request->uri;
-        $uriList = explode('/', $uri);
-        $fileName = end($uriList);
-        if (!file_exists($uri)) {
-            header('HTTP/1.1 404 NOT FOUND');
-        } else {
-            $this->response->setResponseType('stream');
-            $file = fopen($uri, 'rb');
-            Header('Accept-Ranges: bytes');
-            Header('Accept-Length: ' . filesize($uri));
-            Header('Content-Disposition: attachment; filename=' . $fileName);
-            echo fread($file, filesize($uri));
-            fclose($file);
-            exit();
+        $file = new FileUtil($this->request->uri);
+        if (!$file->download()) {
+            return ResultGenerator::errorWithMsg('download error');
         }
     }
 

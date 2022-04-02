@@ -4,16 +4,20 @@ return [
     'app' => [
         'name' => 'phpseed',
         'description' => 'PHP SEED',
-        'url'  => 'http://127.0.0.1/php-seed',
+        'baseUrl' => 'http://127.0.0.1/php-seed',
         'projectPath' => __DIR__,
         'debug' => true,
         'response' => [
             'type' => 'json',
             // 响应结构字段映射
             'structureMap' => [
+                // 状态码
                 'errno' => 'errno',
-                'data'  => 'data',
+                // 消息
                 'msg'   => 'msg',
+                // 数据
+                'data'  => 'data',
+                // 调试数据
                 'debug' => 'debug',
             ],
         ],

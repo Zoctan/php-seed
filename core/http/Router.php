@@ -61,7 +61,7 @@ class Router
 
         // fixme暂时这样处理upload接口
         if (strpos($uri, '/upload') === 0 && (strpos($uri, '/upload/add') === false && strpos($uri, '/upload/delete') === false)) {
-            $route = $this->routes['upload'];
+            $route = $this->routes['/upload'];
         } else {
             if (!isset($this->routes[$uri])) {
                 throw new RouterException('unknown router');

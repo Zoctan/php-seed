@@ -15,11 +15,14 @@ class AuthenticationFilter implements Filter
      * @var array
      */
     private $routes;
+    /**
+     * @var Request
+     */
     private $request;
 
-    public function __construct($routes)
+    public function __construct()
     {
-        $this->routes = $routes;
+        $this->routes = \App\DI()->router->getRoutes();
         $this->request = \App\DI()->request;
     }
 
@@ -27,6 +30,8 @@ class AuthenticationFilter implements Filter
     {
         // 需要认证的路由才检查
         $uri = $this->request->uri;
+        \App\debug('uri', $uri);
+        \App\debug('routes', $this->routes);
 
         // fixme暂时这样处理upload接口
         if (strpos($uri, '/upload') === 0) {

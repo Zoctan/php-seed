@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Util\Tree;
 use App\Core\AuthMember;
 
 class AuthMemberModel
@@ -17,14 +18,15 @@ class AuthMemberModel
         $memberRoleModel = new MemberRoleModel();
         $role = $memberRoleModel->getRole($memberId);
 
-        $rules = [];
+        $ruleList = [];
         if ($role['has_all_rule'] == 1) {
             $ruleModel = new RuleModel();
-            $rules = $ruleModel->listAllWithoutCondition();
+            $ruleList = $ruleModel->_listBy();
         } else {
-            $rules = $memberRoleModel->getRule($memberId);
+            $ruleList = $memberRoleModel->getRule($memberId);
         }
-        $permissionList = $memberRoleModel->getPermissionList($rules);
+        $ruleTree = Tree::list2Tree($ruleList);
+        $permissionList = $memberRoleModel->getPermissionList($ruleTree);
 
         return new AuthMember($member, $memberData, $role, $permissionList);
     }
