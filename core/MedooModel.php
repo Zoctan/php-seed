@@ -138,7 +138,7 @@ abstract class MedooModel
         }
         $this->config = $config;
         $this->database = $config['master'][0]['database'];
-        
+
         return $this;
     }
 
@@ -327,19 +327,28 @@ abstract class MedooModel
      */
     public function page(int $currentPage = 0, int $pageSize = 20, $columns = '*', array $where = []): array
     {
-        $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
-        // 根据分页获取id
-        $where['LIMIT'] = [$limitStart, $pageSize];
-        $ids = $this->connection()->select($this->table, $this->primary, $where);
-        $total = count($ids);
-        $list = $this->connection()->select($this->table, $columns, [$this->primary => $ids]);
-        return [
-            'list' => $list,
-            'total' => $total,
-            'currentPage' => $currentPage,
-            'pageSize' => $pageSize,
-            'totalPage' => ceil($total / $pageSize),
-        ];
+        if ($pageSize > 0) {
+            $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
+            // 根据分页获取id
+            $where['LIMIT'] = [$limitStart, $pageSize];
+            $ids = $this->connection()->select($this->table, $this->primary, $where);
+            $total = count($ids);
+            $list = $this->connection()->select($this->table, $columns, [$this->primary => $ids]);
+            return [
+                'list' => $list,
+                'total' => $total,
+                'currentPage' => $currentPage,
+                'pageSize' => $pageSize,
+                'totalPage' => ceil($total / $pageSize),
+            ];
+        } else {
+            $list = $this->connection()->select($this->table, $columns, $where);
+            $total = count($list);
+            return [
+                'list' => $list,
+                'total' => $total,
+            ];
+        }
     }
 
     /**
@@ -355,36 +364,45 @@ abstract class MedooModel
      */
     public function pageJoin(int $currentPage = 0, int $pageSize = 20, array $join = [], $columns = '*', array $where = []): array
     {
-        $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
-        $where['LIMIT'] = [$limitStart, $pageSize];
-        $idList = [];
-        $this->connection()->select(
-            $this->table,
-            $join,
-            '$this->table.$this->primary',
-            $where,
-            function ($_id) use (&$idList) {
-                $idList[] = $_id;
-            }
-        );
-        $total = count($idList);
-        $list = [];
-        $this->connection()->select(
-            $this->table,
-            $join,
-            $columns,
-            ['$this->table.$this->primary' => $idList],
-            function ($_data) use (&$list) {
-                $list[] = $_data;
-            }
-        );
-        return [
-            'list' => $list,
-            'total' => $total,
-            'currentPage' => $currentPage,
-            'pageSize' => $pageSize,
-            'totalPage' => ceil($total / $pageSize),
-        ];
+        if ($pageSize > 0) {
+            $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
+            $where['LIMIT'] = [$limitStart, $pageSize];
+            $idList = [];
+            $this->connection()->select(
+                $this->table,
+                $join,
+                "$this->table.$this->primary",
+                $where,
+                function ($_id) use (&$idList) {
+                    $idList[] = $_id;
+                }
+            );
+            $total = count($idList);
+            $list = [];
+            $this->connection()->select(
+                $this->table,
+                $join,
+                $columns,
+                ["$this->table.$this->primary" => $idList],
+                function ($_data) use (&$list) {
+                    $list[] = $_data;
+                }
+            );
+            return [
+                'list' => $list,
+                'total' => $total,
+                'currentPage' => $currentPage,
+                'pageSize' => $pageSize,
+                'totalPage' => ceil($total / $pageSize),
+            ];
+        } else {
+            $list = $this->connection()->select($this->table, $join, $columns, $where);
+            $total = count($list);
+            return [
+                'list' => $list,
+                'total' => $total,
+            ];
+        }
     }
 
     /**

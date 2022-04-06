@@ -83,7 +83,7 @@ class Util
 
     public static function debug($title, $obj)
     {
-        print_r('$title => ' . json_encode($obj) . '     ');
+        print_r("$title => ' . json_encode($obj) . '     ");
     }
 
     /*

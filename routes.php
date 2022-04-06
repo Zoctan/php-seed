@@ -10,8 +10,9 @@ $router->register('POST', '/member/checkExist', 'MemberController@checkExist')->
 $router->register('POST', '/member/checkOldPassword', 'MemberController@checkOldPassword');
 $router->register('POST', '/member/register', 'MemberController@register')->notRequiresAuth();
 $router->register(['GET', 'POST'], '/member/login', 'MemberController@login')->notRequiresAuth();
+$router->register(['GET', 'POST'], '/member/validateAccessToken', 'MemberController@validateAccessToken')->notRequiresAuth();
 $router->register('DELETE', '/member/logout', 'MemberController@logout');
-$router->register('PUT', '/member/refreshToken', 'MemberController@refreshToken');
+$router->register('PUT', '/member/refreshToken', 'MemberController@refreshToken')->notRequiresAuth();
 $router->register(['GET', 'POST'], '/member/detail', 'MemberController@detail');
 $router->register(['GET', 'POST'], '/member/profile', 'MemberController@profile');
 $router->register('POST', '/member/list', 'MemberController@list');
@@ -23,6 +24,7 @@ $router->register('DELETE', '/member/delete', 'MemberController@delete');
 
 $router->register('POST', '/role/add', 'RoleController@add');
 $router->register('POST', '/role/list', 'RoleController@list');
+$router->register('POST', '/role/listParent', 'RoleController@listParent');
 $router->register(['GET', 'POST'], '/role/detail', 'RoleController@detail');
 $router->register('PUT', '/role/update', 'RoleController@update');
 $router->register('PUT', '/memberRole/update', 'RoleController@updateMemberRole');

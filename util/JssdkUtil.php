@@ -47,13 +47,13 @@ class JssdkUtil
 
         // 注意 URL 一定要动态获取，不能 hardcode.
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
-        $url = '$protocol$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]';
+        $url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 
         $timestamp = time();
         $nonceStr = Util::randomStr();
 
         // 这里参数的顺序要按照 key 值 ASCII 码升序排序
-        $rawString = 'jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url';
+        $rawString = "jsapi_ticket=$jsapiTicket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
         $signature = sha1($rawString);
         return [
             'appId' => $this->appId,

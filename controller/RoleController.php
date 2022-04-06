@@ -44,7 +44,7 @@ class RoleController extends BaseController
     public function list()
     {
         $currentPage = intval($this->request->get('currentPage', 0));
-        $pageSize = intval($this->request->get('pageSize', 20));
+        $pageSize = intval($this->request->get('pageSize', 0));
 
         $role = $this->request->get('role');
 
@@ -69,6 +69,7 @@ class RoleController extends BaseController
             $pageSize,
             [
                 'id [Int]',
+                'parent_id [Int]',
                 'name',
                 'has_all_rule [Int]',
                 'lock [Int]',
@@ -88,6 +89,7 @@ class RoleController extends BaseController
         }
         $role = $this->roleModel->getById([
             'id [Int]',
+            'parent_id [Int]',
             'name',
             'has_all_rule [Int]',
             'lock [Int]',
@@ -97,7 +99,7 @@ class RoleController extends BaseController
         if (empty($role)) {
             return ResultGenerator::errorWithMsg('role does not exist');
         }
-        $ruleList = $this->roleModel->getRuleById($roleId);
+        $ruleList = $this->roleModel->listRuleByRoleId($roleId);
         if (!empty($ruleList) && $ruleList[0]['id'] === null) {
             $ruleList = [];
         }
@@ -105,6 +107,16 @@ class RoleController extends BaseController
             'role' => $role,
             'ruleList' => $ruleList,
         ]);
+    }
+
+    public function listParent()
+    {
+        $parentId = intval($this->request->get('parentId'));
+        if (empty($parentId)) {
+            return ResultGenerator::errorWithMsg('parent id does not exist');
+        }
+        $parentList = $this->roleModel->listParentByParentId($parentId);
+        return ResultGenerator::successWithData($parentList);
     }
 
     public function update()

@@ -31,7 +31,6 @@ class AuthenticationFilter implements Filter
         // 需要认证的路由才检查
         $uri = $this->request->uri;
         \App\debug('uri', $uri);
-        \App\debug('routes', $this->routes);
 
         // fixme暂时这样处理upload接口
         if (strpos($uri, '/upload') === 0) {

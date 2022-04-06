@@ -21,6 +21,7 @@ class MemberRoleModel extends BaseModel
             ],
             [
                 'role.id [Int]',
+                'role.parent_id [Int]',
                 'role.name',
                 'role.has_all_rule [Int]',
                 'role.lock [Int]',
@@ -55,7 +56,6 @@ class MemberRoleModel extends BaseModel
     public function getPermissionList($ruleTree)
     {
         $permissionList = [];
-        \App\debug('ruleTree', $ruleTree);
         foreach ($ruleTree as $rule) {
             if (isset($rule['children'])) {
                 foreach ($rule['children'] as $child) {

@@ -7,7 +7,7 @@ use App\Core\BaseModel;
 class RoleModel extends BaseModel
 {
     protected $table = 'role';
-    
+
     public function listRuleByRoleId($roleId)
     {
         return $this->select(
@@ -17,6 +17,7 @@ class RoleModel extends BaseModel
             ],
             [
                 'rule.id [Int]',
+                'rule.parent_id [Int]',
                 'rule.description',
                 'rule.permission',
                 'rule.created_at',
@@ -26,5 +27,29 @@ class RoleModel extends BaseModel
                 'role.id' => $roleId
             ]
         );
+    }
+
+    public function listParentByParentId(
+        $parentId,
+        $columns = [
+            'id [Int]',
+            'parent_id [Int]',
+            'name',
+            'has_all_rule [Int]',
+            'lock [Int]',
+            'created_at',
+            'updated_at',
+        ]
+    ) {
+        $parentList = [];
+        while (true) {
+            $parent = $this->getBy($columns, ['id' => $parentId]);
+            $parentList[] = $parent;
+            $parentId = $parent['parent_id'];
+            if ($parentId === 0) {
+                break;
+            }
+        }
+        return $parentList;
     }
 }

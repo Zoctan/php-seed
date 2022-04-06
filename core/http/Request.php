@@ -185,7 +185,7 @@ final class Request
         }
     }
 
-    public function get(string $key, mixed $default = null): ?string
+    public function get(string $key, $default = null)
     {
         if ($this->query->has($key)) {
             return $this->query->get($key);

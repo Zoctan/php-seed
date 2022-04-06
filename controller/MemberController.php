@@ -8,6 +8,7 @@ use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
 use App\Core\BaseController;
+use App\Core\Response\ResultCode;
 use App\Core\Response\ResultGenerator;
 
 /**
@@ -146,6 +147,22 @@ class MemberController extends BaseController
     }
 
     /**
+     * 检验 token 的有效性
+     */
+    public function validateAccessToken()
+    {
+        $accessToken = strval($this->request->get('accessToken'));
+        if (empty($accessToken)) {
+            return ResultGenerator::errorWithMsg('accessToken does not exist');
+        }
+        $accessTokenValidation = $this->jwtUtil->validateTokenRedis($accessToken);
+        if (!$accessTokenValidation) {
+            return ResultGenerator::errorWithCodeMsg(ResultCode::UNAUTHORIZED_EXCEPTION, 'accessToken is not valid');
+        }
+        return ResultGenerator::successWithMsg('accessToken is valid');
+    }
+
+    /**
      * 刷新 token
      */
     public function refreshToken()
@@ -239,6 +256,9 @@ class MemberController extends BaseController
         $memberData = $this->request->get('memberData');
         $role = $this->request->get('role');
 
+        \App\debug('member', $member);
+        \App\debug('memberData', $memberData);
+        \App\debug('role', $role);
         $conditionList = [];
         // 先查询其他表，根据其他表的结果再查主表
         $memberDataList = [];
@@ -309,12 +329,15 @@ class MemberController extends BaseController
                 array_push($conditionList, Util::value2Array($memberList, 'member_id'));
             }
         }
+        \App\debug('memberDataList', $memberDataList);
+        \App\debug('memberRoleList', $memberRoleList);
+        \App\debug('memberList', $memberList);
         // 数组所有可能的子集，并对这些子集做相交运算，再做分页查询
         $memberPageWhere = [];
         if (!empty($conditionList)) {
             $memberPageWhere = ['member.id' => Util::subsetsIntersect($conditionList)];
         }
-        $result =  $this->memberModel->pageJoin(
+        $result = $this->memberModel->pageJoin(
             $currentPage,
             $pageSize,
             [
@@ -344,6 +367,8 @@ class MemberController extends BaseController
             ],
             $memberPageWhere
         );
+
+        \App\debug('sql', $this->memberModel->log());
 
         return ResultGenerator::successWithData($result);
     }
