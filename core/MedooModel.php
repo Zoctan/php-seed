@@ -569,6 +569,7 @@ abstract class MedooModel
                 $times[$this->timestamps] = $timestamp;
             }
         }
+        
 
         $multi = $method == 'insert' && is_array($data) && is_numeric(array_keys($data)[0]);
         if ($times) {

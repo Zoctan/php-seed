@@ -187,20 +187,22 @@ final class Request
 
     public function get(string $key, $default = null)
     {
+        $value = null;
+
         if ($this->query->has($key)) {
-            return $this->query->get($key);
+            $value = $this->query->get($key);
         }
         if ($this->data->has($key)) {
-            return $this->data->get($key);
+            $value = $this->data->get($key);
         }
         if ($this->cookies->has($key)) {
-            return $this->cookies->get($key);
+            $value = $this->cookies->get($key);
         }
         if ($this->files->has($key)) {
-            return $this->files->get($key);
+            $value = $this->files->get($key);
         }
 
-        return $default;
+        return $value ? $value : $default;
     }
 
     /**

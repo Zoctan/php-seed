@@ -43,9 +43,12 @@ class ResultCode
     /** 认证异常 */
     const UNAUTHORIZED_EXCEPTION = [4002, 'unauthorized exception'];
 
+    /** 凭证异常 */
+    const TOKEN_EXCEPTION = [4003, 'token exception'];
+
     /** 验证异常 */
-    const VIOLATION_EXCEPTION = [4003, 'violation exception'];
+    const VIOLATION_EXCEPTION = [4004, 'violation exception'];
 
     /** 路由异常 */
-    const ROUTER_EXCEPTION = [4004, 'router exception'];
+    const ROUTER_EXCEPTION = [4005, 'router exception'];
 }

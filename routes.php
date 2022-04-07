@@ -11,7 +11,7 @@ $router->register('POST', '/member/checkOldPassword', 'MemberController@checkOld
 $router->register('POST', '/member/register', 'MemberController@register')->notRequiresAuth();
 $router->register(['GET', 'POST'], '/member/login', 'MemberController@login')->notRequiresAuth();
 $router->register(['GET', 'POST'], '/member/validateAccessToken', 'MemberController@validateAccessToken')->notRequiresAuth();
-$router->register('DELETE', '/member/logout', 'MemberController@logout');
+$router->register('DELETE', '/member/logout', 'MemberController@logout')->notRequiresAuth();
 $router->register('PUT', '/member/refreshToken', 'MemberController@refreshToken')->notRequiresAuth();
 $router->register(['GET', 'POST'], '/member/detail', 'MemberController@detail');
 $router->register(['GET', 'POST'], '/member/profile', 'MemberController@profile');

@@ -141,8 +141,10 @@ class MemberController extends BaseController
      */
     public function logout()
     {
-        $memberId = $this->authMember->member['id'];
-        $this->jwtUtil->invalidRedisToken($memberId);
+        if ($this->authMember) {
+            $memberId = $this->authMember->member['id'];
+            $this->jwtUtil->invalidRedisToken($memberId);
+        }
         return ResultGenerator::success();
     }
 
@@ -170,27 +172,27 @@ class MemberController extends BaseController
         // 先检查旧 accessToken 是否正常
         $oldAccessToken = $this->jwtUtil->getTokenFromRequest($this->request);
         if (empty($oldAccessToken)) {
-            return ResultGenerator::errorWithMsg('old accessToken does not exist');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'old accessToken does not exist');
         }
         $oldAuthMember = $this->jwtUtil->getAuthMember($oldAccessToken);
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
-            return ResultGenerator::errorWithMsg('old authMember does not exist');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'old authMember does not exist');
         }
         // 再检查 refreshToken 是否正常
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
-            return ResultGenerator::errorWithMsg('refreshToken does not exist');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'refreshToken does not exist');
         }
         if (!$this->jwtUtil->validateToken($refreshToken)) {
-            return ResultGenerator::errorWithMsg('invalidate refreshToken');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'invalidate refreshToken');
         }
         $authMember = $this->jwtUtil->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            return ResultGenerator::errorWithMsg('authMember does not exist');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'authMember does not exist');
         }
         // accessToken 和 refreshToken 是否为同一用户的
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            return ResultGenerator::errorWithMsg('accessToken does not match the refreshToken');
+            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'accessToken does not match the refreshToken');
         }
         $result = $this->jwtUtil->signAccessToken($authMember->member['id']);
         return ResultGenerator::successWithData($result);

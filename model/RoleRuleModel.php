@@ -14,19 +14,23 @@ class RoleRuleModel extends BaseModel
         // 先找到原来的规则列表
         $oldRuleList = $this->listByRoleId($roleId, ['rule_id [Int]']);
         $oldRuleIdList = Util::value2Array($oldRuleList, 'rule_id');
+
         // 在 原来规则，但不在 新规则，要删除
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //    ruleIdList: [1, 3, 5, 6, 7]
         //      diffList: [2, 4]
-        $diffList = array_diff($oldRuleIdList, $ruleIdList);
-        foreach ($diffList as $diffId) {
-            $this->deleteBy([
-                'AND' => [
-                    'role_id' => $roleId,
-                    'rule_id' => $diffId
-                ]
-            ]);
+        if (count($oldRuleIdList) > 0) {
+            $diffList = array_diff($oldRuleIdList, $ruleIdList);
+            foreach ($diffList as $diffId) {
+                $this->deleteBy([
+                    'AND' => [
+                        'role_id' => $roleId,
+                        'rule_id' => $diffId
+                    ]
+                ]);
+            }
         }
+
         // 在 新规则，但不在 原来规则，要添加
         //    ruleIdList: [1, 3, 5, 6, 7]
         // oldRuleIdList: [1, 2, 3, 4, 5]

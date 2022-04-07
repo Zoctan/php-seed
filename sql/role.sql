@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`
 (
     `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '角色id',
-    `parent_id`    BIGINT(20) UNSIGNED DEFAULT 0 COMMENT '父角色id',
+    `parent_id`    BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT '父角色id',
     `name`         VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '名称',
     `has_all_rule` TINYINT(3) DEFAULT 0 COMMENT '是否拥有所有权限：0否|1是',
     `lock`         TINYINT(3) DEFAULT 0 COMMENT '锁定，不可修改：0否|1是',

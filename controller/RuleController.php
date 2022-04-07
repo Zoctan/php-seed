@@ -22,6 +22,7 @@ class RuleController extends BaseController
 
     public function add()
     {
+        $parentId = intval($this->request->get('parent_id', 0));
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
 
@@ -30,6 +31,7 @@ class RuleController extends BaseController
         }
 
         $ruleId = $this->ruleModel->insert([
+            'parent_id' => $parentId,
             'description' => $description,
             'permission' => $permission,
         ]);
@@ -74,11 +76,10 @@ class RuleController extends BaseController
 
     public function deleteList()
     {
-        $ruleList = $this->request->get('ruleList');
-        if (empty($ruleList)) {
-            return ResultGenerator::errorWithMsg('ruleList does not exist');
+        $ruleIdList = $this->request->get('ruleIdList');
+        if (empty($ruleIdList)) {
+            return ResultGenerator::errorWithMsg('ruleIdList does not exist');
         }
-        $ruleIdList = Util::value2Array($ruleList, 'id');
         $this->ruleModel->deleteByIdList($ruleIdList);
         return ResultGenerator::success();
     }
