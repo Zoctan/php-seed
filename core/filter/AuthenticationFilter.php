@@ -4,7 +4,7 @@ namespace App\Core\Filter;
 
 use App\Core\Filter;
 use App\Util\JwtUtil;
-use App\Core\Exception\UnAuthorizedException;
+use App\Core\Exception\AccessTokenException;
 
 /**
  * 认证过滤器
@@ -42,17 +42,17 @@ class AuthenticationFilter implements Filter
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
-                throw new UnAuthorizedException('empty token');
+                throw new AccessTokenException('empty token');
                 return false;
             }
             if (!$jwtUtil->validateTokenRedis($token)) {
-                throw new UnAuthorizedException('invalidate token');
+                throw new AccessTokenException('invalid token');
                 return false;
             }
             $needPermissionList = $this->routes[$uri]->auth;
             $authMember = $jwtUtil->getAuthMember($token);
             if (!$authMember->has($needPermissionList)) {
-                throw new UnAuthorizedException('no permission to visit this route');
+                throw new AccessTokenException('no permission to visit this route');
                 return false;
             }
             // 注入已认证的成员信息

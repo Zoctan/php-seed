@@ -5,7 +5,7 @@ namespace App\Util;
 use Predis\Client;
 use App\Model\AuthMemberModel;
 use App\Core\Singleton;
-use App\Core\exception\UnAuthorizedException;
+use App\Core\exception\TokenException;
 use App\Core\Http\Request;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
@@ -178,7 +178,7 @@ class JwtUtil
         try {
             $token = $this->jwtConfig->parser()->parse($token);
         } catch (Exception $e) {
-            // throw new UnAuthorizedException('token parse error: ' . $e->getMessage());
+            // throw new TokenException('token parse error:' . $e->getMessage());
             return false;
         }
 
@@ -193,7 +193,7 @@ class JwtUtil
             $this->jwtConfig->validator()->assert($token, ...$validationConstraints);
             return true;
         } catch (RequiredConstraintsViolated $e) {
-            // throw new UnAuthorizedException('token validate error: ' . $e->getMessage());
+            // throw new TokenException('token validate error:' . $e->getMessage());
             return false;
         }
     }
@@ -204,6 +204,9 @@ class JwtUtil
     public function getAuthMember($token)
     {
         $claims =  $this->parseToken($token);
+        if (empty($claims)) {
+            return null;
+        }
         $memberId = $claims['memberId'];
         return (new AuthMemberModel())->get($memberId);
     }
@@ -218,7 +221,8 @@ class JwtUtil
             // 包的问题，能读取
             $claims = json_decode(base64_decode($token->claims()->toString()), true);
         } catch (Exception $e) {
-            throw new UnAuthorizedException('token parse error: ' . $e->getMessage());
+            // throw new TokenException('token parse error: ' . $e->getMessage());
+            return null;
         }
         return $claims;
     }

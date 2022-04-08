@@ -111,7 +111,7 @@ return [
         // 刷新时间（分钟）：这段时间内可以获取新 token
         'refreshMinutes' => 1440,
         // 多久过期（分钟）
-        'expiresMinutes' => 60,
+        'expiresMinutes' => 1,
         // 私钥
         'signingKey' => __DIR__ . '/rsa/private-key.pem',
         // 公钥

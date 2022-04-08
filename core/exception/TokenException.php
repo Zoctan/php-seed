@@ -6,13 +6,13 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * 认证异常
+ * 凭证异常
  */
-class UnAuthorizedException extends BaseException
+class TokenException extends BaseException
 {
 
     public function __construct($msg = '')
     {
-        parent::__construct(ResultCode::UNAUTHORIZED_EXCEPTION, $msg);
+        parent::__construct(ResultCode::TOKEN_EXCEPTION, $msg);
     }
 }

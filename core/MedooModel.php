@@ -4,6 +4,7 @@ namespace App\Core;
 
 use PDO;
 use Medoo\Medoo;
+use App\Core\exception\DatabaseException;
 
 /**
  * https://medoo.in/doc
@@ -134,7 +135,7 @@ abstract class MedooModel
     public function __construct(array $config)
     {
         if (empty($config)) {
-            throw new \Exception('empty database config');
+            throw new DatabaseException('empty database config');
         }
         $this->config = $config;
         $this->database = $config['master'][0]['database'];
@@ -195,7 +196,7 @@ abstract class MedooModel
      */
     public function getBy($columns = '*', array $where)
     {
-        if (empty($where)) throw new \Exception('empty condition, get one error');
+        if (empty($where)) throw new DatabaseException('empty condition, get one error');
 
         $this->read = true;
         return $this->connection()->get($this->table, $columns, $where);
@@ -237,11 +238,11 @@ abstract class MedooModel
      */
     public function deleteBy(array $where): void
     {
-        if (empty($where)) throw new \Exception('empty condition, delete error');
+        if (empty($where)) throw new DatabaseException('empty condition, delete error');
 
         $result = $this->connection()->delete($this->table, $where);
         if (empty($result)) {
-            throw new \Exception('delete error');
+            throw new DatabaseException('delete error');
         }
     }
 
@@ -280,12 +281,12 @@ abstract class MedooModel
      */
     public function updateBy($values, array $where): void
     {
-        if (empty($where)) throw new \Exception('empty condition, update error');
+        if (empty($where)) throw new DatabaseException('empty condition, update error');
 
         $this->write = true;
         $result = $this->connection()->update($this->table, $values, $where);
         if (empty($result)) {
-            throw new \Exception('update error');
+            throw new DatabaseException('update error');
         }
     }
 
@@ -569,7 +570,7 @@ abstract class MedooModel
                 $times[$this->timestamps] = $timestamp;
             }
         }
-        
+
 
         $multi = $method == 'insert' && is_array($data) && is_numeric(array_keys($data)[0]);
         if ($times) {

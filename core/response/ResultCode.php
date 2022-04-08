@@ -37,18 +37,21 @@ class ResultCode
     /** 账户名重复 */
     const DUPLICATE_NAME = [2004, 'duplicate name'];
 
-    /** 数据库异常 */
-    const DATABASE_EXCEPTION = [4001, 'datebase exception'];
-
-    /** 认证异常 */
-    const UNAUTHORIZED_EXCEPTION = [4002, 'unauthorized exception'];
-
     /** 凭证异常 */
-    const TOKEN_EXCEPTION = [4003, 'token exception'];
+    const TOKEN_EXCEPTION = [4001, 'token exception'];
+
+    /** 通行凭证异常 */
+    const ACCESS_TOKEN_EXCEPTION = [4002, 'access token exception'];
+
+    /** 刷新凭证异常 */
+    const REFRESH_TOKEN_EXCEPTION = [4003, 'refresh token exception'];
+
+    /** 数据库异常 */
+    const DATABASE_EXCEPTION = [4004, 'datebase exception'];
 
     /** 验证异常 */
-    const VIOLATION_EXCEPTION = [4004, 'violation exception'];
+    const VIOLATION_EXCEPTION = [4005, 'violation exception'];
 
     /** 路由异常 */
-    const ROUTER_EXCEPTION = [4005, 'router exception'];
+    const ROUTER_EXCEPTION = [4006, 'router exception'];
 }
