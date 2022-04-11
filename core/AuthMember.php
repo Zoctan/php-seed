@@ -48,11 +48,23 @@ class AuthMember
      * 
      * @param array $need
      */
-    public function has(array $need)
+    public function checkPermission(array $need)
     {
         if (count($need) == 0) {
             return true;
         }
-        return count(array_diff($need, $this->permissionList)) == 0;
+        $intersect = array_intersect($need, $this->permissionList);
+        \App\debug('intersect', $intersect);
+        if (isset($need['joint'])) {
+            if ($need['joint'] === 'and') {
+                return count($intersect) === count($need);
+            } else if ($need['joint'] === 'or') {
+                return count($intersect) > 0;
+            }
+        } else {
+            // same as joint = 'and'
+            return count($intersect) === count($need);
+        }
+        return false;
     }
 }

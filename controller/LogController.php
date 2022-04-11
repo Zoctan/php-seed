@@ -24,18 +24,18 @@ class LogController extends BaseController
         $currentPage = intval($this->request->get('currentPage', 0));
         $pageSize = intval($this->request->get('pageSize', 20));
 
-        $level = strval($this->request->get('level'));
+        $level = intval($this->request->get('level'));
         $content = strval($this->request->get('content'));
         $created_at = strval($this->request->get('created_at'));
 
         $where = [];
-        if ($level) {
+        if (is_numeric($level)) {
             $where['level'] = $level;
         }
-        if ($content) {
+        if (!empty($content)) {
             $where['content[~]'] = $content;
         }
-        if ($created_at) {
+        if (!empty($created_at)) {
             $where['created_at'] = $created_at;
         }
 

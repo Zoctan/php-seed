@@ -9,9 +9,6 @@ class LogModel extends BaseModel
 {
     protected $table = 'log';
 
-    /*
-     * 添加
-     */
     public function add($data)
     {
         $ip = Ipv4Location::getIp();

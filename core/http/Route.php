@@ -2,46 +2,45 @@
 
 namespace App\Core\Http;
 
-/**
- * 路由
- */
 class Route
 {
     /**
-     * 请求方法
+     * request method list
      * 
      * @var array
      */
     public $methods;
 
     /**
-     * 网址
+     * request uri
      * 
      * @var string
      */
     public $uri;
 
     /**
-     * 处理方法
-     * function | 'XXController@Method'
+     * controller handle method callback function or string
+     * callback function | 'XXController@Method'
      * 
      * @var callback|string
      */
     public $action;
 
     /**
-     * 需要权限
+     * requires auth
      * 
      * @var boolean
      */
-    public $requiresAuth = true;
+    public $auth = true;
 
     /**
-     * 需要的操作权限
+     * permission list
+     * and: ['article:add', 'article:delete'] or [ 'joint' => 'and', 'list' => ['article:add', 'article:delete'] ]
+     * or:  [ 'joint' => 'or', 'list' => ['article:add', 'article:delete'] ]
      * 
      * @var array
      */
-    public $auth = [];
+    public $permission = [];
 
     public function __construct($methods, $uri, $action)
     {
@@ -50,21 +49,15 @@ class Route
         $this->action = $action;
     }
 
-    public function requiresAuth()
-    {
-        $this->requiresAuth = true;
-        return $this;
-    }
-
-    public function notRequiresAuth()
-    {
-        $this->requiresAuth = false;
-        return $this;
-    }
-
-    public function setAuth(array $auth)
+    public function setAuth(bool $auth = true)
     {
         $this->auth = $auth;
+        return $this;
+    }
+
+    public function setPermission(array $permission = [])
+    {
+        $this->permission = $permission;
         return $this;
     }
 }

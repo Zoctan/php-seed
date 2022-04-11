@@ -30,15 +30,17 @@ class AuthenticationFilter implements Filter
     {
         // 需要认证的路由才检查
         $uri = $this->request->uri;
+
         \App\debug('uri', $uri);
+        \App\debug('routes', $this->routes);
 
         // fixme暂时这样处理upload接口
-        if (strpos($uri, '/upload') === 0) {
-            $requiresAuth = false;
+        if (strpos($uri, '/upload/') === 0) {
+            $auth = false;
         } else {
-            $requiresAuth = $this->routes[$uri]->requiresAuth;
+            $auth = $this->routes[$uri]->auth;
         }
-        if ($requiresAuth) {
+        if ($auth) {
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
             if (empty($token)) {
@@ -49,9 +51,9 @@ class AuthenticationFilter implements Filter
                 throw new AccessTokenException('invalid token');
                 return false;
             }
-            $needPermissionList = $this->routes[$uri]->auth;
+            $needPermissionList = $this->routes[$uri]->permission;
             $authMember = $jwtUtil->getAuthMember($token);
-            if (!$authMember->has($needPermissionList)) {
+            if (!$authMember->checkPermission($needPermissionList)) {
                 throw new AccessTokenException('no permission to visit this route');
                 return false;
             }

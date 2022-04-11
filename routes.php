@@ -4,45 +4,59 @@ namespace App;
 
 use App\Core\Http\Router;
 
+$routeCachePath = \App\DI()->config['routeCachePath'];
+
 $router = new Router();
 
-$router->register('POST', '/member/checkExist', 'MemberController@checkExist')->notRequiresAuth();
-$router->register('POST', '/member/checkOldPassword', 'MemberController@checkOldPassword');
-$router->register('POST', '/member/register', 'MemberController@register')->notRequiresAuth();
-$router->register(['GET', 'POST'], '/member/login', 'MemberController@login')->notRequiresAuth();
-$router->register(['GET', 'POST'], '/member/validateAccessToken', 'MemberController@validateAccessToken')->notRequiresAuth();
-$router->register('DELETE', '/member/logout', 'MemberController@logout')->notRequiresAuth();
-$router->register('PUT', '/member/refreshToken', 'MemberController@refreshToken')->notRequiresAuth();
-$router->register(['GET', 'POST'], '/member/detail', 'MemberController@detail');
-$router->register(['GET', 'POST'], '/member/profile', 'MemberController@profile');
-$router->register('POST', '/member/list', 'MemberController@list');
-$router->register('PUT', '/member/updatePassword', 'MemberController@updatePassword');
-$router->register('PUT', '/member/updateProfile', 'MemberController@updateProfile');
-$router->register('PUT', '/member/updateDetail', 'MemberController@updateDetail');
-$router->register('POST', '/member/add', 'MemberController@add');
-$router->register('DELETE', '/member/delete', 'MemberController@delete');
+// production
+// $router->loadCache($routeCachePath);
 
-$router->register('POST', '/role/add', 'RoleController@add');
-$router->register('POST', '/role/list', 'RoleController@list');
-$router->register('POST', '/role/listParent', 'RoleController@listParent');
-$router->register(['GET', 'POST'], '/role/detail', 'RoleController@detail');
-$router->register('PUT', '/role/update', 'RoleController@update');
-$router->register('PUT', '/memberRole/update', 'RoleController@updateMemberRole');
-$router->register('DELETE', '/role/delete', 'RoleController@delete');
+// development
+$router->addGroup('/member', 'MemberController')
+  ->addRoute('POST', '/checkExist', 'checkExist', ['auth' => false])
+  ->addRoute('POST', '/checkOldPassword', 'checkOldPassword')
+  ->addRoute('POST', '/register', 'register', ['auth' => false])
+  ->addRoute(['GET', 'POST'], '/login', 'login', ['auth' => false])
+  ->addRoute(['GET', 'POST'], '/validateAccessToken', 'validateAccessToken', ['auth' => false])
+  ->addRoute('DELETE', '/logout', 'logout', ['auth' => false])
+  ->addRoute('PUT', '/refreshToken', 'refreshToken', ['auth' => false])
+  ->addRoute(['GET', 'POST'], '/detail', 'detail')
+  ->addRoute(['GET', 'POST'], '/profile', 'profile')
+  ->addRoute('POST', '/list', 'list', ['permission' => ['member:list']])
+  ->addRoute('PUT', '/updatePassword', 'updatePassword')
+  ->addRoute('PUT', '/updateProfile', 'updateProfile')
+  ->addRoute('PUT', '/updateDetail', 'updateDetail')
+  ->addRoute('POST', '/add', 'add')
+  ->addRoute('DELETE', '/delete', 'delete');
 
-$router->register('POST', '/rule/add', 'RuleController@add');
-$router->register('POST', '/rule/list', 'RuleController@list');
-$router->register('PUT', '/rule/updateList', 'RuleController@updateList');
-$router->register('PUT', '/rule/update', 'RuleController@update');
-$router->register('DELETE', '/rule/deleteList', 'RuleController@deleteList');
-$router->register('DELETE', '/rule/delete', 'RuleController@delete');
+$router->addGroup('/role', 'RoleController')
+  ->addRoute('POST', '/add', 'add')
+  ->addRoute('POST', '/list', 'list')
+  ->addRoute('POST', '/listParent', 'listParent')
+  ->addRoute(['GET', 'POST'], '/detail', 'detail')
+  ->addRoute('PUT', '/update', 'update')
+  ->addRoute('DELETE', '/delete', 'delete')
+  ->addRoute('PUT', '/updateMemberRole', 'updateMemberRole');
 
-$router->register('GET', '/upload', 'UploadController@download');
-$router->register(['GET', 'POST'], '/upload/add', 'UploadController@add');
-$router->register(['GET', 'POST', 'DELETE'], '/upload/delete', 'UploadController@delete');
+$router->addGroup('/rule', 'RuleController')
+  ->addRoute('POST', '/add', 'add')
+  ->addRoute('POST', '/list', 'list')
+  ->addRoute('PUT', '/updateList', 'updateList')
+  ->addRoute('PUT', '/update', 'update')
+  ->addRoute('DELETE', '/deleteList', 'deleteList')
+  ->addRoute('DELETE', '/delete', 'delete');
 
-$router->register('POST', '/system/getValue', 'SystemController@getValue');
-$router->register('POST', '/system/add', 'SystemController@add');
-$router->register('PUT', '/system/update', 'SystemController@update');
-$router->register('DELETE', '/system/delete', 'SystemController@delete');
+$router->addGroup('/upload', 'UploadController')
+  ->addRoute('GET', '/', 'download')
+  ->addRoute(['GET', 'POST'], '/add', 'add')
+  ->addRoute(['GET', 'POST', 'DELETE'], '/delete', 'delete');
+
+$router->addGroup('/system', 'SystemController')
+  ->addRoute('POST', '/getValue', 'getValue')
+  ->addRoute('POST', '/add', 'add')
+  ->addRoute('PUT', '/update', 'update')
+  ->addRoute('DELETE', '/delete', 'delete');
+
+$router->cache($routeCachePath);
+
 return $router;

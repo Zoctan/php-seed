@@ -118,7 +118,7 @@ class Bootstrap
         return $this;
     }
 
-    public function start()
+    public function dispatch()
     {
         // 路由分发、处理请求、返回响应
         $this->di->router->dispatch($this->di->request);
@@ -133,4 +133,4 @@ $bootstrap
         new CorsFilter(),
         new AuthenticationFilter()
     )
-    ->start();
+    ->dispatch();

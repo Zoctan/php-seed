@@ -31,7 +31,7 @@ class UploadController extends BaseController
 
     public function add()
     {
-        // 目标文件夹：/pdf/xx/
+        // 目标文件夹：/image/xx/
         $targetDir = strval($this->request->get('targetDir'));
         // 是否使用时间文件夹
         $useTimeDir = boolval($this->request->get('useTimeDir', false));

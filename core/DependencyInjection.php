@@ -149,7 +149,7 @@ class DependencyInjection implements \ArrayAccess
         return $this->get($name, null);
     }
 
-    /** ------------------ 实现 ArrayAccess ------------------ **/
+    /** ------------------ ArrayAccess ------------------ **/
 
     public function offsetSet($offset, $value): void
     {

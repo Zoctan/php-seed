@@ -56,6 +56,11 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
         return $this->data;
     }
 
+    public function isEmpty(): bool
+    {
+        return $this->count() === 0;
+    }
+
     public function clearData(): void
     {
         $this->data = [];
