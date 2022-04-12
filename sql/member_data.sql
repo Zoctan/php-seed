@@ -14,6 +14,6 @@ CREATE TABLE `member_data`
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='成员信息表';
 
 INSERT INTO `member_data` VALUES
-(1, 1, 'http://127.0.0.1/php-seed/upload/image/avatar.jpg', 'admin', 1, '2022-01-01 00:00:00', NULL),
+(1, 1, 'http://127.0.0.1/php-seed/upload?filename=avatar.jpg&type=image', 'admin', 1, '2022-01-01 00:00:00', NULL),
 (2, 2, '', 'user001', 1, '2022-01-01 00:00:00', NULL),
 (3, 3, '', 'black001', 0, '2022-01-01 00:00:00', NULL);

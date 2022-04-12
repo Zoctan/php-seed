@@ -42,6 +42,13 @@ class Route
      */
     public $permission = [];
 
+    /**
+     * response type
+     * 
+     * @var string
+     */
+    public $responseType = Response::RESPONSE_TYPE_JSON;
+
     public function __construct($methods, $uri, $action)
     {
         $this->methods = $methods;
@@ -58,6 +65,12 @@ class Route
     public function setPermission(array $permission = [])
     {
         $this->permission = $permission;
+        return $this;
+    }
+
+    public function setResponseType(array $responseType = Response::RESPONSE_TYPE_JSON)
+    {
+        $this->responseType = $responseType;
         return $this;
     }
 }

@@ -16,14 +16,20 @@ class UploadController extends BaseController
     public function __construct()
     {
         parent::__construct();
-        $this->basePath = \App\DI()->config['app']['projectPath'];
+        $this->basePath = \App\DI()->config['basePath'];
         $this->baseUrl = \App\DI()->config['app']['baseUrl'];
         $this->config = \App\DI()->config['app']['upload'];
     }
 
     public function download()
     {
-        $file = new FileUtil($this->request->uri);
+        $filename = strval($this->request->get('filename'));
+        $type = strval($this->request->get('type'));
+        if (empty($filename) || empty($type)) {
+            return ResultGenerator::errorWithMsg('filename or type does not exist');
+        }
+        $filePath = implode('/', [$this->config[$type]['localPath'], $filename]);
+        $file = new FileUtil($filePath, $this->basePath);
         if (!$file->download()) {
             return ResultGenerator::errorWithMsg('download error');
         }
@@ -105,7 +111,7 @@ class UploadController extends BaseController
                     if (!$useRandomName) {
                         return ResultGenerator::errorWithMsg(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
                     }
-                    // 设置随机文件名
+                    // set random file name
                     // test.jpg -> asdfghjkl.jpg
                     $randomStr = Util::randomStr(15);
                     $fileNameWithExt = implode('.', [$randomStr, $fileExt]);
@@ -114,7 +120,7 @@ class UploadController extends BaseController
             }
 
             // 返回的应该是网站目录下的上传目录，而不是D:\xx这样的目录地址
-            $uploadFileUrl = implode('/', [$uploadUrl, $fileNameWithExt]);
+            $uploadFileUrl = sprintf('%s?file=%s', $uploadUrl, $fileNameWithExt);
 
             $isMoveSuccess = move_uploaded_file($fileTmp, $realUploadFile);
             if ($isMoveSuccess) {
@@ -134,13 +140,13 @@ class UploadController extends BaseController
 
     public function delete()
     {
-        $type = strval($this->request->get('type', 'image'));
-        $url = strval($this->request->get('url'));
-        if (empty($type) || empty($url)) {
-            return ResultGenerator::errorWithMsg('please input type and url');
+        $filename = strval($this->request->get('filename'));
+        $type = strval($this->request->get('type'));
+        if (empty($filename) || empty($type)) {
+            return ResultGenerator::errorWithMsg('filename or type does not exist');
         }
 
-        $realUploadFile = str_replace($this->baseUrl, $this->basePath, $url);
+        $realUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
         if (!file_exists($realUploadFile)) {
             return ResultGenerator::errorWithMsg('File is not existed.');
         }

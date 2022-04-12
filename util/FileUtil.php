@@ -4,27 +4,27 @@ namespace App\Util;
 
 class FileUtil
 {
-  public $projectPath;
+  public $basePath;
   public $absolutePath;
   public $relativePath;
   public $fileNameWithExt;
   public $fileNameWithoutExt;
   public $fileExt;
 
-  public function __construct($path)
+  public function __construct($path, $basePath = __DIR__)
   {
-    $this->projectPath = \App\DI()->config['app']['projectPath'];
-    if (strpos($this->projectPath, $path) === 0) {
+    $this->basePath = $basePath;
+    if (strpos($this->basePath, $path) === 0) {
       $this->absolutePath = $path;
       $this->relativePath = $this->getRelativePath($this->absolutePath);
     } else {
       $this->absolutePath = $this->getAbsolutePath($path);
       $this->relativePath = $path;
     }
-    $this->getFileInfo();
+    $this->setFileInfo();
   }
 
-  private function getFileInfo()
+  private function setFileInfo()
   {
     // C:\dir\test.txt
     $fileInfo = pathinfo($this->absolutePath);
@@ -40,16 +40,17 @@ class FileUtil
 
   private function getAbsolutePath($relativePath)
   {
-    return implode('/', [$this->projectPath, $relativePath]);
+    return implode('/', [$this->basePath, $relativePath]);
   }
 
   private function getRelativePath($absolutePath)
   {
-    return str_replace($this->projectPath, '', $absolutePath);
+    return str_replace($this->basePath, '', $absolutePath);
   }
 
   public function download()
   {
+    \App\debug('download', $this->absolutePath);
     if (!file_exists($this->absolutePath)) {
       header('HTTP/1.1 404 NOT FOUND');
       return false;

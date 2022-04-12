@@ -4,6 +4,7 @@ ini_set('display_errors', true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\Util\FileUtil;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Collection;
@@ -17,7 +18,7 @@ class Bootstrap
     private $di;
     private $timezoneId = 'prc';
     private $configPath = __DIR__ . '/config.php';
-    private $routerPath = __DIR__ . '/routes.php';
+    private $routerPath;
 
     public function __construct()
     {
@@ -26,6 +27,9 @@ class Bootstrap
 
     public function init()
     {
+        // global exception handler
+        ExceptionHandler::register();
+        
         $this->initTimezone();
 
         $this->initConfig();
@@ -37,9 +41,6 @@ class Bootstrap
         $this->initCache();
 
         $this->initRouter();
-
-        // 注册全局异常处理器
-        ExceptionHandler::register();
 
         return $this;
     }
@@ -61,9 +62,18 @@ class Bootstrap
         return $this;
     }
 
+    /**
+     * all config files must be place at the same dir.
+     * env config should name as config-xxx.php, eg. config-development.php
+     */
     public function initConfig()
     {
-        $this->di->config = new Collection(require_once $this->configPath);
+        $config = require_once $this->configPath;
+        $basePath = $config['basePath'];
+        $configFile = new FileUtil($this->configPath, $basePath);
+        // $basePath is from config.php, so require config.php first
+        $configEnv = require_once sprintf('%s/%s-%s.%s', $basePath, $configFile->fileNameWithoutExt, $config['env'], $configFile->fileExt);
+        $this->di->config = new Collection(array_merge($config, $configEnv));
     }
 
     public function setRouter($path)
@@ -74,19 +84,22 @@ class Bootstrap
 
     public function initRouter()
     {
+        if (!$this->routerPath) {
+            $this->routerPath = $this->di->config['app']['routerPath'];
+        }
         $this->di->router = require_once $this->routerPath;
         return $this;
     }
 
     public function initUtil()
     {
-        // 注册伪造数据工具
+        // faker data util
         $this->di->faker = Faker\Factory::create('zh_CN');
 
-        // 注册 HTTP 客户端
+        // http client util
         $this->di->curl = new GuzzleHttp\Client();
 
-        // 注册图片处理工具
+        // image handle util
         $this->di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
     }
 
@@ -120,8 +133,7 @@ class Bootstrap
 
     public function dispatch()
     {
-        // 路由分发、处理请求、返回响应
-        $this->di->router->dispatch($this->di->request);
+        $this->di->router->dispatch($this->di->request, $this->di->response);
     }
 }
 

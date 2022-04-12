@@ -85,9 +85,15 @@ class Response
 
     protected array $debugData = [];
 
-    protected string $responseType = 'json';
+    public const RESPONSE_TYPE_TXT = 'txt';
+    public const RESPONSE_TYPE_XML = 'xml';
+    public const RESPONSE_TYPE_HTML = 'html';
+    public const RESPONSE_TYPE_JSON = 'json';
+    public const RESPONSE_TYPE_STREAM = 'stream';
 
-    protected array $mimeTypes = [
+    protected string $responseType = self::RESPONSE_TYPE_JSON;
+
+    protected static array $mimeTypes = [
         'txt' => 'text/plain; charset=utf-8',
         'xml' => 'application/xml; charset=utf-8',
         'html' => 'application/html; charset=utf-8',
@@ -109,7 +115,7 @@ class Response
         return $this;
     }
 
-    public function setResponseType(string $responseType)
+    public function setResponseType(string $responseType = self::RESPONSE_TYPE_JSON)
     {
         $this->responseType = $responseType;
         return $this;
@@ -294,20 +300,24 @@ class Response
         }
 
         switch ($this->responseType) {
-            case 'html':
+            case self::RESPONSE_TYPE_TXT:
                 break;
-            case 'xml':
+            case self::RESPONSE_TYPE_XML:
                 $this->setContent(Array2Xml::convert($this->data));
                 break;
+            case self::RESPONSE_TYPE_HTML:
+                break;
             default:
-            case 'json':
+            case self::RESPONSE_TYPE_JSON:
                 // JSON_UNESCAPED_UNICODE 中文也能显示
                 $this->setContent(json_encode($this->data, JSON_UNESCAPED_UNICODE));
+                break;
+            case self::RESPONSE_TYPE_STREAM:
                 break;
         }
 
         if (!headers_sent()) {
-            $this->setContentType($this->mimeTypes[$this->responseType]);
+            $this->setContentType(self::$mimeTypes[$this->responseType]);
             $this->sendHeader();
         }
 

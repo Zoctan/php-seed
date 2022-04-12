@@ -80,26 +80,13 @@ class Util
         }
         return $valueArray;
     }
-
-    public static function debug($title, $obj)
-    {
-        print_r("$title => ' . json_encode($obj) . '     ");
-    }
-
+    
     /*
      * 当前文件名
      */
     public static function phpSelfName()
     {
         return substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/') + 1);
-    }
-
-    /*
-     * 字符串中是否包含关键字
-     */
-    public static function containKey($data, $key)
-    {
-        return strpos($data, $key) !== false;
     }
 
     /*
@@ -111,46 +98,6 @@ class Util
         $today = date('Y-m-d', time());
         $day = date('Y-m-d', strtotime($dateString));
         return $day == $today;
-    }
-
-    /**
-     * 删除二维数组中不需要的键值对
-     */
-    public static function deleteByKeys($array, $noNeedKeys)
-    {
-        $afterArray = $array;
-        for ($i = 0, $len = count($array); $i < $len; $i++) {
-            foreach ($array[$i] as $key => $value) {
-                foreach ($noNeedKeys as $key2) {
-                    if ($key === $key2) {
-                        unset($afterArray[$i][$key]);
-                    }
-                }
-            }
-        }
-        return $afterArray;
-    }
-
-    /**
-     * 只保留二维数组中需要的键值对
-     */
-    public static function keepByKeys($array, $needKeys)
-    {
-        $afterArray = [];
-        for ($i = 0, $len = count($array); $i < $len; $i++) {
-            $tempArray = [];
-            foreach ($array[$i] as $key => $value) {
-                foreach ($needKeys as $key2) {
-                    if ($key === $key2) {
-                        $tempArray = array_merge($tempArray, [$key => $value]);
-                    }
-                }
-            }
-            if (count($tempArray) > 0) {
-                array_push($afterArray, $tempArray);
-            }
-        }
-        return $afterArray;
     }
 
     /**
@@ -179,14 +126,6 @@ class Util
             $value = $str;
         }
         return $value;
-    }
-
-    /**
-     * 获取文件后缀名
-     */
-    public static function getFileExt($filename)
-    {
-        return substr(strrchr($filename, '.'), 1);
     }
 
     /*

@@ -11,15 +11,12 @@ class Router
 {
     protected $groupUri = '';
     protected $groupCallback = null;
-    // todo 树结构
-    protected $routes = [];
 
-    /**
-     * 获取路由列表
-     */
-    public function getRoutes()
+    protected $routeList = [];
+
+    public function getrouteList()
     {
-        return $this->routes;
+        return $this->routeList;
     }
 
     public function addGroup(string $groupUri = '', $groupCallback = null)
@@ -39,28 +36,33 @@ class Router
      */
     public function addRoute($methods, string $uri, $callback, array $extra = [])
     {
-        if (isset($this->routes[$uri])) {
-            return;
+        // eg. member/login => /member/login
+        $uri = strpos($uri, '/') === false ? '/' . $uri : $uri;
+        // /$groupUri/$uri
+        $uri = $this->groupUri !== '' ? $this->groupUri . $uri : $uri;
+
+        if (isset($this->routeList[$uri])) {
+            throw new RouterException('url repeat: ' . $uri);
         }
 
         // 'GET' => ['GET']
+        // '*' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS']
         if (is_string($methods)) {
-            $methods = [$methods];
+            if ($methods === '*') {
+                $methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'];
+            } else {
+                $methods = [$methods];
+            }
         }
 
-        // ['GET','POST'] => ['get','post']
+        // ['get','post'] => ['GET','POST']
         foreach ($methods as $key => $value) {
-            $methods[$key] = strtolower($value);
+            $methods[$key] = strtoupper($value);
         }
-
-        // eg. member/login => /member/login
-        $uri = strpos($uri, '/') === false ? '/' . $uri : $uri;
-        // /groupUri/...
-        $uri = $this->groupUri !== '' ? $this->groupUri . $uri : $uri;
 
         if ($this->groupCallback) {
             if (!is_string($callback)) {
-                throw new RouterException('If use $groupCallback, please make sure $callback to be a string, like: "list", "get", "search" ...');
+                throw new RouterException('If use $groupCallback, please make sure $callback type is a string, like: "list", "get", "search" ...');
             } else {
                 if (is_string($this->groupCallback)) {
                     // eg.
@@ -85,9 +87,12 @@ class Router
             if (isset($extra['permission'])) {
                 $route->setPermission($extra['permission']);
             }
+            if (isset($extra['responseType'])) {
+                $route->setResponseType($extra['responseType']);
+            }
         }
 
-        $this->routes[$uri] = $route;
+        $this->routeList[$uri] = $route;
 
         return $this;
     }
@@ -95,40 +100,45 @@ class Router
     public function loadCache($filePath)
     {
         $file = fopen($filePath, 'r');
-        $this->routes = unserialize(fread($file, filesize($filePath)));
+        $this->routeList = unserialize(fread($file, filesize($filePath)));
         fclose($filePath);
     }
 
+    /**
+     * do not cache when using closure function as addRoute() callback param
+     */
     public function cache($filePath)
     {
-        if (fopen($filePath, 'w+') !== false) {
-            file_put_contents($filePath, serialize($this->routes));
+        if (empty($this->routeList)) {
+            throw new RouterException('route list empty, please add some routes.');
+        }
+
+        if (!file_put_contents($filePath, serialize($this->routeList))) {
+            throw new RouterException('cache routes error');
         }
         return $this;
     }
 
-    /**
-     * 分配请求
-     */
-    public function dispatch(Request $request)
+    public function dispatch(Request $request, Response $response)
     {
+        if (empty($this->routeList)) {
+            throw new RouterException('route list empty, please add some routes.');
+        }
+
         $uri = $request->uri;
+        $method = $request->getMethod();
 
-        // fixme暂时这样处理upload接口
-        if (strpos($uri, '/upload/') === 0 && (strpos($uri, '/upload/add') === false && strpos($uri, '/upload/delete') === false)) {
-            $route = $this->routes['/upload/'];
-        } else {
-            if (!isset($this->routes[$uri])) {
-                throw new RouterException('unknown router');
-            }
+        if (!isset($this->routeList[$uri])) {
+            throw new RouterException('unknown route');
+        }
 
-            $route = $this->routes[$uri];
-            if (!in_array(strtolower($request->getMethod()), $route->methods)) {
-                throw new RouterException('router method error');
-            }
+        $route = $this->routeList[$uri];
+        if (!in_array($method, $route->methods)) {
+            throw new RouterException('route method error');
         }
 
         $callback = $route->action;
+        $response->setResponseType($route->responseType);
         if (is_callable($callback)) {
             // 通过匿名函数注册的路由回调
             // 比如：$router->register('get', '/', function () { xxx });
@@ -144,7 +154,7 @@ class Router
             // 调用控制器方法
             $controllerInstance->$controllerMethod();
         } else {
-            throw new RouterException('router inside error, please contract with administrator');
+            throw new RouterException('route inside error, please contract with administrator');
         }
     }
 }

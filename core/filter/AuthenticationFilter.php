@@ -14,7 +14,7 @@ class AuthenticationFilter implements Filter
     /**
      * @var array
      */
-    private $routes;
+    private $routeList;
     /**
      * @var Request
      */
@@ -22,24 +22,19 @@ class AuthenticationFilter implements Filter
 
     public function __construct()
     {
-        $this->routes = \App\DI()->router->getRoutes();
+        $this->routeList = \App\DI()->router->getRouteList();
         $this->request = \App\DI()->request;
     }
 
     public function doFilter()
     {
-        // 需要认证的路由才检查
         $uri = $this->request->uri;
 
         \App\debug('uri', $uri);
-        \App\debug('routes', $this->routes);
+        \App\debug('request base', $this->request->base);
+        // \App\debug('routeList', $this->routeList);
 
-        // fixme暂时这样处理upload接口
-        if (strpos($uri, '/upload/') === 0) {
-            $auth = false;
-        } else {
-            $auth = $this->routes[$uri]->auth;
-        }
+        $auth = $this->routeList[$uri]->auth;
         if ($auth) {
             $jwtUtil = JwtUtil::getInstance();
             $token = $jwtUtil->getTokenFromRequest($this->request);
@@ -51,13 +46,13 @@ class AuthenticationFilter implements Filter
                 throw new AccessTokenException('invalid token');
                 return false;
             }
-            $needPermissionList = $this->routes[$uri]->permission;
+            $needPermissionList = $this->routeList[$uri]->permission;
             $authMember = $jwtUtil->getAuthMember($token);
             if (!$authMember->checkPermission($needPermissionList)) {
                 throw new AccessTokenException('no permission to visit this route');
                 return false;
             }
-            // 注入已认证的成员信息
+            // inject auth member info
             \App\DI()->authMember = $authMember;
         }
         return true;

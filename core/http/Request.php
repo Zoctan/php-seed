@@ -7,7 +7,12 @@ use App\Core\Collection;
 final class Request
 {
     /**
-     * @var string URL being requested
+     * @var string URL being requested with args
+     */
+    public string $fullUri;
+
+    /**
+     * @var string URL being requested without args
      */
     public string $uri;
 
@@ -119,9 +124,9 @@ final class Request
             $this->cookies = new Collection($_COOKIE);
             $this->files = new Collection($_FILES);
             $this->server = new Collection($_SERVER);
+            $this->fullUri = $this->server->get('REQUEST_URI', '/');
 
             $config = [
-                'uri' => str_replace('@', '%40', $this->server->get('REQUEST_URI', '/')),
                 'base' => str_replace(['\\', ' '], ['/', '%20'], dirname($this->server->get('SCRIPT_NAME'))),
                 'method' => $this->getMethod(),
                 'header' => $this->getHeader(),
@@ -155,19 +160,21 @@ final class Request
         }
 
         // Get the requested URL without the base directory
-        if ('/' !== $this->base && '' !== $this->base && 0 === strpos($this->uri, $this->base)) {
-            $this->uri = substr($this->uri, strlen($this->base));
+        if ('/' !== $this->base && '' !== $this->base && strpos($this->fullUri, $this->base) === 0) {
+            $this->fullUri = substr($this->fullUri, strlen($this->base));
         }
 
         // Default url
-        if (empty($this->uri)) {
-            $this->uri = '/';
+        if (empty($this->fullUri)) {
+            $this->fullUri = '/';
         } else {
             // Merge URL query parameters with $_GET
-            $_GET = array_merge($_GET, $this->parseQuery($this->uri));
+            $_GET = array_merge($_GET, $this->parseQuery($this->fullUri));
 
             $this->query->setData($_GET);
         }
+        
+        $this->uri = parse_url($this->fullUri, PHP_URL_PATH);
 
         // Check for JSON input
         if (0 === strpos($this->contentType, 'application/json')) {

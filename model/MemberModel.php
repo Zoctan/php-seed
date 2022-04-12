@@ -8,13 +8,23 @@ use App\Core\BaseModel;
 
 class MemberModel extends BaseModel
 {
-    protected $table = 'member';
-    
+    protected string $table = 'member';
+
+    protected array $columns = [
+        'id' => 'id [Int]',
+        'username' => 'username',
+        'password' => 'password',
+        'status'   => 'status [Int]',
+        'logined_at' => 'logined_at',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+    ];
+
     public function add($member)
     {
         $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
         $memberId = $this->insert($member);
-        
+
         // 绑定默认角色
         $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->saveAsDefaultRole($memberId);
@@ -37,18 +47,10 @@ class MemberModel extends BaseModel
      */
     public function getByUsername(
         $username,
-        $column = [
-            'id [Int]',
-            'username',
-            'password',
-            'status [Int]',
-            'logined_at',
-            'created_at',
-            'updated_at'
-        ]
+       array $columnKeys
     ) {
         return $this->getBy(
-            $column,
+            $this->getColumns($columnKeys),
             [
                 'username' => $username
             ]
