@@ -5,6 +5,7 @@ CREATE TABLE `role_rule`
     `role_id`       BIGINT(20) UNSIGNED NOT NULL COMMENT '角色id',
     `rule_id`       BIGINT(20) UNSIGNED NOT NULL COMMENT '规则id',
     `created_at`    DATETIME DEFAULT NOW() COMMENT '创建于',
+    `updated_at`    DATETIME DEFAULT NULL COMMENT '更新于',
     PRIMARY KEY (`id`),
     KEY `K_ROID` (`role_id`),
     KEY `K_RUID` (`rule_id`)

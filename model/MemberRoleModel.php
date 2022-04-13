@@ -8,14 +8,17 @@ class MemberRoleModel extends BaseModel
 {
     protected $table = 'member_role';
 
-    public function saveAsDefaultRole($memberId)
-    {
-        return $this->insert(['member_id' => $memberId]);
-    }
+    protected $columns = [
+        'id' => 'id [Int]',
+        'member_id' => 'member_id [Int]',
+        'role_id' => 'role_id [Int]',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+    ];
 
-    public function getRole($memberId)
+    public function listRole($memberId)
     {
-        return $this->get(
+        return $this->select(
             [
                 '[>]role' => ['member_role.role_id' => 'id'],
             ],
@@ -59,8 +62,7 @@ class MemberRoleModel extends BaseModel
         foreach ($ruleTree as $rule) {
             if (isset($rule['children'])) {
                 foreach ($rule['children'] as $child) {
-                    // resource:handle, like:
-                    // member:add, member:delete
+                    // [resource]:[handle], like: member:add, member:delete
                     array_push($permissionList, sprintf('%s:%s', $rule['permission'], $child['permission']));
                 }
             }

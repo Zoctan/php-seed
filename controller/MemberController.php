@@ -7,6 +7,7 @@ use App\Util\JwtUtil;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
+use App\Model\RoleModel;
 use App\Core\BaseController;
 use App\Core\Response\ResultCode;
 use App\Core\Response\ResultGenerator;
@@ -43,7 +44,7 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg('please input username');
         }
 
-        $existMember = $this->memberModel->count(['username' => $username]) === 1;
+        $existMember = $this->memberModel->countByUsername($username) === 1;
         if ($existMember) {
             return ResultGenerator::errorWithMsg('username already exists');
         }
@@ -107,16 +108,15 @@ class MemberController extends BaseController
         $username = strval($this->request->get('username'));
         $password = strval($this->request->get('password'));
 
-        \App\debug('username', $username);
-        \App\debug('password', $password);
-
         if (empty($username) || empty($password)) {
             return ResultGenerator::errorWithMsg('please input username and password');
         }
 
-        $member = $this->memberModel->getByUsername($username);
+        $member = $this->memberModel->getByUsername(
+            $this->memberModel->getColumns(),
+            $username
+        );
 
-        \App\debug('member', $member);
         if (empty($member)) {
             return ResultGenerator::errorWithMsg('username error');
         }
@@ -211,32 +211,27 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg('member id does not exist');
         }
 
-        $member = $this->memberModel->getById([
-            'member.id [Int]',
-            'member.username',
-            'member.status [Int]',
-            'member.lock [Int]',
-            'member.logined_at',
-            'member.created_at',
-            'member.updated_at',
-        ], $memberId);
+        $member = $this->memberModel->getById(
+            $this->memberModel->getColumnsExcept(['password']),
+            $memberId
+        );
         if (empty($member)) {
-            return ResultGenerator::errorWithMsg('member does not exist');
+            return ResultGenerator::errorWithMsg('id error, member does not exist');
         }
 
         $memberDataModel = new MemberDataModel();
-        $memberData = $memberDataModel->getById([
-            'member_data.avatar',
-            'member_data.nickname',
-            'member_data.gender [Int]',
-        ], $memberId);
+        $memberData = $memberDataModel->getById(
+            $memberDataModel->getColumns(),
+            $memberId
+        );
 
         $memberRoleModel = new MemberRoleModel();
-        $memberRole = $memberRoleModel->getRole($memberId);
+        $roleList = $memberRoleModel->listRole($memberId);
+
         return ResultGenerator::successWithData([
             'member' => $member,
             'memberData' => $memberData,
-            'role' => $memberRole,
+            'roleList' => $roleList,
         ]);
     }
 
@@ -245,8 +240,7 @@ class MemberController extends BaseController
      */
     public function profile()
     {
-        $authMember = $this->authMember;
-        return ResultGenerator::successWithData($authMember);
+        return ResultGenerator::successWithData($this->authMember);
     }
 
     /**
@@ -261,9 +255,10 @@ class MemberController extends BaseController
         $memberData = $this->request->get('memberData');
         $role = $this->request->get('role');
 
-        \App\debug('member', $member);
-        \App\debug('memberData', $memberData);
-        \App\debug('role', $role);
+        $memberDataModel = new MemberDataModel();
+        $memberRoleModel = new MemberRoleModel();
+        $roleModel = new RoleModel();
+
         $conditionList = [];
         // 先查询其他表，根据其他表的结果再查主表
         $memberDataList = [];
@@ -277,17 +272,14 @@ class MemberController extends BaseController
             }
 
             if ($memberDataWhere) {
-                $memberDataModel = new MemberDataModel();
-                $memberDataModel->listBy(
-                    [
-                        'member_id [Int]',
-                    ],
+                $memberDataModel->select(
+                    $memberDataModel->getColumns(['member_id']),
                     $memberDataWhere,
                     function ($_memberData) use (&$memberDataList) {
                         $memberDataList[] = $_memberData;
                     }
                 );
-                array_push($conditionList, Util::value2Array($memberDataList, 'member_id'));
+                array_push($conditionList, Util::getValueList('member_id', $memberDataList));
             }
         }
         $memberRoleList = [];
@@ -298,17 +290,14 @@ class MemberController extends BaseController
             }
 
             if ($memberRoleWhere) {
-                $memberRoleModel = new MemberRoleModel();
-                $memberRoleModel->listBy(
-                    [
-                        'member_id [Int]',
-                    ],
+                $memberRoleModel->select(
+                    $memberDataModel->getColumns(['member_id']),
                     $memberRoleWhere,
                     function ($_memberRole) use (&$memberRoleList) {
                         $memberRoleList[] = $_memberRole;
                     }
                 );
-                array_push($conditionList, Util::value2Array($memberRoleList, 'member_id'));
+                array_push($conditionList, Util::getValueList('member_id', $memberRoleList));
             }
         }
         $memberList = [];
@@ -322,16 +311,14 @@ class MemberController extends BaseController
             }
 
             if ($memberWhere) {
-                $this->memberModel->listBy(
-                    [
-                        'id (member_id) [Int]',
-                    ],
+                $this->memberModel->select(
+                    $memberDataModel->getColumns(['member_id']),
                     $memberWhere,
                     function ($_member) use (&$memberList) {
                         $memberList[] = $_member;
                     }
                 );
-                array_push($conditionList, Util::value2Array($memberList, 'member_id'));
+                array_push($conditionList, Util::getValueList('member_id', $memberList));
             }
         }
         \App\debug('memberDataList', $memberDataList);
@@ -347,8 +334,6 @@ class MemberController extends BaseController
             $pageSize,
             [
                 '[>]member_data' => ['member.id' => 'member_id'],
-                '[>]member_role' => ['member_data.member_id' => 'member_id'],
-                '[>]role' => ['member_role.role_id' => 'id'],
             ],
             [
                 'member' => [
@@ -365,14 +350,18 @@ class MemberController extends BaseController
                     'member_data.nickname',
                     'member_data.gender [Int]',
                 ],
-                'role' => [
-                    'role.id [Int]',
-                    'role.name',
-                ],
             ],
             $memberPageWhere
         );
-
+        // add role list
+        for ($i = 0; $i < count($result['list']); $i++) {
+            $memberRoleList = $memberRoleModel->selectByMember_id($memberRoleModel->getColumns(), $result['list'][$i]['member']['member_id']);
+            $roleList = [];
+            for ($j = 0; $j < count($memberRoleList); $j++) {
+                $roleList[] = $roleModel->getById($roleModel->getColumns(), $memberRoleList[$j]['role_id']);
+            }
+            $result['list'][$i]['roleList'] = $roleList;
+        }
         \App\debug('sql', $this->memberModel->log());
 
         return ResultGenerator::successWithData($result);
@@ -412,11 +401,11 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg('member or memberData does not exist');
         }
         if (!empty($member)) {
-            $this->memberModel->updateByMemberId($member);
+            $this->memberModel->update($member, $member['id']);
         }
         if (!empty($memberData)) {
             $memberDataModel = new MemberDataModel();
-            $memberDataModel->updateBy($memberData, ['member_id' => $member['id']]);
+            $memberDataModel->updateByMember_id($memberData, $member['id']);
         }
         return ResultGenerator::success();
     }
@@ -435,14 +424,11 @@ class MemberController extends BaseController
         $memberId = $this->memberModel->add($member);
         if (!empty($memberData)) {
             $memberDataModel = new MemberDataModel();
-            $memberDataModel->updateBy($memberData, ['member_id' => $memberId]);
+            $memberDataModel->updateByMember_id($memberData, $memberId);
         }
         if (!empty($role)) {
             $memberRoleModel = new MemberRoleModel();
-            $memberRoleModel->updateBy(
-                ['role_id' => $role['id']],
-                ['member_id' => $memberId]
-            );
+            $memberRoleModel->updateByRole_idMember_id([$role['id'], $memberId]);
         }
         return ResultGenerator::successWithData($memberId);
     }
@@ -456,7 +442,12 @@ class MemberController extends BaseController
         if (empty($memberId)) {
             return ResultGenerator::errorWithMsg('member id does not exist');
         }
-        $this->memberModel->deleteByMemberId($memberId);
+        $this->memberModel->deleteById($memberId);
+        $memberDataModel = new MemberDataModel();
+        $memberDataModel->deleteByMember_id($memberId);
+
+        $memberRoleModel = new MemberRoleModel();
+        $memberRoleModel->deleteByMember_id($memberId);
         return ResultGenerator::success();
     }
 }

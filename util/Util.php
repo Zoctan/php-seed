@@ -58,27 +58,18 @@ class Util
 
     /*
      * [
-     *   [
-     *    'id' => 18,
-     *    'title' => 'test',
-     *   ],
-     *   [
-     *    'id' => 19,
-     *    'title' => 'demo',
-     *   ]
+     *   [ 'id' => 18, 'title' => 'test' ],
+     *   [ 'id' => 19, 'title' => 'demo' ],
      * ]
      * only keep id value => [18, 19]
      */
-    public static function value2Array($array, $key)
+    public static function getValueList($key, $list)
     {
-        if (empty($array)) {
-            return [];
+        $valueList = [];
+        for ($i = 0; $i < count($list); $i++) {
+            $valueList[] = $list[$i][$key];
         }
-        $valueArray = [];
-        for ($i = 0; $i < count($array); $i++) {
-            $valueArray[] = $array[$i][$key];
-        }
-        return $valueArray;
+        return $valueList;
     }
     
     /*

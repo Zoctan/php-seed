@@ -8,6 +8,15 @@ class SystemModel extends BaseModel
 {
     protected $table = 'system';
 
+    protected $columns = [
+        'id' => 'id [Int]',
+        'description' => 'description',
+        'key' => 'key',
+        'value' => 'value [JSON]',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+    ];
+
     /**
      * 获取值
      * 
@@ -17,13 +26,10 @@ class SystemModel extends BaseModel
      */
     public function getValue($key)
     {
-        $method = is_array($key) ? 'select' : 'getBy';
-        return $this->$method(['value [JSON]'], ['key' => $key]);
+        $method = is_array($key) ? 'selectByKey' : 'getByKey';
+        return $this->$method($this->getColumns(['value']), $key);
     }
 
-    /*
-     * 添加
-     */
     public function add($description, $key, $value)
     {
         return $this->insert([
@@ -33,20 +39,14 @@ class SystemModel extends BaseModel
         ]);
     }
 
-    /*
-     * 更新值
-     */
     public function updateValue($key, $value)
     {
-        $this->updateBy(['value [JSON]' => $value], ['key' => $key]);
+        $this->updateByKey(['value [JSON]' => $value], $key);
     }
 
-    /*
-     * 更新
-     */
     public function updateById($values, $id): void
     {
-        $this->updateById([
+        parent::updateById([
             'key' => $values['key'],
             'value [JSON]' => $values['value'],
             'description' => $values['description'],

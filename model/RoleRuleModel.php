@@ -9,11 +9,19 @@ class RoleRuleModel extends BaseModel
 {
     protected $table = 'role_rule';
 
+    protected $columns = [
+        'id' => 'id [Int]',
+        'role_id' => 'role_id [Int]',
+        'rule_id' => 'rule_id [Int]',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+    ];
+
     public function updateRuleByRoleId($ruleIdList, $roleId)
     {
         // 先找到原来的规则列表
-        $oldRuleList = $this->listByRoleId($roleId, ['rule_id [Int]']);
-        $oldRuleIdList = Util::value2Array($oldRuleList, 'rule_id');
+        $oldRuleList = $this->selectByRole_id($this->getColumns(), $roleId);
+        $oldRuleIdList = Util::getValueList('rule_id', $oldRuleList);
 
         // 在 原来规则，但不在 新规则，要删除
         // oldRuleIdList: [1, 2, 3, 4, 5]
@@ -22,7 +30,7 @@ class RoleRuleModel extends BaseModel
         if (count($oldRuleIdList) > 0) {
             $diffList = array_diff($oldRuleIdList, $ruleIdList);
             foreach ($diffList as $diffId) {
-                $this->deleteBy([
+                $this->delete([
                     'AND' => [
                         'role_id' => $roleId,
                         'rule_id' => $diffId
@@ -42,22 +50,5 @@ class RoleRuleModel extends BaseModel
                 'rule_id' => $diffId
             ]);
         }
-    }
-
-    public function listByRoleId(
-        $roleId,
-        $columns = [
-            'id [Int]',
-            'role_id [Int]',
-            'rule_id [Int]',
-            'created_at'
-        ]
-    ) {
-        return $this->select(
-            $columns,
-            [
-                'role_id' => $roleId
-            ]
-        );
     }
 }

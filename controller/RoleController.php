@@ -67,15 +67,7 @@ class RoleController extends BaseController
         $result = $this->roleModel->page(
             $currentPage,
             $pageSize,
-            [
-                'id [Int]',
-                'parent_id [Int]',
-                'name',
-                'has_all_rule [Int]',
-                'lock [Int]',
-                'created_at',
-                'updated_at',
-            ],
+            $this->roleModel->getColumns(),
             $where
         );
         return ResultGenerator::successWithData($result);
@@ -87,15 +79,7 @@ class RoleController extends BaseController
         if (empty($roleId)) {
             return ResultGenerator::errorWithMsg('role id does not exist');
         }
-        $role = $this->roleModel->getById([
-            'id [Int]',
-            'parent_id [Int]',
-            'name',
-            'has_all_rule [Int]',
-            'lock [Int]',
-            'created_at',
-            'updated_at',
-        ], $roleId);
+        $role = $this->roleModel->getById($this->roleModel->getColumns(), $roleId);
         if (empty($role)) {
             return ResultGenerator::errorWithMsg('role does not exist');
         }
@@ -115,7 +99,7 @@ class RoleController extends BaseController
         if (empty($parentId)) {
             return ResultGenerator::errorWithMsg('parent id does not exist');
         }
-        $parentList = $this->roleModel->listParentByParentId($parentId);
+        $parentList = $this->roleModel->listParentByParentId($parentId, $this->roleModel->getColumns());
         return ResultGenerator::successWithData($parentList);
     }
 
@@ -140,10 +124,7 @@ class RoleController extends BaseController
             return ResultGenerator::errorWithMsg('member id or role id does not exist');
         }
         $memberRoleModel = new MemberRoleModel();
-        $memberRoleModel->updateBy(
-            ['role_id' => $role['id']],
-            ['member_id' => $memberId]
-        );
+        $memberRoleModel->updateByRole_idMember_id([$role['id'], $memberId]);
         return ResultGenerator::success();
     }
 

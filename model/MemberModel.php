@@ -8,13 +8,14 @@ use App\Core\BaseModel;
 
 class MemberModel extends BaseModel
 {
-    protected string $table = 'member';
+    protected $table = 'member';
 
-    protected array $columns = [
+    protected $columns = [
         'id' => 'id [Int]',
         'username' => 'username',
         'password' => 'password',
-        'status'   => 'status [Int]',
+        'status' => 'status [Int]',
+        'lock' => 'lock [Int]',
         'logined_at' => 'logined_at',
         'created_at' => 'created_at',
         'updated_at' => 'updated_at'
@@ -25,61 +26,31 @@ class MemberModel extends BaseModel
         $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
         $memberId = $this->insert($member);
 
-        // 绑定默认角色
+        // bind default member role
         $memberRoleModel = new MemberRoleModel();
-        $memberRoleModel->saveAsDefaultRole($memberId);
-        // 绑定默认数据
+        $memberRoleModel->insert(['member_id' => $memberId]);
+
+        // bind default member data
         $memberDataModel = new MemberDataModel();
-        $memberDataModel->saveDefault($memberId);
+        $memberDataModel->insert(['member_id' => $memberId]);
         return $memberId;
     }
 
-    public function updateByMemberId($member)
+    public function updateById($member)
     {
         if ($member['password'] != null) {
             $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
         }
-        $this->updateById($member, $member['id']);
+        parent::updateById($member, $member['id']);
     }
 
-    /**
-     * 根据账户名获取成员
-     */
-    public function getByUsername(
-        $username,
-       array $columnKeys
-    ) {
-        return $this->getBy(
-            $this->getColumns($columnKeys),
-            [
-                'username' => $username
-            ]
-        );
-    }
-
-    /**
-     * 更新登录时间
-     */
     public function updateLoginedAtById($id)
     {
-        $this->updateBy(['logined_at' => Medoo::raw('NOW()')], ['id' => $id]);
+        parent::updateById(['logined_at' => Medoo::raw('NOW()')], $id);
     }
 
-    /**
-     * 校验密码
-     */
     public function verifyPassword($password, $passwordDB)
     {
         return password_verify($password, $passwordDB);
-    }
-
-    public function deleteByMemberId($memberId)
-    {
-        $this->deleteById($memberId);
-        $memberDataModel = new MemberDataModel();
-        $memberDataModel->deleteBy(['member_id' => $memberId]);
-
-        $memberRoleModel = new MemberRoleModel();
-        $memberRoleModel->deleteBy(['member_id' => $memberId]);
     }
 }

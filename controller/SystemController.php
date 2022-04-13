@@ -19,9 +19,6 @@ class SystemController extends BaseController
         $this->systemModel = $systemModel;
     }
 
-    /**
-     * 获取值
-     */
     public function getValue()
     {
         $key = strval($this->request->get('key'));
@@ -32,9 +29,6 @@ class SystemController extends BaseController
         return ResultGenerator::successWithData($result);
     }
 
-    /**
-     * 添加
-     */
     public function add()
     {
         $system = $this->request->get('system');
@@ -45,9 +39,6 @@ class SystemController extends BaseController
         return ResultGenerator::success();
     }
 
-    /*
-     * 更新
-     */
     public function update()
     {
         $system = $this->request->get('system');
@@ -58,9 +49,6 @@ class SystemController extends BaseController
         return ResultGenerator::success();
     }
 
-    /*
-     * 删除
-     */
     public function delete()
     {
         $systemId = intval($this->request->get('systemId'));

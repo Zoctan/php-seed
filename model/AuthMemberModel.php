@@ -10,24 +10,40 @@ class AuthMemberModel
     public function get($memberId)
     {
         $memberModel = new MemberModel();
-        $member = $memberModel->getBy(['id [Int]', 'username', 'status [Int]', 'member.lock [Int]', 'logined_at', 'created_at', 'updated_at'], ['id' => $memberId]);
+        $member = $memberModel->getById($memberModel->getColumns(), $memberId);
 
+        \App\debug('member', $member);
         $memberDataModel = new MemberDataModel();
-        $memberData = $memberDataModel->getBy(['avatar', 'nickname', 'gender [Int]'], ['member_id' => $memberId]);
+        $memberData = $memberDataModel->getByMember_id($memberDataModel->getColumns(), $memberId);
+        \App\debug('memberData', $memberData);
 
         $memberRoleModel = new MemberRoleModel();
-        $role = $memberRoleModel->getRole($memberId);
+        $roleList = $memberRoleModel->listRole($memberId);
+
+
+        $hasAllRule = false;
+        for ($i = 0; $i < count($roleList); $i++) {
+            if ($roleList[$i]['has_all_rule'] === 1) {
+                $hasAllRule = true;
+                break;
+            }
+        }
 
         $ruleList = [];
-        if ($role['has_all_rule'] == 1) {
+        if ($hasAllRule) {
             $ruleModel = new RuleModel();
-            $ruleList = $ruleModel->_listBy();
+            $ruleModel->select(
+                $ruleModel->getColumns(),
+                function ($rule) use (&$ruleList) {
+                    $ruleList[] = $rule;
+                }
+            );
         } else {
             $ruleList = $memberRoleModel->getRule($memberId);
         }
         $ruleTree = Tree::list2Tree($ruleList);
         $permissionList = $memberRoleModel->getPermissionList($ruleTree);
 
-        return new AuthMember($member, $memberData, $role, $permissionList);
+        return new AuthMember($member, $memberData, $roleList, $permissionList);
     }
 }

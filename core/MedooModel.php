@@ -173,47 +173,47 @@ abstract class MedooModel
         return $this->connection()->pdo;
     }
 
-    /**
-     * 根据条件查询所有数据
-     *
-     * @param string|array $columns
-     * @param array $where
-     * @param callback $callback
-     */
-    public function listBy($columns = '*', array $where, callable $callback)
-    {
-        $this->read = true;
-        $this->connection()->select($this->table, $columns, $where, $callback);
-    }
+    // /**
+    //  * 根据条件查询所有数据
+    //  *
+    //  * @param string|array $columns
+    //  * @param array $where
+    //  * @param callback $callback
+    //  */
+    // public function listBy($columns = '*', array $where, callable $callback)
+    // {
+    //     $this->read = true;
+    //     $this->connection()->select($this->table, $columns, $where, $callback);
+    // }
 
-    /**
-     * 根据条件查询一条数据
-     *
-     * @param string $columns
-     * @param array $where
-     *
-     * @return 
-     */
-    public function getBy($columns = '*', array $where)
-    {
-        if (empty($where)) throw new DatabaseException('empty condition, get one error');
+    // /**
+    //  * 根据条件查询一条数据
+    //  *
+    //  * @param string $columns
+    //  * @param array $where
+    //  *
+    //  * @return 
+    //  */
+    // public function getBy($columns = '*', array $where)
+    // {
+    //     if (empty($where)) throw new DatabaseException('empty condition, get one error');
 
-        $this->read = true;
-        return $this->connection()->get($this->table, $columns, $where);
-    }
+    //     $this->read = true;
+    //     return $this->connection()->get($this->table, $columns, $where);
+    // }
 
-    /**
-     * 根据主键查询一条数据
-     *
-     * @param string $columns
-     * @param $id
-     *
-     * @return 
-     */
-    public function getById($columns = '*', $id)
-    {
-        return $this->getBy($columns, [$this->primary => $id]);
-    }
+    // /**
+    //  * 根据主键查询一条数据
+    //  *
+    //  * @param string $columns
+    //  * @param $id
+    //  *
+    //  * @return 
+    //  */
+    // public function getById($columns = '*', $id)
+    // {
+    //     return $this->getBy($columns, [$this->primary => $id]);
+    // }
 
     /**
      * 插入数据
@@ -229,92 +229,92 @@ abstract class MedooModel
         return $this->id();
     }
 
-    /**
-     * 根据条件删除一条数据
-     *
-     * @param array $where
-     *
-     * @return void
-     */
-    public function deleteBy(array $where): void
-    {
-        if (empty($where)) throw new DatabaseException('empty condition, delete error');
+    // /**
+    //  * 根据条件删除一条数据
+    //  *
+    //  * @param array $where
+    //  *
+    //  * @return void
+    //  */
+    // public function deleteBy(array $where): void
+    // {
+    //     if (empty($where)) throw new DatabaseException('empty condition, delete error');
 
-        $result = $this->connection()->delete($this->table, $where);
-        if (empty($result)) {
-            throw new DatabaseException('delete error');
-        }
-    }
+    //     $result = $this->connection()->delete($this->table, $where);
+    //     if (empty($result)) {
+    //         throw new DatabaseException('delete error');
+    //     }
+    // }
 
-    /**
-     * 根据主键删除一条数据
-     *
-     * @param $id
-     *
-     * @return void
-     */
-    public function deleteById($id): void
-    {
-        $this->deleteBy([$this->primary => $id]);
-    }
+    // /**
+    //  * 根据主键删除一条数据
+    //  *
+    //  * @param $id
+    //  *
+    //  * @return void
+    //  */
+    // public function deleteById($id): void
+    // {
+    //     $this->deleteBy([$this->primary => $id]);
+    // }
 
-    /**
-     * 根据主键列表删除多条数据
-     *
-     * @param array $idList
-     *
-     * @return void
-     */
-    public function deleteByIdList(array $idList): void
-    {
-        foreach ($idList as $id) {
-            $this->deleteBy([$this->primary => $id]);
-        }
-    }
+    // /**
+    //  * 根据主键列表删除多条数据
+    //  *
+    //  * @param array $idList
+    //  *
+    //  * @return void
+    //  */
+    // public function deleteByIdList(array $idList): void
+    // {
+    //     foreach ($idList as $id) {
+    //         $this->deleteBy([$this->primary => $id]);
+    //     }
+    // }
 
-    /**
-     * 根据条件更新数据
-     *
-     * @param array $where
-     *
-     * @return void
-     */
-    public function updateBy($values, array $where): void
-    {
-        if (empty($where)) throw new DatabaseException('empty condition, update error');
+    // /**
+    //  * 根据条件更新数据
+    //  *
+    //  * @param array $where
+    //  *
+    //  * @return void
+    //  */
+    // public function updateBy($values, array $where): void
+    // {
+    //     if (empty($where)) throw new DatabaseException('empty condition, update error');
 
-        $this->write = true;
-        $result = $this->connection()->update($this->table, $values, $where);
-        if (empty($result)) {
-            throw new DatabaseException('update error');
-        }
-    }
+    //     $this->write = true;
+    //     $result = $this->connection()->update($this->table, $values, $where);
+    //     if (empty($result)) {
+    //         throw new DatabaseException('update error');
+    //     }
+    // }
 
-    /**
-     * 根据主键更新数据
-     *
-     * @param $id
-     *
-     * @return void
-     */
-    public function updateById($values, $id): void
-    {
-        $this->updateBy($values, [$this->primary => $id]);
-    }
+    // /**
+    //  * 根据主键更新数据
+    //  *
+    //  * @param $id
+    //  *
+    //  * @return void
+    //  */
+    // public function updateById($values, $id): void
+    // {
+    //     $this->updateBy($values, [$this->primary => $id]);
+    // }
 
-    /**
-     * 根据主键更新数据列表
-     *
-     * @param array $valuesList
-     *
-     * @return void
-     */
-    public function updateListById(array $valuesList): void
-    {
-        foreach ($valuesList as $values) {
-            $this->updateBy($values, [$this->primary => $values['id']]);
-        }
-    }
+    // /**
+    //  * 根据主键更新数据列表
+    //  *
+    //  * @param array $valuesList
+    //  *
+    //  * @return void
+    //  */
+    // public function updateListById(array $valuesList): void
+    // {
+    //     foreach ($valuesList as $values) {
+    //         $this->updateBy($values, [$this->primary => $values['id']]);
+    //     }
+    // }
 
     /**
      * 分页
@@ -521,8 +521,8 @@ abstract class MedooModel
     }
 
     /**
-     * Medoo 调用代理
-     *
+     * 魔法方法
+     * 
      * @param $method
      * @param $arguments
      *
@@ -530,6 +530,102 @@ abstract class MedooModel
      */
     public function __call($method, $arguments)
     {
+        \App\debug('method', $method);
+        \App\debug('arguments', $arguments);
+        
+        // use 'By' to set $where directly
+        // like: 
+        // selectByName(array|string $columns, $name)
+        // selectByNameGender(array|string $columns, [$name, $gender])
+        if (strpos($method, 'By') !== false) {
+            list($method, $whereKeyString) = explode('By', $method);
+            if ($whereKeyString === '') {
+                throw new DatabaseException('empty where string when using "By".');
+            } else {
+                $whereKeyList = preg_split("/(?=[A-Z])/", $whereKeyString, -1, PREG_SPLIT_NO_EMPTY);
+            }
+            for ($i = 0; $i < count($whereKeyList); $i++) {
+                $whereKeyList[$i] = strtolower($whereKeyList[$i]);
+            }
+            $wherePosition = null;
+            switch ($method) {
+                case 'select':
+                    // select(array|string $columns, callable $callback)
+                    if (count($arguments) === 2) {
+                        if (!is_callable($arguments[1])) {
+                            $wherePosition = 1;
+                        }
+                    }
+                    // select(array|string $columns, array $where, callable $callback)
+                    if (count($arguments) === 3) {
+                        $wherePosition = 1;
+                    }
+                    // select(array $join, array $columns, array $where, callable $callback)
+                    if (count($arguments) === 4) {
+                        $wherePosition = 2;
+                    }
+                    break;
+                case 'delete':
+                    // delete(array $where)
+                    $wherePosition = 0;
+                    break;
+                case 'update':
+                case 'replace':
+                    // update(array $values, array $where)
+                    // replace(array|string $columns, array $where)
+                    $wherePosition = 1;
+                    break;
+                case 'has':
+                case 'count':
+                    // has(array $where)
+                    // count(array $where)
+                    if (count($arguments) === 1) {
+                        $wherePosition = 0;
+                    }
+                    // has(array $join, array $where)
+                    // count(array $join, array $where)
+                    if (count($arguments) === 2) {
+                        $wherePosition = 1;
+                    }
+                    break;
+                case 'get':
+                case 'rand':
+                case 'max':
+                case 'min':
+                case 'avg':
+                case 'sum':
+                    // get(array|string $columns, array $where)
+                    // rand(array|string $column, array $where)
+                    // max(string $column, array $where)
+                    // min(string $column, array $where)
+                    // avg(string $column, array $where)
+                    // sum(string $column, array $where)
+                    if (count($arguments) === 2) {
+                        $wherePosition = 1;
+                    }
+                    // get(array $join, array|string $columns, array $where)
+                    // rand(array $join, array|string $column, array $where)
+                    // max(array $join, string $column, array $where)
+                    // min(array $join, string $column, array $where)
+                    // avg(array $join, string $column, array $where)
+                    // sum(array $join, string $column, array $where)
+                    if (count($arguments) === 3) {
+                        $wherePosition = 2;
+                    }
+                    break;
+            }
+            if ($wherePosition) {
+                $whereValueList = $arguments[$wherePosition];
+                if (!is_array($whereValueList)) {
+                    $whereValueList = [$whereValueList];
+                }
+                \App\debug('whereKeyList', $whereKeyList);
+                \App\debug('whereValueList', $whereValueList);
+                $where = array_combine($whereKeyList, $whereValueList);
+                $arguments[$wherePosition] = $where;
+            }
+        }
+
         // 是否是读操作
         $this->read = in_array($method, ['select', 'get', 'has', 'count',  'sum', 'max', 'min', 'avg']);
 

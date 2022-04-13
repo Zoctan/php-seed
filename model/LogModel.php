@@ -9,6 +9,18 @@ class LogModel extends BaseModel
 {
     protected $table = 'log';
 
+    protected $columns = [
+        'id' => 'id [Int]',
+        'member_id' => 'member_id [Int]',
+        'level' => 'level [Int]',
+        'content' => 'content',
+        'ip' => 'ip [Int]',
+        'ip_city' => 'ip_city',
+        'extra' => 'extra [JSON]',
+        'created_at' => 'created_at',
+        'updated_at' => 'updated_at'
+    ];
+
     public function add($data)
     {
         $ip = Ipv4Location::getIp();
@@ -22,14 +34,12 @@ class LogModel extends BaseModel
             }
         }
 
-        $data =  array_merge($data, [
+        return $this->insert(array_merge($data, [
             'member_id' => \App\DI()->authMember->id,
             'member_name' => \App\DI()->authMember->nickname,
             'ip' => ip2long($ip),
             'ip_city' => implode('-', $ipCity),
-        ]);
-
-        return $this->insert($data);
+        ]));
     }
 
     public function asInfo($content, $extra = null)

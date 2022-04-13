@@ -8,43 +8,43 @@ namespace App\Core;
 class AuthMember
 {
     /**
-     * 成员
+     * member
      * 
      * @var object
      */
     public $member;
 
     /**
-     * 成员信息
+     * member data
      * 
      * @var object
      */
     public $memberData;
 
     /**
-     * 角色
+     * role list
      * 
      * @var object
      */
-    public $role;
+    public $roleList;
 
     /**
-     * 操作权限列表
+     * permission list
      * 
      * @var array
      */
     public $permissionList;
 
-    public function __construct($member, $memberData, $role, $permissionList)
+    public function __construct($member, $memberData, $roleList, $permissionList)
     {
         $this->member = $member;
         $this->memberData = $memberData;
-        $this->role = $role;
+        $this->roleList = $roleList;
         $this->permissionList = $permissionList;
     }
 
     /**
-     * 是否有操作权限
+     * check member has target permission
      * 
      * @param array $need
      */

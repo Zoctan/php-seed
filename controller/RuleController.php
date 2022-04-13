@@ -41,7 +41,13 @@ class RuleController extends BaseController
 
     public function list()
     {
-        $ruleList = $this->ruleModel->_listBy();
+        $ruleList = [];
+        $this->ruleModel->select(
+            $this->ruleModel->getColumns(),
+            function ($rule) use (&$ruleList) {
+                $ruleList[] = $rule;
+            }
+        );
         return ResultGenerator::successWithData($ruleList);
     }
 
@@ -51,7 +57,9 @@ class RuleController extends BaseController
         if (empty($ruleList)) {
             return ResultGenerator::errorWithMsg('ruleList does not exist');
         }
-        $this->ruleModel->updateListById($ruleList);
+        foreach ($ruleList as $rule) {
+            $this->ruleModel->updateById($rule, $rule['id']);
+        }
         return ResultGenerator::success();
     }
 
@@ -80,7 +88,9 @@ class RuleController extends BaseController
         if (empty($ruleIdList)) {
             return ResultGenerator::errorWithMsg('ruleIdList does not exist');
         }
-        $this->ruleModel->deleteByIdList($ruleIdList);
+        foreach ($ruleIdList as $id) {
+            $this->ruleModel->deleteById($id);
+        }
         return ResultGenerator::success();
     }
 
