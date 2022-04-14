@@ -43,12 +43,14 @@ class RoleRuleModel extends BaseModel
         //    ruleIdList: [1, 3, 5, 6, 7]
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //      diffList: [6, 7]
-        $diffList2 = array_diff($ruleIdList, $oldRuleIdList);
-        foreach ($diffList2 as $diffId) {
-            $this->insert([
-                'role_id' => $roleId,
-                'rule_id' => $diffId
-            ]);
+        if (count($ruleIdList) > 0) {
+            $diffList2 = array_diff($ruleIdList, $oldRuleIdList);
+            foreach ($diffList2 as $diffId) {
+                $this->insert([
+                    'role_id' => $roleId,
+                    'rule_id' => $diffId
+                ]);
+            }
         }
     }
 }
