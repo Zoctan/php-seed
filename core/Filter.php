@@ -3,7 +3,7 @@
 namespace App\Core;
 
 /**
- * 过滤器接口
+ * Filter interface
  */
 interface Filter
 {

@@ -111,7 +111,7 @@ class Bootstrap
     private function initResponse()
     {
         $this->di->response = (new Response())
-            ->setDebug($this->di->config['app']['debug'])
+            ->setDebug($this->di->config['debug'])
             ->setDebugKey($this->di->config['app']['response']['structureMap']['debug'])
             ->setResponseType($this->di->config['app']['response']['type']);
     }

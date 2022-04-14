@@ -37,47 +37,48 @@ class UploadController extends BaseController
 
     public function add()
     {
-        // 目标文件夹：/image/xx/
+        // target directory, like: /test/abc/
         $targetDir = strval($this->request->get('targetDir'));
-        // 是否使用时间文件夹
+        // use time directory
         $useTimeDir = boolval($this->request->get('useTimeDir', false));
-        // 上传的文件类型
-        $type = strval($this->request->get('type', 'image'));
-        // 是否使用随机文件名
+        // use random file name
         $useRandomName = boolval($this->request->get('useRandomName', false));
-        // 是否覆盖已有文件
-        $replace = boolval($this->request->get('replace', false));
+        // upload file type
+        $type = strval($this->request->get('type', 'image'));
+        // overwrite file
+        $overwrite = boolval($this->request->get('overwrite', false));
 
-        // 实际保存目录
-        $realUploadDir = implode('/', [$this->basePath, $this->config[$type]['localPath']]);
-        // 网络访问地址
+        // local saving directory
+        $localUploadDir = implode('/', [$this->basePath, $this->config[$type]['localPath']]);
+        // network visit url
         $uploadUrl = implode('/', [$this->baseUrl, $this->config[$type]['localPath']]);
-        // 上传到目标文件夹
+
+        // upload to target directory
         if (!empty($targetDir)) {
-            $realUploadDir = implode('/', [$realUploadDir, $targetDir]);
+            $localUploadDir = implode('/', [$localUploadDir, $targetDir]);
         }
-        // 按时间保存
+        // upload to time directory
         if ($useTimeDir) {
-            $realUploadDir = implode('/', [$realUploadDir, date('Y-m-d')]);
+            $localUploadDir = implode('/', [$localUploadDir, date('Y-m-d')]);
         }
-        // 不存在则创建
-        if (!is_dir($realUploadDir)) {
-            mkdir($realUploadDir, 0777, true);
+        // create local saving directory if it does not exist
+        if (!is_dir($localUploadDir)) {
+            mkdir($localUploadDir, 0777, true);
         }
 
-        // 成功上传的文件列表
+        // upload success file list
         $successList = [];
-        // 失败上传的文件列表
+        // upload fail file list
         $failList = [];
         foreach ($_FILES as $item) {
-            // 文件名称
+            // filename with extension
             $fileNameWithExt = $item['name'];
-            // 文件类型
+            // file type
             $fileType = $item['type'];
-            // 文件大小
+            // file size in byte
             $fileSizeByte = $item['size'];
             $fileSizeKB = $fileSizeByte / 1024;
-            // 文件的临时保存路径
+            // temp file path in local disk
             $fileTmp = $item['tmp_name'];
 
             if ($this->config[$type]['minKB'] > $fileSizeKB) {
@@ -90,9 +91,8 @@ class UploadController extends BaseController
                 return ResultGenerator::errorWithMsg('File type not allow: ' . $fileType . ', allow type: ' . json_encode($this->config[$type]['allowType']));
             }
 
-            $isUploadSuccess = is_uploaded_file($fileTmp);
-            // 上传失败
-            if (!$isUploadSuccess) {
+            // upload fail
+            if (!is_uploaded_file($fileTmp)) {
                 array_push($failList, $fileNameWithExt);
                 continue;
             }
@@ -100,33 +100,34 @@ class UploadController extends BaseController
             $fileNameArray = explode('.', $fileNameWithExt);
             $fileExt = array_pop($fileNameArray);
             $fileNameWithoutExt = implode('.', $fileNameArray);
-            $realUploadFile = implode('/', [$realUploadDir, $fileNameWithExt]);
-            // 覆盖已有文件
-            if ($replace) {
-                if (file_exists($realUploadFile)) {
-                    unlink($realUploadFile);
+            $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
+
+            // overwrite exist file?
+            if ($overwrite) {
+                if (file_exists($localUploadFile)) {
+                    // remove exist file
+                    unlink($localUploadFile);
                 }
             } else {
-                while (file_exists($realUploadFile)) {
+                // rename upload file
+                while (file_exists($localUploadFile)) {
                     if (!$useRandomName) {
                         return ResultGenerator::errorWithMsg(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
                     }
-                    // set random file name
+                    // set random filename
                     // test.jpg -> asdfghjkl.jpg
                     $randomStr = Util::randomStr(15);
                     $fileNameWithExt = implode('.', [$randomStr, $fileExt]);
-                    $realUploadFile = implode('/', [$realUploadDir, $fileNameWithExt]);
+                    $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
                 }
             }
 
-            // 返回的应该是网站目录下的上传目录，而不是D:\xx这样的目录地址
-            $uploadFileUrl = sprintf('%s?file=%s', $uploadUrl, $fileNameWithExt);
-
-            $isMoveSuccess = move_uploaded_file($fileTmp, $realUploadFile);
-            if ($isMoveSuccess) {
+            // move temp file to local saving directory 
+            if (move_uploaded_file($fileTmp, $localUploadFile)) {
                 $data = [
                     'name' => $fileNameWithExt,
-                    'url' => $uploadFileUrl,
+                    // splice visit url
+                    'url' => sprintf('%s?file=%s', $uploadUrl, $fileNameWithExt),
                 ];
                 array_push($successList, $data);
             }
@@ -146,11 +147,11 @@ class UploadController extends BaseController
             return ResultGenerator::errorWithMsg('filename or type does not exist');
         }
 
-        $realUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
-        if (!file_exists($realUploadFile)) {
-            return ResultGenerator::errorWithMsg('File is not existed.');
+        $localUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
+        if (!file_exists($localUploadFile)) {
+            return ResultGenerator::errorWithMsg('file does not exist');
         }
-        if (!unlink($realUploadFile)) {
+        if (!unlink($localUploadFile)) {
             return ResultGenerator::errorWithMsg('delete failed');
         }
         return ResultGenerator::success();

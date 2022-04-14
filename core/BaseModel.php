@@ -15,6 +15,12 @@ class BaseModel extends MedooModel
         parent::__construct(\App\DI()->config['datasource']['mysql']);
     }
 
+    /**
+     * get columns from specify column keys
+     *
+     * @param array|string $columnKeys
+     * @return array
+     */
     public function getColumns($columnKeys = [])
     {
         $columnKeys = $this->splitIfString($columnKeys);
@@ -34,6 +40,12 @@ class BaseModel extends MedooModel
         return $columnValues;
     }
 
+    /**
+     * get columns from except specify column keys
+     *
+     * @param array|string $columnExceptKeys
+     * @return array
+     */
     public function getColumnsExcept($columnExceptKeys = [])
     {
         $columnExceptKeys = $this->splitIfString($columnExceptKeys);
@@ -41,6 +53,12 @@ class BaseModel extends MedooModel
         return $this->getColumns($columnKeys);
     }
 
+    /**
+     * split keys if it is string
+     *
+     * @param array|string $keys
+     * @return array
+     */
     private function splitIfString($keys)
     {
         if (is_string($keys)) {

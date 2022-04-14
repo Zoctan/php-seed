@@ -54,7 +54,7 @@ class AuthMember
             return true;
         }
         $intersect = array_intersect($need, $this->permissionList);
-        \App\debug('intersect', $intersect);
+        // \App\debug('intersect', $intersect);
         if (isset($need['joint'])) {
             if ($need['joint'] === 'and') {
                 return count($intersect) === count($need);

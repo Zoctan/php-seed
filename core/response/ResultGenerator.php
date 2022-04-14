@@ -3,16 +3,16 @@
 namespace App\Core\Response;
 
 /**
- * 响应结果生成工具
+ * Result generator
  */
 class ResultGenerator
 {
-    /** ------------------ 成功响应结果 ------------------ **/
+    /** ------------------ success result ------------------ **/
 
     /**
-     * 成功响应结果
+     * success result
      * 
-     * @return string 响应结果
+     * @return string
      */
     public static function success()
     {
@@ -20,10 +20,10 @@ class ResultGenerator
     }
 
     /**
-     * 成功响应结果
+     * success result
      *
-     * @param $msg 消息
-     * @return string 响应结果
+     * @param $msg message
+     * @return string
      */
     public static function successWithMsg($msg = '')
     {
@@ -31,10 +31,10 @@ class ResultGenerator
     }
 
     /**
-     * 成功响应结果
+     * success result
      *
-     * @param $data 数据
-     * @return string 响应结果
+     * @param $data data
+     * @return string
      */
     public static function successWithData($data = '')
     {
@@ -42,11 +42,11 @@ class ResultGenerator
     }
 
     /**
-     * 成功响应结果
+     * success result
      *
-     * @param $msg 消息
-     * @param $data 数据
-     * @return string 响应结果
+     * @param $msg message
+     * @param $data data
+     * @return string
      */
     public static function successWithMsgData($msg = '', $data = null)
     {
@@ -57,12 +57,12 @@ class ResultGenerator
             ->response();
     }
 
-    /** ------------------ 失败响应结果 ------------------ **/
+    /** ------------------ error result ------------------ **/
 
     /**
-     * 失败响应结果
+     * error result
      * 
-     * @return string 响应结果
+     * @return string
      */
     public static function error()
     {
@@ -70,10 +70,10 @@ class ResultGenerator
     }
 
     /**
-     * 失败响应结果
+     * error result
      *
-     * @param $msg 消息
-     * @return string 响应结果
+     * @param $msg message
+     * @return string
      */
     public static function errorWithMsg($msg = '')
     {
@@ -81,10 +81,10 @@ class ResultGenerator
     }
 
     /**
-     * 失败响应结果
+     * error result
      *
-     * @param $resultCode 状态码枚举
-     * @return string 响应结果
+     * @param array $resultCode enum result code
+     * @return string
      */
     public static function errorWithCode(array $resultCode)
     {
@@ -92,11 +92,11 @@ class ResultGenerator
     }
 
     /**
-     * 失败响应结果
+     * error result
      *
-     * @param $resultCode 状态码枚举
-     * @param $msg 消息
-     * @return string 响应结果
+     * @param array $resultCode enum result code
+     * @param string $msg message
+     * @return string
      */
     public static function errorWithCodeMsg(array $resultCode, $msg = '')
     {
@@ -104,12 +104,12 @@ class ResultGenerator
     }
 
     /**
-     * 失败响应结果
+     * error result
      *
-     * @param $resultCode 状态码枚举
-     * @param $msg 消息
-     * @param $data 数据
-     * @return string 响应结果
+     * @param array $resultCode enum result code
+     * @param string $msg message
+     * @param $data data
+     * @return string
      */
     public static function errorWithCodeMsgData(array $resultCode, $msg = '', $data = null)
     {

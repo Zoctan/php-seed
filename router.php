@@ -18,8 +18,8 @@ if ($env === 'development') {
   $router->addRoute('*', '/', 'HomeController@home', ['auth' => false]);
 
   $router->addGroup('/member', 'MemberController')
-    ->addRoute('POST', '/checkExist', 'checkExist', ['auth' => false])
-    ->addRoute('POST', '/checkOldPassword', 'checkOldPassword')
+    ->addRoute('POST', '/isMemberExist', 'isMemberExist', ['auth' => false])
+    ->addRoute('POST', '/validateOldPassword', 'validateOldPassword')
     ->addRoute('POST', '/register', 'register', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/login', 'login', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/validateAccessToken', 'validateAccessToken', ['auth' => false])

@@ -12,14 +12,11 @@ class AuthMemberModel
         $memberModel = new MemberModel();
         $member = $memberModel->getById($memberModel->getColumns(), $memberId);
 
-        \App\debug('member', $member);
         $memberDataModel = new MemberDataModel();
         $memberData = $memberDataModel->getByMember_id($memberDataModel->getColumns(), $memberId);
-        \App\debug('memberData', $memberData);
 
         $memberRoleModel = new MemberRoleModel();
         $roleList = $memberRoleModel->listRoleByMemberId($memberId);
-
 
         $hasAllRule = false;
         for ($i = 0; $i < count($roleList); $i++) {

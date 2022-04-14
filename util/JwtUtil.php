@@ -5,8 +5,6 @@ namespace App\Util;
 use Predis\Client;
 use App\Model\AuthMemberModel;
 use App\Core\Singleton;
-use App\Core\exception\TokenException;
-use App\Core\Http\Request;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Exception;
@@ -37,6 +35,12 @@ class JwtUtil
      */
     private $jwtConfig;
 
+    /**
+     * date time zone
+     * @var string
+     */
+    private $dateTimeZone = 'Asia/Shanghai';
+
     private function __construct()
     {
         $this->config = \App\DI()->config['jwt'];
@@ -53,17 +57,23 @@ class JwtUtil
     }
 
     /**
-     * 从请求头或请求参数中获取 token
+     * get token from request header or data
+     * 
+     * @param $request
      */
-    public function getTokenFromRequest(Request $request)
+    public function getTokenFromRequest()
     {
+        $request = \App\DI()->request;
         $headerKey = $this->config['header'];
         $token = $request->header->get($headerKey);
         return !empty($token) ? $token : $request->get($headerKey);
     }
 
     /**
-     * 签发 accessToken 和 refreshToken
+     * sign access token and refresh token
+     * 
+     * @param $memberId
+     * @param $payload
      */
     public function sign($memberId, array $payload = [])
     {
@@ -77,7 +87,10 @@ class JwtUtil
     }
 
     /**
-     * 签发 accessToken
+     * sign access token
+     * 
+     * @param $memberId
+     * @param $payload
      */
     public function signAccessToken($memberId, array $payload = [])
     {
@@ -90,7 +103,10 @@ class JwtUtil
     }
 
     /**
-     * 签发 refreshToken
+     * sign refresh token
+     * 
+     * @param $memberId
+     * @param $payload
      */
     public function signRefreshToken($memberId, array $payload = [])
     {
@@ -98,7 +114,11 @@ class JwtUtil
     }
 
     /**
-     * 签发 token
+     * sign token
+     * 
+     * @param $memberId
+     * @param $expiresMinutes
+     * @param $payload
      */
     public function signToken($memberId, $expiresMinutes, array $payload = [])
     {
@@ -109,11 +129,11 @@ class JwtUtil
             ->permittedFor($this->config['permittedFor'])
             ->identifiedBy($this->config['identifiedBy'])
             ->issuedAt($now)
-            // 在1分钟后才可使用
+            // can only be used after 1 minute
             // ->canOnlyBeUsedAfter($now->modify('+1 minute'))
             ->expiresAt($now->modify('+' . $expiresMinutes . ' minute'));
 
-        // 装载 payload
+        // put payload
         $jwtObj->withClaim('memberId', $memberId);
         // 不适合放操作权限列表，token 后期可能会非常长
         // 这里可能会有个疑惑，放不了什么东西，那为什么不用 UUID 这些做 token
@@ -124,7 +144,7 @@ class JwtUtil
             }
         }
 
-        // 生成 token
+        // create token
         $token = $jwtObj
             ->getToken($this->jwtConfig->signer(), $this->jwtConfig->signingKey())
             ->toString();
@@ -133,7 +153,10 @@ class JwtUtil
     }
 
     /**
-     * 保存 token 到 redis
+     * save token to redis
+     * 
+     * @param $memberId
+     * @param $token
      */
     public function save2Redis($memberId, $token)
     {
@@ -146,19 +169,21 @@ class JwtUtil
     }
 
     /**
-     * 使 redis 里的 token 失效
+     * invalid redis token
+     * 
+     * @param $memberId
      */
     public function invalidRedisToken($memberId)
     {
-        // 直接删除
+        // remove redis token
         $token = $this->cache->get($memberId);
         $this->cache->del([$token, $memberId]);
-        // $token = $this->cache->get($memberId);
-        // $this->cache->setex($token, $this->config['expiresMinutes'] * 60, 0);
     }
 
     /**
-     * 验证 token & redis
+     * validate token self and redis token
+     * 
+     * @param string $token
      */
     public function validateTokenRedis($token)
     {
@@ -171,21 +196,22 @@ class JwtUtil
     }
 
     /**
-     * 验证 token
+     * validate token
+     * 
+     * @param string $token
      */
     public function validateToken($token)
     {
         try {
             $token = $this->jwtConfig->parser()->parse($token);
         } catch (Exception $e) {
-            // throw new TokenException('token parse error:' . $e->getMessage());
             return false;
         }
 
         $this->jwtConfig->setValidationConstraints(new IdentifiedBy($this->config['identifiedBy']));
         $this->jwtConfig->setValidationConstraints(new IssuedBy($this->config['issuedBy']));
         $this->jwtConfig->setValidationConstraints(new PermittedFor($this->config['permittedFor']));
-        $time = new SystemClock(new \DateTimeZone('Asia/Shanghai'));
+        $time = new SystemClock(new \DateTimeZone($this->dateTimeZone));
         $this->jwtConfig->setValidationConstraints(new ValidAt($time));
 
         $validationConstraints  = $this->jwtConfig->validationConstraints();
@@ -193,13 +219,14 @@ class JwtUtil
             $this->jwtConfig->validator()->assert($token, ...$validationConstraints);
             return true;
         } catch (RequiredConstraintsViolated $e) {
-            // throw new TokenException('token validate error:' . $e->getMessage());
             return false;
         }
     }
 
     /**
-     * 获取认证用户
+     * get authentication member
+     * 
+     * @param string $token
      */
     public function getAuthMember($token)
     {
@@ -212,16 +239,16 @@ class JwtUtil
     }
 
     /**
-     * 解析 token
+     * parse token
+     * 
+     * @param string $token
      */
     public function parseToken($token)
     {
         try {
             $token = $this->jwtConfig->parser()->parse($token);
-            // 包的问题，能读取
             $claims = json_decode(base64_decode($token->claims()->toString()), true);
         } catch (Exception $e) {
-            // throw new TokenException('token parse error: ' . $e->getMessage());
             return null;
         }
         return $claims;

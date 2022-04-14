@@ -34,9 +34,9 @@ class MemberController extends BaseController
     }
 
     /**
-     * 检查成员是否已存在
+     * is member exist
      */
-    public function checkExist()
+    public function isMemberExist()
     {
         $username = strval($this->request->get('username'));
 
@@ -49,16 +49,16 @@ class MemberController extends BaseController
             return ResultGenerator::errorWithMsg('username already exists');
         }
 
-        // 其他的唯一属性
+        // other attributions that can find the unique member
         // ...
 
         return ResultGenerator::success();
     }
 
     /**
-     * 检查旧密码是否正确
+     * validate old password
      */
-    public function checkOldPassword()
+    public function validateOldPassword()
     {
         $oldPassword = strval($this->request->get('oldPassword'));
 
@@ -77,7 +77,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 注册
+     * register
      */
     public function register()
     {
@@ -101,7 +101,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 登录
+     * login
      */
     public function login()
     {
@@ -137,7 +137,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 登出
+     * logout
      */
     public function logout()
     {
@@ -149,14 +149,13 @@ class MemberController extends BaseController
     }
 
     /**
-     * 检验 accessToken 的有效性
+     * validate access token
      */
     public function validateAccessToken()
     {
-        // 前端搭配 refreshToken 会无限循环，因为 refreshToken 会重试失败请求
-        // 但是前端 POST 或者 GET 请求的数据 accessToken 是定值，即使刷新了也无法实时修改，所以前端重试时要更改提交的数据，比较麻烦
-        // 为了方便，后端直接捕获头部的 Authorization，因为前端重试时会更改头部的 Authorization
-        $accessToken = $this->jwtUtil->getTokenFromRequest($this->request);
+        // read access token from header
+        // if use POST or GET data, make sure the access token had been changed when refresh token
+        $accessToken = $this->jwtUtil->getTokenFromRequest();
         if (empty($accessToken)) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::ACCESS_TOKEN_EXCEPTION, 'accessToken does not exist');
         }
@@ -168,12 +167,12 @@ class MemberController extends BaseController
     }
 
     /**
-     * 刷新 accessToken
+     * refresh access token
      */
     public function refreshToken()
     {
-        // 先检查旧 accessToken 是否正常
-        $oldAccessToken = $this->jwtUtil->getTokenFromRequest($this->request);
+        // check old access token
+        $oldAccessToken = $this->jwtUtil->getTokenFromRequest();
         if (empty($oldAccessToken)) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'old accessToken does not exist');
         }
@@ -181,7 +180,7 @@ class MemberController extends BaseController
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'old authMember does not exist, old accessToken error');
         }
-        // 再检查 refreshToken 是否正常
+        // check refresh token
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'refreshToken does not exist');
@@ -193,7 +192,7 @@ class MemberController extends BaseController
         if (empty($authMember) || empty($authMember->member['id'])) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'new authMember does not exist, refreshToken error');
         }
-        // accessToken 和 refreshToken 是否为同一用户的
+        // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
             return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'accessToken does not match the refreshToken');
         }
@@ -202,7 +201,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 成员信息
+     * member detail
      */
     public function detail()
     {
@@ -236,7 +235,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 个人信息
+     * member profile
      */
     public function profile()
     {
@@ -244,7 +243,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 列表
+     * member list
      */
     public function list()
     {
@@ -257,7 +256,6 @@ class MemberController extends BaseController
 
         $memberDataModel = new MemberDataModel();
         $memberRoleModel = new MemberRoleModel();
-        $roleModel = new RoleModel();
 
         $conditionList = [];
         // 先查询其他表，根据其他表的结果再查主表
@@ -324,7 +322,7 @@ class MemberController extends BaseController
         \App\debug('memberDataList', $memberDataList);
         \App\debug('memberRoleList', $memberRoleList);
         \App\debug('memberList', $memberList);
-        // 数组所有可能的子集，并对这些子集做相交运算，再做分页查询
+        // all subsets make intersect
         $memberPageWhere = [];
         if (!empty($conditionList)) {
             $memberPageWhere = ['member.id' => Util::subsetsIntersect($conditionList)];
@@ -358,13 +356,12 @@ class MemberController extends BaseController
             $roleList = $memberRoleModel->listRoleByMemberId($result['list'][$i]['member']['member_id']);
             $result['list'][$i]['roleList'] = $roleList;
         }
-        \App\debug('sql', $this->memberModel->log());
 
         return ResultGenerator::successWithData($result);
     }
 
     /**
-     * 更新密码
+     * update password
      */
     public function updatePassword()
     {
@@ -375,7 +372,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 更新个人信息
+     * update profile
      */
     public function updateProfile()
     {
@@ -387,7 +384,7 @@ class MemberController extends BaseController
 
 
     /**
-     * 更新
+     * update detail
      */
     public function updateDetail()
     {
@@ -407,7 +404,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 添加
+     * add member
      */
     public function add()
     {
@@ -430,7 +427,7 @@ class MemberController extends BaseController
     }
 
     /**
-     * 删除
+     * delete member
      */
     public function delete()
     {

@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Core\DependencyInjection;
-use App\Core\HTTP\Response;
 
 function DI()
 {
@@ -12,5 +11,5 @@ function DI()
 
 function debug($key, $value)
 {
-    return DI()->get('response', new Response())->appendDebug($key, $value);
+    return DI()->response->appendDebug($key, $value);
 }

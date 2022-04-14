@@ -399,9 +399,6 @@ abstract class MedooModel
      */
     public function __call($method, $arguments)
     {
-        \App\debug('method', $method);
-        \App\debug('arguments', $arguments);
-
         // use 'By' to set $where directly
         // like: 
         // selectByName(array|string $columns, $name)
@@ -416,9 +413,7 @@ abstract class MedooModel
             for ($i = 0; $i < count($whereKeyList); $i++) {
                 $whereKeyList[$i] = strtolower($whereKeyList[$i]);
             }
-            \App\debug('whereKeyList1', $whereKeyList);
             $wherePosition = null;
-            \App\debug('method2', $method);
             switch ($method) {
                 case 'select':
                     // select(array|string $columns, callable $callback)
@@ -485,16 +480,11 @@ abstract class MedooModel
                     }
                     break;
             }
-            \App\debug('method3', $method);
             if (is_numeric($wherePosition)) {
                 $whereValueList = $arguments[$wherePosition];
-                \App\debug('wherePosition', $wherePosition);
-                \App\debug('whereValueList1', $whereValueList);
                 if (!is_array($whereValueList)) {
                     $whereValueList = [$whereValueList];
                 }
-                \App\debug('whereKeyList2', $whereKeyList);
-                \App\debug('whereValueList2', $whereValueList);
                 $where = array_combine($whereKeyList, $whereValueList);
                 $arguments[$wherePosition] = $where;
             }

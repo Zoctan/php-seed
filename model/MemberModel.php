@@ -3,7 +3,6 @@
 namespace App\Model;
 
 use Medoo\Medoo;
-
 use App\Core\BaseModel;
 
 class MemberModel extends BaseModel

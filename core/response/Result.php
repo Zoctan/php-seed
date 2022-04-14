@@ -5,7 +5,7 @@ namespace App\Core\Response;
 use App\Core\Http\Response;
 
 /**
- * 响应结果
+ * Result
  */
 class Result
 {

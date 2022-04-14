@@ -50,7 +50,7 @@ class File
 
   public function download()
   {
-    \App\debug('download', $this->absolutePath);
+    // \App\debug('download', $this->absolutePath);
     if (!file_exists($this->absolutePath)) {
       header('HTTP/1.1 404 NOT FOUND');
       return false;

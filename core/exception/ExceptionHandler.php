@@ -20,17 +20,17 @@ class ExceptionHandler
     }
 
     /**
-     * 处理自定义抛出的 Exception
+     * handle custom throw exception
      */
     private static function setExceptionHandler()
     {
         set_exception_handler(function (\Throwable $exception) {
             $resultCode = [];
             if ($exception instanceof BaseException) {
-                // 继承自基类的异常
+                // extend from BaseException
                 $resultCode = $exception->getResultCode();
             } else {
-                // 其他异常
+                // other Exception
                 $resultCode = ResultCode::UNKNOWN_FAILED;
             }
             if (self::$showFileLine) {
@@ -53,7 +53,7 @@ class ExceptionHandler
     }
 
     /**
-     * 处理自定义抛出的 Error
+     * handle custom throw error
      */
     private static function setErrorHandler()
     {
