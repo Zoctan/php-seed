@@ -5,7 +5,7 @@ namespace App\Core\Http;
 use App\Core\Exception\RouterException;
 
 /**
- * 路由器
+ * Router
  */
 class Router
 {
@@ -31,7 +31,7 @@ class Router
      * 
      * @param array|string $methods ['GET', 'POST'] or just 'GET'
      * @param string $uri 'member/list' or '/member/list'
-     * @param callback|string $callback 'MemberController@list' or function() {}
+     * @param callback|string $callback 'MemberController@list' or closure function() {}
      * @param array $extra extra data for Route()
      */
     public function addRoute($methods, string $uri, $callback, array $extra = [])
@@ -140,18 +140,17 @@ class Router
         $callback = $route->action;
         $response->setResponseType($route->responseType);
         if (is_callable($callback)) {
-            // 通过匿名函数注册的路由回调
-            // 比如：$router->register('get', '/', function () { xxx });
+            // call closure function, like: $router->register('get', '/', function () { xxx });
             call_user_func($callback);
-        } elseif (is_string($callback) && strpos($callback, '@') !== FALSE) {
-            // 通过控制器方法注册的路由回调
+        } elseif (is_string($callback) && strpos($callback, '@') !== false) {
+            // like: $router->register('get', '/', 'MemberController@list'); 
             list($controllerClass, $controllerMethod) = explode('@', $callback);
             $controllerNamespace = \App\DI()->config['app']['controllerNamespace'];
             // App\Controller\XXController
             $controllerClass = $controllerNamespace . $controllerClass;
-            // 创建控制器实例
+            // new class instance
             $controllerInstance = \App\DI()->newInstance($controllerClass);
-            // 调用控制器方法
+            // call method
             $controllerInstance->$controllerMethod();
         } else {
             throw new RouterException('route inside error, please contract with administrator');

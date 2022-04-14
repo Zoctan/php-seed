@@ -7,6 +7,9 @@ use Countable;
 use Iterator;
 use JsonSerializable;
 
+/**
+ * Array wrap
+ */
 final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializable
 {
     private array $data;

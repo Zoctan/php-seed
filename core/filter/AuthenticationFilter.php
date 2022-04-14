@@ -7,7 +7,7 @@ use App\Util\JwtUtil;
 use App\Core\Exception\AccessTokenException;
 
 /**
- * 认证过滤器
+ * Authentication filter
  */
 class AuthenticationFilter implements Filter
 {

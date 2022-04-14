@@ -16,40 +16,29 @@ class MemberRoleModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
-    public function listRole($memberId)
+    public function listRoleByMemberId($memberId)
     {
+        $roleModel = new RoleModel();
         return $this->select(
             [
                 '[>]role' => ['member_role.role_id' => 'id'],
             ],
-            [
-                'role.id [Int]',
-                'role.parent_id [Int]',
-                'role.name',
-                'role.has_all_rule [Int]',
-                'role.lock [Int]',
-            ],
+            $roleModel->getColumns(),
             [
                 'member_role.member_id' => $memberId
             ]
         );
     }
 
-    public function getRule($memberId)
+    public function listRuleByMemberId($memberId)
     {
+        $ruleModel = new RuleModel();
         return $this->select(
             [
                 '[>]role_rule' => ['member_role.role_id' => 'role_id'],
                 '[>]rule' => ['role_rule.rule_id' => 'id'],
             ],
-            [
-                'rule.id [Int]',
-                'rule.parent_id [Int]',
-                'rule.description',
-                'rule.permission',
-                'rule.created_at',
-                'rule.updated_at'
-            ],
+            $ruleModel->getColumns(),
             [
                 'member_role.member_id' => $memberId
             ]

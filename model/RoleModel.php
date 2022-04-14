@@ -20,6 +20,7 @@ class RoleModel extends BaseModel
 
     public function listRuleByRoleId($roleId)
     {
+        $ruleModel = new RuleModel();
         return $this->select(
             [
                 '[>]role_rule' => ['role.id' => 'role_id'],

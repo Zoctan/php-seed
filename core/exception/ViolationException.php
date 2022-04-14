@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * 验证异常
+ * Violation exception
  */
 class ViolationException extends BaseException
 {

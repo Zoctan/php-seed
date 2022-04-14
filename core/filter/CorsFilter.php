@@ -6,7 +6,7 @@ use App\Core\Filter;
 use App\Core\Http\Response;
 
 /**
- * 跨域过滤器
+ * Cors filter
  */
 class CorsFilter implements Filter
 {
@@ -28,17 +28,17 @@ class CorsFilter implements Filter
     public function doFilter()
     {
         $this->response
-            // 允许任何网址请求
+            // allow all origin
             ->appendHeader('Access-Control-Allow-Origin', '*')
-            // 允许请求的类型
+            // allow methods
             ->appendHeader('Access-Control-Allow-Methods', 'GET,POST,DELETE,PUT,PATCH,OPTIONS')
-            // 不允许带 cookies
-            // 若请求框架是 axios，要关闭 withCredentials: false
+            // deny credentials
+            // if frontend using axios, make sure param withCredentials = false
             ->appendHeader('Access-Control-Allow-Credentials', 'false')
-            // 设置允许自定义请求头的字段
+            // allow headers
             ->appendHeader('Access-Control-Allow-Headers', 'Content-Type,Content-Length,Authorization');
 
-        // 预请求后，直接返回
+        // options request return 200 directly
         if ('OPTIONS' === $this->request->getMethod()) {
             return false;
         }

@@ -35,10 +35,10 @@ class DependencyInjection implements \ArrayAccess
 
     use Singleton;
 
-    // 服务命中的次数
+    // service hit times
     protected $hitTimes = [];
 
-    // 服务池
+    // data pool
     protected $data = [];
 
     private function __construct()
@@ -78,11 +78,11 @@ class DependencyInjection implements \ArrayAccess
 
         return $this->data[$key];
     }
-    
+
     /**
-     * 类   => 初始化
-     * 方法 => 调用
-     * 值   => 调用
+     * class => initial
+     * closure function => call
+     * value => return
      */
     protected function initService($value)
     {
@@ -100,7 +100,7 @@ class DependencyInjection implements \ArrayAccess
     }
 
     /**
-     * 反射方式创建实例
+     * new instance using reflection
      */
     public function newInstance(string $class): object
     {
@@ -124,7 +124,7 @@ class DependencyInjection implements \ArrayAccess
         return $reflectionClass->newInstanceArgs($newInstanceParams);
     }
 
-    /** ------------------ 魔法方法 ------------------ **/
+    /** ------------------ magic function ------------------ **/
 
     public function __call($name, $arguments)
     {

@@ -18,7 +18,7 @@ class AuthMemberModel
         \App\debug('memberData', $memberData);
 
         $memberRoleModel = new MemberRoleModel();
-        $roleList = $memberRoleModel->listRole($memberId);
+        $roleList = $memberRoleModel->listRoleByMemberId($memberId);
 
 
         $hasAllRule = false;
@@ -39,7 +39,7 @@ class AuthMemberModel
                 }
             );
         } else {
-            $ruleList = $memberRoleModel->getRule($memberId);
+            $ruleList = $memberRoleModel->listRuleByMemberId($memberId);
         }
         $ruleTree = Tree::list2Tree($ruleList);
         $permissionList = $memberRoleModel->getPermissionList($ruleTree);

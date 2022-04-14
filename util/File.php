@@ -2,7 +2,7 @@
 
 namespace App\Util;
 
-class FileUtil
+class File
 {
   public $basePath;
   public $absolutePath;

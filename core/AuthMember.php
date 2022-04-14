@@ -3,7 +3,7 @@
 namespace App\Core;
 
 /**
- * 认证成员
+ * Authentication member
  */
 class AuthMember
 {

@@ -41,7 +41,8 @@ if ($env === 'development') {
     ->addRoute(['GET', 'POST'], '/detail', 'detail')
     ->addRoute('PUT', '/update', 'update')
     ->addRoute('DELETE', '/delete', 'delete')
-    ->addRoute('PUT', '/updateMemberRole', 'updateMemberRole');
+    ->addRoute('POST', '/addMemberRole', 'addMemberRole')
+    ->addRoute('DELETE', '/deleteMemberRole', 'deleteMemberRole');
 
   $router->addGroup('/rule', 'RuleController')
     ->addRoute('POST', '/add', 'add')

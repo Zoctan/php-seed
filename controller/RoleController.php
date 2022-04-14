@@ -116,18 +116,6 @@ class RoleController extends BaseController
         return ResultGenerator::success();
     }
 
-    public function updateMemberRole()
-    {
-        $memberId = intval($this->request->get('memberId'));
-        $role = $this->request->get('role');
-        if (empty($memberId) || empty($role)) {
-            return ResultGenerator::errorWithMsg('member id or role id does not exist');
-        }
-        $memberRoleModel = new MemberRoleModel();
-        $memberRoleModel->updateByRole_idMember_id([$role['id'], $memberId]);
-        return ResultGenerator::success();
-    }
-
     public function delete()
     {
         $roleId = intval($this->request->get('roleId'));
@@ -135,6 +123,31 @@ class RoleController extends BaseController
             return ResultGenerator::errorWithMsg('role id does not exist');
         }
         $this->roleModel->deleteById($roleId);
+        return ResultGenerator::success();
+    }
+
+    public function addMemberRole()
+    {
+        $memberId = intval($this->request->get('memberId'));
+        $roleId = intval($this->request->get('roleId'));
+        if (empty($memberId) || empty($roleId)) {
+            return ResultGenerator::errorWithMsg('member id or role id does not exist');
+        }
+        $memberRoleModel = new MemberRoleModel();
+        $memberRoleModel->insert(['member_id' => $memberId, 'role_id' => $roleId]);
+        $role = $this->roleModel->getById($this->roleModel->getColumns(), $roleId);
+        return ResultGenerator::successWithData($role);
+    }
+
+    public function deleteMemberRole()
+    {
+        $memberId = intval($this->request->get('memberId'));
+        $roleId = intval($this->request->get('roleId'));
+        if (empty($memberId) || empty($roleId)) {
+            return ResultGenerator::errorWithMsg('member id or role id does not exist');
+        }
+        $memberRoleModel = new MemberRoleModel();
+        $memberRoleModel->deleteByMember_idRole_id([$memberId, $roleId]);
         return ResultGenerator::success();
     }
 }

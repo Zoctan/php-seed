@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Util\Util;
-use App\Util\FileUtil;
+use App\Util\File;
 use App\Core\BaseController;
 use App\Core\Response\ResultGenerator;
 
@@ -29,7 +29,7 @@ class UploadController extends BaseController
             return ResultGenerator::errorWithMsg('filename or type does not exist');
         }
         $filePath = implode('/', [$this->config[$type]['localPath'], $filename]);
-        $file = new FileUtil($filePath, $this->basePath);
+        $file = new File($filePath, $this->basePath);
         if (!$file->download()) {
             return ResultGenerator::errorWithMsg('download error');
         }

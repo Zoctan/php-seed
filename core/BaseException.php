@@ -3,7 +3,7 @@
 namespace App\Core;
 
 /**
- * 异常基类
+ * Base exception
  */
 class BaseException extends \Exception
 {

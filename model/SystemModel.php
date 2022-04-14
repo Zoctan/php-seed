@@ -18,16 +18,13 @@ class SystemModel extends BaseModel
     ];
 
     /**
-     * 获取值
-     * 
      * @param string|array $key
-     *
      * @return string|array
      */
     public function getValue($key)
     {
         $method = is_array($key) ? 'selectByKey' : 'getByKey';
-        return $this->$method($this->getColumns(['value']), $key);
+        return $this->$method($this->getColumns('value'), $key);
     }
 
     public function add($description, $key, $value)

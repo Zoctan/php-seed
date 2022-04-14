@@ -7,7 +7,7 @@ use App\Core\Response\ResultGenerator;
 use App\Core\Response\ResultCode;
 
 /**
- * 全局异常处理器
+ * Global exception handler
  */
 class ExceptionHandler
 {

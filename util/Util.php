@@ -4,7 +4,6 @@ namespace App\Util;
 
 class Util
 {
-
     /*
      * 1D array: [1, 2, 3] => [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
      * 2D array: [[1], [2], [3]] => [[[1], [2], [3]], [[1, 2], [1, 3], [2, 3]], [[1, 2, 3]]]
@@ -71,24 +70,16 @@ class Util
         }
         return $valueList;
     }
-    
-    /*
-     * 当前文件名
-     */
-    public static function phpSelfName()
-    {
-        return substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], '/') + 1);
-    }
 
-    /*
-     * 日期是否为今天
+    /**
+     * is
      * @param $dateString Y-m-d
      */
     public static function isToday($dateString)
     {
         $today = date('Y-m-d', time());
         $day = date('Y-m-d', strtotime($dateString));
-        return $day == $today;
+        return $day === $today;
     }
 
     /**

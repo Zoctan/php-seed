@@ -4,7 +4,7 @@ ini_set('display_errors', true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Util\FileUtil;
+use App\Util\File;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
 use App\Core\Collection;
@@ -70,7 +70,7 @@ class Bootstrap
     {
         $config = require_once $this->configPath;
         $basePath = $config['basePath'];
-        $configFile = new FileUtil($this->configPath, $basePath);
+        $configFile = new File($this->configPath, $basePath);
         // $basePath is from config.php, so require config.php first
         $configEnv = require_once sprintf('%s/%s-%s.%s', $basePath, $configFile->fileNameWithoutExt, $config['env'], $configFile->fileExt);
         $this->di->config = new Collection(array_merge($config, $configEnv));

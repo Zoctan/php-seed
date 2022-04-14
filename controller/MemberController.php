@@ -226,7 +226,7 @@ class MemberController extends BaseController
         );
 
         $memberRoleModel = new MemberRoleModel();
-        $roleList = $memberRoleModel->listRole($memberId);
+        $roleList = $memberRoleModel->listRoleByMemberId($memberId);
 
         return ResultGenerator::successWithData([
             'member' => $member,
@@ -273,7 +273,7 @@ class MemberController extends BaseController
 
             if ($memberDataWhere) {
                 $memberDataModel->select(
-                    $memberDataModel->getColumns(['member_id']),
+                    $memberDataModel->getColumns('member_id'),
                     $memberDataWhere,
                     function ($_memberData) use (&$memberDataList) {
                         $memberDataList[] = $_memberData;
@@ -291,7 +291,7 @@ class MemberController extends BaseController
 
             if ($memberRoleWhere) {
                 $memberRoleModel->select(
-                    $memberDataModel->getColumns(['member_id']),
+                    $memberDataModel->getColumns('member_id'),
                     $memberRoleWhere,
                     function ($_memberRole) use (&$memberRoleList) {
                         $memberRoleList[] = $_memberRole;
@@ -312,7 +312,7 @@ class MemberController extends BaseController
 
             if ($memberWhere) {
                 $this->memberModel->select(
-                    $memberDataModel->getColumns(['member_id']),
+                    $memberDataModel->getColumns('member_id'),
                     $memberWhere,
                     function ($_member) use (&$memberList) {
                         $memberList[] = $_member;
@@ -355,11 +355,7 @@ class MemberController extends BaseController
         );
         // add role list
         for ($i = 0; $i < count($result['list']); $i++) {
-            $memberRoleList = $memberRoleModel->selectByMember_id($memberRoleModel->getColumns(), $result['list'][$i]['member']['member_id']);
-            $roleList = [];
-            for ($j = 0; $j < count($memberRoleList); $j++) {
-                $roleList[] = $roleModel->getById($roleModel->getColumns(), $memberRoleList[$j]['role_id']);
-            }
+            $roleList = $memberRoleModel->listRoleByMemberId($result['list'][$i]['member']['member_id']);
             $result['list'][$i]['roleList'] = $roleList;
         }
         \App\debug('sql', $this->memberModel->log());

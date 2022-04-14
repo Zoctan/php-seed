@@ -3,7 +3,7 @@
 namespace App\Core;
 
 /**
- * 模型基类
+ * Base model
  */
 class BaseModel extends MedooModel
 {
@@ -15,8 +15,9 @@ class BaseModel extends MedooModel
         parent::__construct(\App\DI()->config['datasource']['mysql']);
     }
 
-    public function getColumns(array $columnKeys = [])
+    public function getColumns($columnKeys = [])
     {
+        $columnKeys = $this->splitIfString($columnKeys);
         $columnValues = [];
         $keysLength = count($columnKeys);
         if ($keysLength > 0) {
@@ -33,9 +34,24 @@ class BaseModel extends MedooModel
         return $columnValues;
     }
 
-    public function getColumnsExcept(array $columnExceptKeys = [])
+    public function getColumnsExcept($columnExceptKeys = [])
     {
+        $columnExceptKeys = $this->splitIfString($columnExceptKeys);
         $columnKeys = array_values(array_diff(array_keys($this->columns), $columnExceptKeys));
         return $this->getColumns($columnKeys);
+    }
+
+    private function splitIfString($keys)
+    {
+        if (is_string($keys)) {
+            if (strpos('&', $keys) !== false) {
+                return explode('&', $keys);
+            } else if (strpos(',', $keys) !== false) {
+                return explode(',', $keys);
+            } else {
+                return [$keys];
+            }
+        }
+        return $keys;
     }
 }

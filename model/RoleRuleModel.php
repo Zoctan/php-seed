@@ -19,11 +19,11 @@ class RoleRuleModel extends BaseModel
 
     public function updateRuleByRoleId($ruleIdList, $roleId)
     {
-        // 先找到原来的规则列表
+        // list old rule first
         $oldRuleList = $this->selectByRole_id($this->getColumns(), $roleId);
         $oldRuleIdList = Util::getValueList('rule_id', $oldRuleList);
 
-        // 在 原来规则，但不在 新规则，要删除
+        // in old list, but not in new list, delete:
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //    ruleIdList: [1, 3, 5, 6, 7]
         //      diffList: [2, 4]
@@ -39,7 +39,7 @@ class RoleRuleModel extends BaseModel
             }
         }
 
-        // 在 新规则，但不在 原来规则，要添加
+        // in new list, but not in old list, insert:
         //    ruleIdList: [1, 3, 5, 6, 7]
         // oldRuleIdList: [1, 2, 3, 4, 5]
         //      diffList: [6, 7]

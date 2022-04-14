@@ -63,35 +63,31 @@ use App\Core\exception\DatabaseException;
  * @method int sum(string $table, string $column, array $where)
  * @method int sum(string $table, array $join, string $column, array $where)
  */
-
-/**
- * 模型基类
- */
 abstract class MedooModel
 {
     /**
-     * 库名
+     * database name
      *
      * @var string
      */
     protected $database = 'phpseed';
 
     /**
-     * 表名
+     * table name
      *
      * @var string
      */
     protected $table;
 
     /**
-     * 表主键
+     * table primary key
      *
      * @var string
      */
     protected $primary = 'id';
 
     /**
-     * 表主键类型
+     * table primary key type
      *
      * @var string
      */
@@ -105,28 +101,28 @@ abstract class MedooModel
     protected $timestamps = true;
 
     /**
-     * 配置
+     * medoo config
      *
      * @var array
      */
     protected $config = [];
 
     /**
-     * a place of connect
+     * a place of connection
      *
      * @var string
      */
     protected $place = 'MedooModel';
 
     /**
-     * 是否是读操作
+     * read method
      *
      * @var bool
      */
     protected $read = false;
 
     /**
-     * 是否是写操作
+     * write method
      *
      * @var bool
      */
@@ -144,177 +140,20 @@ abstract class MedooModel
     }
 
     /**
-     * 错误信息
-     * 
-     * @return string
-     */
-    public function error()
-    {
-        return $this->connection()->error;
-    }
-
-    /**
-     * 详细错误信息
-     * 
-     * @return array|null
-     */
-    public function errorInfo()
-    {
-        return $this->connection()->errorInfo;
-    }
-
-    /**
-     * 获取数据库连接实例
-     *
-     * @return PDO
-     */
-    public function pdo()
-    {
-        return $this->connection()->pdo;
-    }
-
-    // /**
-    //  * 根据条件查询所有数据
-    //  *
-    //  * @param string|array $columns
-    //  * @param array $where
-    //  * @param callback $callback
-    //  */
-    // public function listBy($columns = '*', array $where, callable $callback)
-    // {
-    //     $this->read = true;
-    //     $this->connection()->select($this->table, $columns, $where, $callback);
-    // }
-
-    // /**
-    //  * 根据条件查询一条数据
-    //  *
-    //  * @param string $columns
-    //  * @param array $where
-    //  *
-    //  * @return 
-    //  */
-    // public function getBy($columns = '*', array $where)
-    // {
-    //     if (empty($where)) throw new DatabaseException('empty condition, get one error');
-
-    //     $this->read = true;
-    //     return $this->connection()->get($this->table, $columns, $where);
-    // }
-
-    // /**
-    //  * 根据主键查询一条数据
-    //  *
-    //  * @param string $columns
-    //  * @param $id
-    //  *
-    //  * @return 
-    //  */
-    // public function getById($columns = '*', $id)
-    // {
-    //     return $this->getBy($columns, [$this->primary => $id]);
-    // }
-
-    /**
-     * 插入数据
-     *
      * @param array $values
      *
-     * @return int|void
+     * @return int|string|void
      */
     public function insert(array $values)
     {
         $this->write = true;
         $this->connection()->insert($this->table, $values);
-        return $this->id();
+        $id = $this->id();
+        if (empty($id)) {
+            throw new DatabaseException('insert error');
+        }
+        return $id;
     }
-
-    // /**
-    //  * 根据条件删除一条数据
-    //  *
-    //  * @param array $where
-    //  *
-    //  * @return void
-    //  */
-    // public function deleteBy(array $where): void
-    // {
-    //     if (empty($where)) throw new DatabaseException('empty condition, delete error');
-
-    //     $result = $this->connection()->delete($this->table, $where);
-    //     if (empty($result)) {
-    //         throw new DatabaseException('delete error');
-    //     }
-    // }
-
-    // /**
-    //  * 根据主键删除一条数据
-    //  *
-    //  * @param $id
-    //  *
-    //  * @return void
-    //  */
-    // public function deleteById($id): void
-    // {
-    //     $this->deleteBy([$this->primary => $id]);
-    // }
-
-    // /**
-    //  * 根据主键列表删除多条数据
-    //  *
-    //  * @param array $idList
-    //  *
-    //  * @return void
-    //  */
-    // public function deleteByIdList(array $idList): void
-    // {
-    //     foreach ($idList as $id) {
-    //         $this->deleteBy([$this->primary => $id]);
-    //     }
-    // }
-
-    // /**
-    //  * 根据条件更新数据
-    //  *
-    //  * @param array $where
-    //  *
-    //  * @return void
-    //  */
-    // public function updateBy($values, array $where): void
-    // {
-    //     if (empty($where)) throw new DatabaseException('empty condition, update error');
-
-    //     $this->write = true;
-    //     $result = $this->connection()->update($this->table, $values, $where);
-    //     if (empty($result)) {
-    //         throw new DatabaseException('update error');
-    //     }
-    // }
-
-    // /**
-    //  * 根据主键更新数据
-    //  *
-    //  * @param $id
-    //  *
-    //  * @return void
-    //  */
-    // public function updateById($values, $id): void
-    // {
-    //     $this->updateBy($values, [$this->primary => $id]);
-    // }
-
-    // /**
-    //  * 根据主键更新数据列表
-    //  *
-    //  * @param array $valuesList
-    //  *
-    //  * @return void
-    //  */
-    // public function updateListById(array $valuesList): void
-    // {
-    //     foreach ($valuesList as $values) {
-    //         $this->updateBy($values, [$this->primary => $values['id']]);
-    //     }
-    // }
 
     /**
      * 分页
@@ -330,7 +169,7 @@ abstract class MedooModel
     {
         if ($pageSize > 0) {
             $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
-            // 根据分页获取id
+            // list id first
             $where['LIMIT'] = [$limitStart, $pageSize];
             $ids = $this->connection()->select($this->table, $this->primary, $where);
             $total = count($ids);
@@ -407,7 +246,37 @@ abstract class MedooModel
     }
 
     /**
-     * 获取 sql 执行记录
+     * error
+     * 
+     * @return string
+     */
+    public function error()
+    {
+        return $this->connection()->error;
+    }
+
+    /**
+     * error detail
+     * 
+     * @return array|null
+     */
+    public function errorInfo()
+    {
+        return $this->connection()->errorInfo;
+    }
+
+    /**
+     * For more information about PDO class, read more about from: http://php.net/manual/en/class.pdo.php
+     * 
+     * @return PDO
+     */
+    public function pdo()
+    {
+        return $this->connection()->pdo;
+    }
+
+    /**
+     * return all executed queries
      *
      * @return array
      */
@@ -417,7 +286,7 @@ abstract class MedooModel
     }
 
     /**
-     * 获取最后一条 sql
+     * return the last query performed
      *
      * @return mixed
      */
@@ -427,9 +296,9 @@ abstract class MedooModel
     }
 
     /**
-     * 获取最新插入的 id
+     * return the ID for the last inserted row
      *
-     * @return int|string
+     * @return int|string|void
      */
     public function id()
     {
@@ -437,14 +306,14 @@ abstract class MedooModel
         switch ($this->primaryType) {
             case 'int':
                 return intval($id);
-            default:
             case 'str':
                 return strval($id);
         }
+        return null;
     }
 
     /**
-     * 自定义查询
+     * execute the customized raw query
      *
      * @param $query
      *
@@ -456,7 +325,7 @@ abstract class MedooModel
     }
 
     /**
-     * 转义字符串, 供 query 使用
+     * quotes the string for the query
      *
      * @param $string
      *
@@ -468,7 +337,7 @@ abstract class MedooModel
     }
 
     /**
-     * 获取数据库信息
+     * database connection information
      *
      * @return array
      */
@@ -478,7 +347,7 @@ abstract class MedooModel
     }
 
     /**
-     * 事务
+     * start a transaction
      *
      * @param $callback
      *
@@ -490,7 +359,7 @@ abstract class MedooModel
     }
 
     /**
-     * 开启 debug 模式
+     * enable debug mode and output readable statement string
      *
      * @return $this
      */
@@ -501,7 +370,7 @@ abstract class MedooModel
     }
 
     /**
-     * 获取表名
+     * get table name
      *
      * @return mixed
      */
@@ -511,7 +380,7 @@ abstract class MedooModel
     }
 
     /**
-     * 设置表名
+     * set table name
      *
      * @param $table
      */
@@ -521,7 +390,7 @@ abstract class MedooModel
     }
 
     /**
-     * 魔法方法
+     * magic function
      * 
      * @param $method
      * @param $arguments
@@ -532,7 +401,7 @@ abstract class MedooModel
     {
         \App\debug('method', $method);
         \App\debug('arguments', $arguments);
-        
+
         // use 'By' to set $where directly
         // like: 
         // selectByName(array|string $columns, $name)
@@ -547,7 +416,9 @@ abstract class MedooModel
             for ($i = 0; $i < count($whereKeyList); $i++) {
                 $whereKeyList[$i] = strtolower($whereKeyList[$i]);
             }
+            \App\debug('whereKeyList1', $whereKeyList);
             $wherePosition = null;
+            \App\debug('method2', $method);
             switch ($method) {
                 case 'select':
                     // select(array|string $columns, callable $callback)
@@ -614,42 +485,44 @@ abstract class MedooModel
                     }
                     break;
             }
-            if ($wherePosition) {
+            \App\debug('method3', $method);
+            if (is_numeric($wherePosition)) {
                 $whereValueList = $arguments[$wherePosition];
+                \App\debug('wherePosition', $wherePosition);
+                \App\debug('whereValueList1', $whereValueList);
                 if (!is_array($whereValueList)) {
                     $whereValueList = [$whereValueList];
                 }
-                \App\debug('whereKeyList', $whereKeyList);
-                \App\debug('whereValueList', $whereValueList);
+                \App\debug('whereKeyList2', $whereKeyList);
+                \App\debug('whereValueList2', $whereValueList);
                 $where = array_combine($whereKeyList, $whereValueList);
                 $arguments[$wherePosition] = $where;
             }
         }
 
-        // 是否是读操作
+        // read method
         $this->read = in_array($method, ['select', 'get', 'has', 'count',  'sum', 'max', 'min', 'avg']);
 
-        // 是否是写操作
+        // write method
         $this->write = in_array($method, ['insert', 'update', 'replace']);
 
-        // 第一个是表名
+        // table name first
         $arguments = array_merge([$this->table], $arguments);
 
-        // 自动维护数据库 插入更新时间
-        $this->appendTimestamps($method, $arguments[1]);
+        $this->maintainTimestamps($method, $arguments[1]);
 
         return call_user_func_array([$this->connection(), $method], $arguments);
     }
 
     /**
-     * 自动维护数据库 插入更新时间
+     * maintain timestamp key
      *
      * @param $method
      * @param $data
      *
      * @return array
      */
-    protected function appendTimestamps($method, &$data)
+    protected function maintainTimestamps($method, &$data)
     {
         $timestamp = Medoo::raw('NOW()');
         $times = [];
@@ -683,7 +556,7 @@ abstract class MedooModel
     }
 
     /**
-     * 连接实例
+     * connection
      * 
      * @return Medoo
      */
@@ -713,7 +586,7 @@ abstract class MedooModel
     }
 
     /**
-     * 清理资源
+     * clear env
      *
      * @return void
      */

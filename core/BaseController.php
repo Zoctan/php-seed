@@ -8,26 +8,26 @@ use App\Core\Http\Request;
 use App\Core\Http\Response;
 
 /**
- * 控制器基类
+ * Base controller
  */
 abstract class BaseController
 {
     /**
-     * 注入请求
+     * inject global request
      * 
      * @var Request
      */
     protected $request;
 
     /**
-     * 注入响应
+     * inject global response
      * 
      * @var Response
      */
     protected $response;
 
     /**
-     * 注入已认证成员
+     * inject authentication member
      * 
      * @var AuthMember
      */
