@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace App\Util;
 
 use ArrayAccess;
 use Countable;
@@ -49,6 +49,11 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
         return array_keys($this->data);
     }
 
+    public function values(): array
+    {
+        return array_values($this->data);
+    }
+
     public function setData(array $data): void
     {
         $this->data = $data;
@@ -69,7 +74,7 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
         $this->data = [];
     }
 
-    // ----------------------- ArrayAccess start ---------------------------------
+    // ----------------------- ArrayAccess ---------------------------------
     public function offsetGet($offset)
     {
         return $this->data[$offset] ?? null;
@@ -94,9 +99,8 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
     {
         unset($this->data[$offset]);
     }
-    // ----------------------- ArrayAccess start ---------------------------------
 
-    // ----------------------- Iterator start ---------------------------------
+    // ----------------------- Iterator ---------------------------------
     #[\ReturnTypeWillChange]
     public function current()
     {
@@ -126,20 +130,16 @@ final class Collection implements ArrayAccess, Iterator, Countable, JsonSerializ
 
         return null !== $key && false !== $key;
     }
-    // ----------------------- Iterator end ---------------------------------
 
-    // ----------------------- Countable start ---------------------------------
+    // ----------------------- Countable ---------------------------------
     public function count(): int
     {
         return count($this->data);
     }
-    // ----------------------- Countable end ---------------------------------
 
-    // ----------------------- JsonSerializable end ---------------------------------
+    // ----------------------- JsonSerializable ---------------------------------
     public function jsonSerialize(): array
     {
         return $this->data;
     }
-    // ----------------------- JsonSerializable end ---------------------------------
-
 }

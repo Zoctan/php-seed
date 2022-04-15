@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Token exception
+ * TokenException
  */
 class TokenException extends BaseException
 {

@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Model\SystemModel;
 use App\Core\BaseController;
-use App\Core\Response\ResultGenerator;
+use App\Core\Result\Result;
 
+/**
+ * SystemController
+ */
 class SystemController extends BaseController
 {
     /**
@@ -19,43 +22,63 @@ class SystemController extends BaseController
         $this->systemModel = $systemModel;
     }
 
+    /**
+     * Get Value by key
+     * 
+     * @param string key
+     */
     public function getValue()
     {
         $key = strval($this->request->get('key'));
         if (empty($key)) {
-            return ResultGenerator::errorWithMsg('key does not exist');
+            return Result::error('Key does not exist');
         }
         $result = $this->systemModel->getValue($key);
-        return ResultGenerator::successWithData($result);
+        return Result::success($result);
     }
 
+    /**
+     * Add system
+     * 
+     * @param object system
+     */
     public function add()
     {
         $system = $this->request->get('system');
         if (empty($system)) {
-            return ResultGenerator::errorWithMsg('system does not exist');
+            return Result::error('System does not exist');
         }
         $this->systemModel->insert($system);
-        return ResultGenerator::success();
+        return Result::success();
     }
 
+    /**
+     * Update system
+     * 
+     * @param object system
+     */
     public function update()
     {
         $system = $this->request->get('system');
         if (empty($system)) {
-            return ResultGenerator::errorWithMsg('system does not exist');
+            return Result::error('System does not exist');
         }
         $this->systemModel->updateById($system, $system['id']);
-        return ResultGenerator::success();
+        return Result::success();
     }
 
+    /**
+     * Delete system by id
+     * 
+     * @param int systemId
+     */
     public function delete()
     {
-        $systemId = intval($this->request->get('systemId'));
+        $systemId = intval($this->request->get('id'));
         if (empty($systemId)) {
-            return ResultGenerator::errorWithMsg('system id does not exist');
+            return Result::error('System id does not exist');
         }
         $this->systemModel->deleteById($systemId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 }

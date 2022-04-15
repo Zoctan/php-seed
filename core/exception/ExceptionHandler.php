@@ -3,8 +3,8 @@
 namespace App\Core\Exception;
 
 use App\Core\BaseException;
-use App\Core\Response\ResultGenerator;
-use App\Core\Response\ResultCode;
+use App\Core\Result\Result;
+use App\Core\Result\ResultCode;
 
 /**
  * Global exception handler
@@ -34,21 +34,11 @@ class ExceptionHandler
                 $resultCode = ResultCode::UNKNOWN_FAILED;
             }
             if (self::$showFileLine) {
-                $message = sprintf(
-                    '%s => %s[%s] => %s',
-                    $resultCode[1],
-                    $exception->getFile(),
-                    $exception->getLine(),
-                    $exception->getMessage()
-                );
+                $msg = sprintf('%s => %s[%s] => %s', $resultCode[1], $exception->getFile(), $exception->getLine(), $exception->getMessage());
             } else {
-                $message = sprintf(
-                    '%s => %s',
-                    $resultCode[1],
-                    $exception->getMessage()
-                );
+                $msg = sprintf('%s => %s', $resultCode[1], $exception->getMessage());
             }
-            ResultGenerator::errorWithCodeMsg($resultCode, $message);
+            Result::error($msg, $resultCode);
         });
     }
 
@@ -60,21 +50,11 @@ class ExceptionHandler
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
             $resultCode = ResultCode::FAILED;
             if (self::$showFileLine) {
-                $message = sprintf(
-                    '%s => %s[%s] => %s',
-                    $resultCode[1],
-                    $errfile,
-                    $errline,
-                    $errstr
-                );
+                $msg = sprintf('%s => %s[%s] => %s', $resultCode[1], $errfile, $errline, $errstr);
             } else {
-                $message = sprintf(
-                    '%s => %s',
-                    $resultCode[1],
-                    $errstr
-                );
+                $msg = sprintf('%s => %s', $resultCode[1], $errstr);
             }
-            ResultGenerator::errorWithCodeMsg($resultCode, $message);
+            Result::error($msg, $resultCode);
         }, E_ALL);
     }
 }

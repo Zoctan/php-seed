@@ -4,9 +4,9 @@ namespace App\Core;
 
 /** 
  * Singleton
+ * add below code to class inside
  * 
- * add below code to class inside, eg.
- * 
+ * eg.
  * class Demo {
  *   use Singleton;
  * }

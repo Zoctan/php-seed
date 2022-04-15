@@ -3,7 +3,7 @@
 namespace App\Core\Filter;
 
 use App\Core\Filter;
-use App\Util\JwtUtil;
+use App\Util\Jwt;
 use App\Core\Exception\AccessTokenException;
 
 /**
@@ -34,19 +34,19 @@ class AuthenticationFilter implements Filter
         // check authentication
         $auth = $this->routeList[$uri]->auth;
         if ($auth) {
-            $jwtUtil = JwtUtil::getInstance();
-            $token = $jwtUtil->getTokenFromRequest();
+            $jwt = Jwt::getInstance();
+            $token = $jwt->getTokenFromRequest();
             if (empty($token)) {
                 throw new AccessTokenException('empty token');
                 return false;
             }
-            if (!$jwtUtil->validateTokenRedis($token)) {
+            if (!$jwt->validateTokenRedis($token)) {
                 throw new AccessTokenException('invalid token');
                 return false;
             }
             // check permission
             $needPermissionList = $this->routeList[$uri]->permission;
-            $authMember = $jwtUtil->getAuthMember($token);
+            $authMember = $jwt->getAuthMember($token);
             if (!$authMember->checkPermission($needPermissionList)) {
                 throw new AccessTokenException('no permission to visit this route');
                 return false;

@@ -35,10 +35,10 @@ class DependencyInjection implements \ArrayAccess
 
     use Singleton;
 
-    // service hit times
+    // Service hit times
     protected $hitTimes = [];
 
-    // data pool
+    // Data pool
     protected $data = [];
 
     private function __construct()
@@ -46,7 +46,7 @@ class DependencyInjection implements \ArrayAccess
     }
 
     /**
-     * setter
+     * Setter
      */
     public function set($key, $value)
     {
@@ -58,7 +58,7 @@ class DependencyInjection implements \ArrayAccess
     }
 
     /**
-     * getter
+     * Getter
      */
     public function get($key, $default = null)
     {
@@ -66,7 +66,6 @@ class DependencyInjection implements \ArrayAccess
             $this->data[$key] = $default;
         }
 
-        // 内联操作，减少函数调用，提升性能
         if (!isset($this->hitTimes[$key])) {
             $this->hitTimes[$key] = 0;
         }
@@ -100,7 +99,7 @@ class DependencyInjection implements \ArrayAccess
     }
 
     /**
-     * new instance using reflection
+     * New instance using reflection
      */
     public function newInstance(string $class): object
     {
@@ -124,7 +123,7 @@ class DependencyInjection implements \ArrayAccess
         return $reflectionClass->newInstanceArgs($newInstanceParams);
     }
 
-    /** ------------------ magic function ------------------ **/
+    /** ------------------ Magic function ------------------ **/
 
     public function __call($name, $arguments)
     {

@@ -14,7 +14,7 @@ class File
   public function __construct($path, $basePath = __DIR__)
   {
     $this->basePath = $basePath;
-    if (strpos($this->basePath, $path) === 0) {
+    if (strpos($this->basePath, $path) !== false) {
       $this->absolutePath = $path;
       $this->relativePath = $this->getRelativePath($this->absolutePath);
     } else {

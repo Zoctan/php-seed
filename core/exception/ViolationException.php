@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Violation exception
+ * ViolationException
  */
 class ViolationException extends BaseException
 {

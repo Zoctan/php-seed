@@ -3,17 +3,16 @@
 namespace App\Controller;
 
 use App\Util\Util;
-use App\Util\JwtUtil;
+use App\Util\Jwt;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
-use App\Model\RoleModel;
 use App\Core\BaseController;
-use App\Core\Response\ResultCode;
-use App\Core\Response\ResultGenerator;
+use App\Core\Result\Result;
+use App\Core\Result\ResultCode;
 
 /**
- * 成员控制器
+ * MemberController
  */
 class MemberController extends BaseController
 {
@@ -22,70 +21,73 @@ class MemberController extends BaseController
      */
     private $memberModel;
     /**
-     * @var JwtUtil
+     * @var Jwt
      */
-    private $jwtUtil;
+    private $jwt;
 
     public function __construct(MemberModel $memberModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
-        $this->jwtUtil = JwtUtil::getInstance();
+        $this->jwt = Jwt::getInstance();
     }
 
     /**
-     * is member exist
+     * Is member exist
+     * 
+     * @param string username
      */
     public function isMemberExist()
     {
         $username = strval($this->request->get('username'));
-
         if (empty($username)) {
-            return ResultGenerator::errorWithMsg('please input username');
+            return Result::error('Username does not exist');
         }
 
         $existMember = $this->memberModel->countByUsername($username) === 1;
         if ($existMember) {
-            return ResultGenerator::errorWithMsg('username already exists');
+            return Result::error('Username already exists');
         }
 
         // other attributions that can find the unique member
         // ...
 
-        return ResultGenerator::success();
+        return Result::success();
     }
 
     /**
-     * validate old password
+     * Validate old password
+     * 
+     * @param string oldPassword
      */
     public function validateOldPassword()
     {
         $oldPassword = strval($this->request->get('oldPassword'));
-
         if (empty($oldPassword)) {
-            return ResultGenerator::errorWithMsg('please input old password');
+            return Result::error('Old password does not exist');
         }
 
         $memberId = $this->authMember->member['id'];
         $member = $this->memberModel->getById(['password'], $memberId);
 
         if (!$this->memberModel->verifyPassword($oldPassword, $member['password'])) {
-            return ResultGenerator::errorWithMsg('old password error');
+            return Result::error('Old password error');
         }
-
-        return ResultGenerator::success();
+        return Result::success();
     }
 
     /**
-     * register
+     * Member register
+     * 
+     * @param string username
+     * @param string password
      */
     public function register()
     {
         $username = strval($this->request->get('username'));
         $password = strval($this->request->get('password'));
-
         if (empty($username) || empty($password)) {
-            return ResultGenerator::errorWithMsg('please input username and password');
+            return Result::error('Username or password does not exist');
         }
 
         $memberId = $this->memberModel->add([
@@ -95,119 +97,116 @@ class MemberController extends BaseController
 
         $this->memberModel->updateLoginedAtById($memberId);
 
-        $result = $this->jwtUtil->sign($memberId);
-
-        return ResultGenerator::successWithData($result);
+        $result = $this->jwt->sign($memberId);
+        return Result::success($result);
     }
 
     /**
-     * login
+     * Member login
+     * 
+     * @param string username
+     * @param string password
      */
     public function login()
     {
         $username = strval($this->request->get('username'));
         $password = strval($this->request->get('password'));
-
         if (empty($username) || empty($password)) {
-            return ResultGenerator::errorWithMsg('please input username and password');
+            return Result::error('Username or password does not exist');
         }
 
-        $member = $this->memberModel->getByUsername(
-            $this->memberModel->getColumns(),
-            $username
-        );
+        $member = $this->memberModel->getByUsername($this->memberModel->getColumns(), $username);
 
         if (empty($member)) {
-            return ResultGenerator::errorWithMsg('username error');
+            return Result::error('Username error');
         }
-
         if (!$this->memberModel->verifyPassword($password, $member['password'])) {
-            return ResultGenerator::errorWithMsg('password error');
+            return Result::error('Password error');
         }
-
         if ($member['status'] !== 1) {
-            return ResultGenerator::errorWithMsg('member status error');
+            return Result::error('Member status error');
         }
 
         $this->memberModel->updateLoginedAtById($member['id']);
 
-        $result = $this->jwtUtil->sign($member['id']);
-
-        return ResultGenerator::successWithData($result);
+        $result = $this->jwt->sign($member['id']);
+        return Result::success($result);
     }
 
     /**
-     * logout
+     * Member logout
      */
     public function logout()
     {
         if ($this->authMember) {
             $memberId = $this->authMember->member['id'];
-            $this->jwtUtil->invalidRedisToken($memberId);
+            $this->jwt->invalidRedisToken($memberId);
         }
-        return ResultGenerator::success();
+        return Result::success();
     }
 
     /**
-     * validate access token
+     * Validate access token
      */
     public function validateAccessToken()
     {
-        // read access token from header
+        // Read access token from header
         // if use POST or GET data, make sure the access token had been changed when refresh token
-        $accessToken = $this->jwtUtil->getTokenFromRequest();
+        $accessToken = $this->jwt->getTokenFromRequest();
         if (empty($accessToken)) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::ACCESS_TOKEN_EXCEPTION, 'accessToken does not exist');
+            return Result::error('AccessToken does not exist', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
-        $accessTokenValidation = $this->jwtUtil->validateTokenRedis($accessToken);
+        $accessTokenValidation = $this->jwt->validateTokenRedis($accessToken);
         if (!$accessTokenValidation) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::ACCESS_TOKEN_EXCEPTION, 'invalid accessToken');
+            return Result::error('Invalid accessToken', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
-        return ResultGenerator::successWithMsg('accessToken is valid');
+        return Result::success();
     }
 
     /**
-     * refresh access token
+     * Refresh access token
      */
     public function refreshToken()
     {
-        // check old access token
-        $oldAccessToken = $this->jwtUtil->getTokenFromRequest();
+        // Check old access token
+        $oldAccessToken = $this->jwt->getTokenFromRequest();
         if (empty($oldAccessToken)) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'old accessToken does not exist');
+            return Result::error('Old accessToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
-        $oldAuthMember = $this->jwtUtil->getAuthMember($oldAccessToken);
+        $oldAuthMember = $this->jwt->getAuthMember($oldAccessToken);
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'old authMember does not exist, old accessToken error');
+            return Result::error('Old authMember does not exist, old accessToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
-        // check refresh token
+        // Check refresh token
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'refreshToken does not exist');
+            return Result::error('RefreshToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
-        if (!$this->jwtUtil->validateToken($refreshToken)) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'invalid refreshToken');
+        if (!$this->jwt->validateToken($refreshToken)) {
+            return Result::error('Invalid refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
-        $authMember = $this->jwtUtil->getAuthMember($refreshToken);
+        $authMember = $this->jwt->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::REFRESH_TOKEN_EXCEPTION, 'new authMember does not exist, refreshToken error');
+            return Result::error('New authMember does not exist, refreshToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            return ResultGenerator::errorWithCodeMsg(ResultCode::TOKEN_EXCEPTION, 'accessToken does not match the refreshToken');
+            return Result::error('AccessToken does not match the refreshToken', ResultCode::TOKEN_EXCEPTION);
         }
-        $result = $this->jwtUtil->signAccessToken($authMember->member['id']);
-        return ResultGenerator::successWithData($result);
+        $result = $this->jwt->signAccessToken($authMember->member['id']);
+        return Result::success($result);
     }
 
     /**
-     * member detail
+     * Get member and member data and role list by id
+     * 
+     * @param int id
      */
     public function detail()
     {
-        $memberId = intval($this->request->get('memberId'));
+        $memberId = intval($this->request->get('id'));
         if (empty($memberId)) {
-            return ResultGenerator::errorWithMsg('member id does not exist');
+            return Result::error('Member id does not exist');
         }
 
         $member = $this->memberModel->getById(
@@ -215,19 +214,16 @@ class MemberController extends BaseController
             $memberId
         );
         if (empty($member)) {
-            return ResultGenerator::errorWithMsg('id error, member does not exist');
+            return Result::error('Id error, member does not exist');
         }
 
         $memberDataModel = new MemberDataModel();
-        $memberData = $memberDataModel->getById(
-            $memberDataModel->getColumns(),
-            $memberId
-        );
+        $memberData = $memberDataModel->getById($memberDataModel->getColumns(), $memberId);
 
         $memberRoleModel = new MemberRoleModel();
         $roleList = $memberRoleModel->listRoleByMemberId($memberId);
 
-        return ResultGenerator::successWithData([
+        return Result::success([
             'member' => $member,
             'memberData' => $memberData,
             'roleList' => $roleList,
@@ -235,15 +231,21 @@ class MemberController extends BaseController
     }
 
     /**
-     * member profile
+     * Logined member profile
      */
     public function profile()
     {
-        return ResultGenerator::successWithData($this->authMember);
+        return Result::success($this->authMember);
     }
 
     /**
-     * member list
+     * List member
+     * 
+     * @param int currentPage
+     * @param int pageSize
+     * @param object member
+     * @param object memberData
+     * @param object role
      */
     public function list()
     {
@@ -351,47 +353,60 @@ class MemberController extends BaseController
             ],
             $memberPageWhere
         );
-        // add role list
+        // Add role list
         for ($i = 0; $i < count($result['list']); $i++) {
             $roleList = $memberRoleModel->listRoleByMemberId($result['list'][$i]['member']['member_id']);
             $result['list'][$i]['roleList'] = $roleList;
         }
 
-        return ResultGenerator::successWithData($result);
+        return Result::success($result);
     }
 
     /**
-     * update password
+     * Update logined member password
+     * 
+     * @param string password
      */
     public function updatePassword()
     {
         $password = strval($this->request->get('password'));
+        if (empty($password)) {
+            return Result::error('Password does not exist');
+        }
         $memberId = $this->authMember->member['id'];
         $this->memberModel->updateById(['password' => $password], $memberId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 
     /**
-     * update profile
+     * Update logined member
+     * 
+     * @param object profile
      */
     public function updateProfile()
     {
         $profile = $this->request->get('profile');
+        if (empty($profile)) {
+            return Result::error('Profile does not exist');
+        }
         $memberId = $this->authMember->member['id'];
         $this->memberModel->updateById($profile, $memberId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 
 
     /**
-     * update detail
+     * Update member (admin)
+     * 
+     * @param object member
+     * @param object memberData
      */
     public function updateDetail()
     {
         $member = $this->request->get('member');
         $memberData = $this->request->get('memberData');
         if (empty($member) || empty($memberData)) {
-            return ResultGenerator::errorWithMsg('member or memberData does not exist');
+            return Result::error('Member or memberData does not exist');
         }
         if (!empty($member)) {
             $this->memberModel->update($member, $member['id']);
@@ -400,11 +415,15 @@ class MemberController extends BaseController
             $memberDataModel = new MemberDataModel();
             $memberDataModel->updateByMember_id($memberData, $member['id']);
         }
-        return ResultGenerator::success();
+        return Result::success();
     }
 
     /**
-     * add member
+     * Add member
+     * 
+     * @param object member
+     * @param object memberData
+     * @param object role
      */
     public function add()
     {
@@ -412,7 +431,7 @@ class MemberController extends BaseController
         $memberData = $this->request->get('memberData');
         $role = $this->request->get('role');
         if (empty($member)) {
-            return ResultGenerator::errorWithMsg('member does not exist');
+            return Result::error('Member does not exist');
         }
         $memberId = $this->memberModel->add($member);
         if (!empty($memberData)) {
@@ -423,17 +442,19 @@ class MemberController extends BaseController
             $memberRoleModel = new MemberRoleModel();
             $memberRoleModel->updateByRole_idMember_id([$role['id'], $memberId]);
         }
-        return ResultGenerator::successWithData($memberId);
+        return Result::success($memberId);
     }
 
     /**
-     * delete member
+     * Delete member by id
+     * 
+     * @param int id
      */
     public function delete()
     {
-        $memberId = intval($this->request->get('memberId'));
+        $memberId = intval($this->request->get('id'));
         if (empty($memberId)) {
-            return ResultGenerator::errorWithMsg('member id does not exist');
+            return Result::error('Member id does not exist');
         }
         $this->memberModel->deleteById($memberId);
         $memberDataModel = new MemberDataModel();
@@ -441,6 +462,6 @@ class MemberController extends BaseController
 
         $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->deleteByMember_id($memberId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 }

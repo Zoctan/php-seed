@@ -5,6 +5,9 @@ namespace App\Model;
 use Medoo\Medoo;
 use App\Core\BaseModel;
 
+/**
+ * MemberModel
+ */
 class MemberModel extends BaseModel
 {
     protected $table = 'member';

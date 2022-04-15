@@ -2,8 +2,11 @@
 
 namespace App\Core\Http;
 
-use App\Core\Collection;
+use App\Util\Collection;
 
+/**
+ * Request
+ */
 final class Request
 {
     /**
@@ -136,7 +139,7 @@ final class Request
                 'scheme' => $this->getScheme(),
                 'userAgent' => $this->server->get('HTTP_USER_AGENT'),
                 'contentType' => $this->server->get('CONTENT_TYPE', ''),
-                'contentLength' => (int) $this->server->get('CONTENT_LENGTH', 0),
+                'contentLength' => intval($this->server->get('CONTENT_LENGTH', 0)),
                 'secure' => 'https' === $this->getScheme(),
                 'accept' => $this->server->get('HTTP_ACCEPT'),
                 'proxyIp' => $this->getProxyIpAddress(),
@@ -160,7 +163,7 @@ final class Request
         }
 
         // Get the requested URL without the base directory
-        if ('/' !== $this->base && '' !== $this->base && strpos($this->fullUri, $this->base) === 0) {
+        if ($this->base !== '/' && $this->base !== '' && strpos($this->fullUri, $this->base) !== false) {
             $this->fullUri = substr($this->fullUri, strlen($this->base));
         }
 
@@ -173,11 +176,11 @@ final class Request
 
             $this->query->setData($_GET);
         }
-        
+
         $this->uri = parse_url($this->fullUri, PHP_URL_PATH);
 
         // Check for JSON input
-        if (0 === strpos($this->contentType, 'application/json')) {
+        if (strpos($this->contentType, 'application/json') !== false) {
             $body = $this->getBody();
             if ('' !== $body && null !== $body) {
                 try {
@@ -251,7 +254,7 @@ final class Request
     {
         $header = [];
         foreach ($this->server as $key => $value) {
-            if (strpos($key, 'HTTP_') === 0) {
+            if (strpos($key, 'HTTP_') !== false) {
                 $header[str_replace(' ', '', ucwords(str_replace('_', ' ', strtolower(substr($key, 5)))))] = $value;
             }
         }
@@ -310,13 +313,10 @@ final class Request
     public function getScheme(): string
     {
         if (
-            ($this->server->has('HTTPS') && 'on' === strtolower($this->server['HTTPS']))
-            ||
-            ($this->server->has('HTTP_X_FORWARDED_PROTO') && 'https' === $this->server['HTTP_X_FORWARDED_PROTO'])
-            ||
-            ($this->server->has('HTTP_FRONT_END_HTTPS') && 'on' === $this->server['HTTP_FRONT_END_HTTPS'])
-            ||
-            ($this->server->has('REQUEST_SCHEME') && 'https' === $this->server['REQUEST_SCHEME'])
+            strcasecmp($this->server->get('HTTPS'), 'on')
+            || strcasecmp($this->server->get('HTTP_FRONT_END_HTTPS'), 'on')
+            || strcasecmp($this->server->get('HTTP_X_FORWARDED_PROTO'), 'https')
+            || strcasecmp($this->server->get('REQUEST_SCHEME'), 'https')
         ) {
             return 'https';
         }

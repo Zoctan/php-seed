@@ -4,6 +4,9 @@ namespace App\Model;
 
 use App\Core\BaseModel;
 
+/**
+ * RuleModel
+ */
 class RuleModel extends BaseModel
 {
     protected $table = 'rule';

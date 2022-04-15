@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Database exception
+ * DatabaseException
  */
 class DatabaseException extends BaseException
 {

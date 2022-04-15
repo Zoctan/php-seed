@@ -5,6 +5,9 @@ namespace App\Model;
 use App\Core\BaseModel;
 use APP\Util\Ipv4Location;
 
+/**
+ * LogModel
+ */
 class LogModel extends BaseModel
 {
     protected $table = 'log';

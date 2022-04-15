@@ -162,8 +162,8 @@ class Url
    * is two host equal
    * 
    * eg.
-   * http://example.com/ == https://example.com/foo
-   * http://example.com/ != https://subdomain.example.com/foo
+   * http://demo.com/ == https://demo.com/test
+   * http://demo.com/ != https://sub.demo.com/test
    * 
    * @param string $a
    * @param string $b

@@ -2,10 +2,13 @@
 
 namespace App\Util;
 
+/**
+ * Util
+ */
 class Util
 {
     /*
-     * 1D array: [1, 2, 3] => [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
+     * 1D array: [1, 2, 3]       => [[], [1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
      * 2D array: [[1], [2], [3]] => [[[1], [2], [3]], [[1, 2], [1, 3], [2, 3]], [[1, 2, 3]]]
      */
     public static function subsets($array, $needEmpty = false)
@@ -28,9 +31,10 @@ class Util
     }
 
     /**
+     * Only for 2D array now
+     * 
      * 1D array: [[1], [2], [3], [1, 2], [1, 3], [2, 3], [1, 2, 3]]
      * 2D array: [[[1], [2], [3]], [[1, 2], [1, 3], [2, 3]], [[1, 2, 3]]]
-     * 目前只用在二维数组
      */
     public static function subsetsIntersect($array)
     {
@@ -56,11 +60,14 @@ class Util
     }
 
     /*
+     * Only keep target key value in list
+     * 
+     * eg.
      * [
      *   [ 'id' => 18, 'title' => 'test' ],
      *   [ 'id' => 19, 'title' => 'demo' ],
      * ]
-     * only keep id value => [18, 19]
+     * => [18, 19]
      */
     public static function getValueList($key, $list)
     {
@@ -72,7 +79,8 @@ class Util
     }
 
     /**
-     * is
+     * Is the date today
+     * 
      * @param $dateString Y-m-d
      */
     public static function isToday($dateString)
@@ -83,10 +91,11 @@ class Util
     }
 
     /**
-     * 生成随机字符串
-     * @param $length
+     * Get random string in target length
+     * 
+     * @param int $length
      */
-    public static function randomStr($length = 16)
+    public static function randomStr(int $length = 16)
     {
         $string = '';
         $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -97,21 +106,10 @@ class Util
         return $string;
     }
 
-    /*
-     * 删除空白字符
-     */
-    public static function deleteSpace($str, $defaultValue = '')
-    {
-        $str = preg_replace('/\s+/', '', $str);
-        $value = $defaultValue;
-        if (!empty($str)) {
-            $value = $str;
-        }
-        return $value;
-    }
-
-    /*
-     * 删除特殊表情字符
+    /**
+     * Delete emoji char
+     * 
+     * @param string $str
      */
     public static function deleteEmojiChar($str)
     {
@@ -125,20 +123,5 @@ class Util
             $strArr[] = $mbSubstr;
         }
         return implode('', $strArr);
-    }
-
-    /**
-     * 创建随机唯一字符串商户订单号
-     * @param string $prefix 自定义前缀：TSBWP-TaiShanWechatPrize
-     * @param int $length 随机的字符串长度
-     */
-    public static function getRandomOrderId($prefix = 'TSBWP', $length = 10)
-    {
-        $string = '';
-        for ($i = 0; $i < $length; $i++) {
-            $string .= mt_rand(0, 9);
-        }
-        // TSBWP + 13个字符串长的唯一ID + 10个随机数字
-        return $prefix . uniqid() . $string;
     }
 }

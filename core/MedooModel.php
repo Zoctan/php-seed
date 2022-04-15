@@ -66,63 +66,63 @@ use App\Core\exception\DatabaseException;
 abstract class MedooModel
 {
     /**
-     * database name
+     * Database name
      *
      * @var string
      */
     protected $database = 'phpseed';
 
     /**
-     * table name
+     * Table name
      *
      * @var string
      */
     protected $table;
 
     /**
-     * table primary key
+     * Table primary key
      *
      * @var string
      */
     protected $primary = 'id';
 
     /**
-     * table primary key type
+     * Table primary key type
      *
      * @var string
      */
     protected $primaryType = 'int';
 
     /**
-     * 自动维护 created_at 和 updated_at，或其他指定字段
+     * Auto maintain created_at and updated_at or other columns
      *
      * @var string|array|bool
      */
     protected $timestamps = true;
 
     /**
-     * medoo config
+     * Medoo config
      *
      * @var array
      */
     protected $config = [];
 
     /**
-     * a place of connection
+     * A place of connection
      *
      * @var string
      */
     protected $place = 'MedooModel';
 
     /**
-     * read method
+     * Read method
      *
      * @var bool
      */
     protected $read = false;
 
     /**
-     * write method
+     * Write method
      *
      * @var bool
      */
@@ -140,8 +140,9 @@ abstract class MedooModel
     }
 
     /**
+     * Insert
+     * 
      * @param array $values
-     *
      * @return int|string|void
      */
     public function insert(array $values)
@@ -156,13 +157,12 @@ abstract class MedooModel
     }
 
     /**
-     * 分页
+     * Get page
      *
      * @param int $currentPage
      * @param int $pageSize
      * @param string|array $columns
      * @param array $where
-     *
      * @return array
      */
     public function page(int $currentPage = 0, int $pageSize = 20, $columns = '*', array $where = []): array
@@ -192,7 +192,7 @@ abstract class MedooModel
     }
 
     /**
-     * 联表分页
+     * Get page (join other table)
      *
      * @param int $currentPage
      * @param int $pageSize
@@ -246,7 +246,7 @@ abstract class MedooModel
     }
 
     /**
-     * error
+     * Error
      * 
      * @return string
      */
@@ -256,7 +256,7 @@ abstract class MedooModel
     }
 
     /**
-     * error detail
+     * Error detail
      * 
      * @return array|null
      */
@@ -276,7 +276,7 @@ abstract class MedooModel
     }
 
     /**
-     * return all executed queries
+     * Return all executed queries
      *
      * @return array
      */
@@ -286,7 +286,7 @@ abstract class MedooModel
     }
 
     /**
-     * return the last query performed
+     * Return the last query performed
      *
      * @return mixed
      */
@@ -296,7 +296,7 @@ abstract class MedooModel
     }
 
     /**
-     * return the ID for the last inserted row
+     * Return the ID for the last inserted row
      *
      * @return int|string|void
      */
@@ -313,7 +313,7 @@ abstract class MedooModel
     }
 
     /**
-     * execute the customized raw query
+     * Execute the customized raw query
      *
      * @param $query
      *
@@ -325,7 +325,7 @@ abstract class MedooModel
     }
 
     /**
-     * quotes the string for the query
+     * Quotes the string for the query
      *
      * @param $string
      *
@@ -337,7 +337,7 @@ abstract class MedooModel
     }
 
     /**
-     * database connection information
+     * Database connection information
      *
      * @return array
      */
@@ -347,7 +347,7 @@ abstract class MedooModel
     }
 
     /**
-     * start a transaction
+     * Start a transaction
      *
      * @param $callback
      *
@@ -359,7 +359,7 @@ abstract class MedooModel
     }
 
     /**
-     * enable debug mode and output readable statement string
+     * Enable debug mode and output readable statement string
      *
      * @return $this
      */
@@ -370,7 +370,7 @@ abstract class MedooModel
     }
 
     /**
-     * get table name
+     * Get table name
      *
      * @return mixed
      */
@@ -380,7 +380,7 @@ abstract class MedooModel
     }
 
     /**
-     * set table name
+     * Set table name
      *
      * @param $table
      */
@@ -390,11 +390,10 @@ abstract class MedooModel
     }
 
     /**
-     * magic function
+     * Magic function
      * 
      * @param $method
      * @param $arguments
-     *
      * @return mixed
      */
     public function __call($method, $arguments)
@@ -505,11 +504,10 @@ abstract class MedooModel
     }
 
     /**
-     * maintain timestamp key
+     * Maintain timestamp key
      *
      * @param $method
      * @param $data
-     *
      * @return array
      */
     protected function maintainTimestamps($method, &$data)
@@ -546,7 +544,7 @@ abstract class MedooModel
     }
 
     /**
-     * connection
+     * Connection
      * 
      * @return Medoo
      */
@@ -576,7 +574,7 @@ abstract class MedooModel
     }
 
     /**
-     * clear env
+     * Clear
      *
      * @return void
      */

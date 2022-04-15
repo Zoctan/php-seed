@@ -44,7 +44,7 @@ class AuthMember
     }
 
     /**
-     * check member has target permission
+     * Check member has target permission or not
      * 
      * @param array $need
      */

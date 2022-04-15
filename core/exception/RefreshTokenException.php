@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Refresh token exception
+ * RefreshTokenException
  */
 class RefreshTokenException extends BaseException
 {

@@ -16,7 +16,7 @@ class BaseModel extends MedooModel
     }
 
     /**
-     * get columns from specify column keys
+     * Get columns from specify column keys
      *
      * @param array|string $columnKeys
      * @return array
@@ -41,7 +41,7 @@ class BaseModel extends MedooModel
     }
 
     /**
-     * get columns from except specify column keys
+     * Get columns from except specify column keys
      *
      * @param array|string $columnExceptKeys
      * @return array
@@ -54,7 +54,7 @@ class BaseModel extends MedooModel
     }
 
     /**
-     * split keys if it is string
+     * Split keys if it is string
      *
      * @param array|string $keys
      * @return array

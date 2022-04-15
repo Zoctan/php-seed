@@ -5,9 +5,17 @@ namespace App\Model;
 use App\Util\Tree;
 use App\Core\AuthMember;
 
+/**
+ * AuthMemberModel
+ */
 class AuthMemberModel
 {
-    public function get($memberId)
+    /**
+     * Get authentication member by member id
+     * 
+     * @param $memberId
+     */
+    public function getByMemberId($memberId)
     {
         $memberModel = new MemberModel();
         $member = $memberModel->getById($memberModel->getColumns(), $memberId);

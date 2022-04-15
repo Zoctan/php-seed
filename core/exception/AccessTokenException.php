@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Access token exception
+ * AccessTokenException
  */
 class AccessTokenException extends BaseException
 {

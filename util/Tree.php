@@ -2,8 +2,19 @@
 
 namespace App\Util;
 
+/**
+ * Tree
+ */
 class Tree
 {
+  /**
+   * List to tree
+   * 
+   * @param array $list
+   * @param string $parentIdKey
+   * @param string $idKey
+   * @param string $childrenKey
+   */
   public static function list2Tree(array $list, string $parentIdKey = 'parent_id', string $idKey = 'id', string $childrenKey = 'children')
   {
     $grouped = [];
@@ -25,6 +36,12 @@ class Tree
     return $fnBuilder($grouped[0]);
   }
 
+  /**
+   * Tree to list
+   * 
+   * @param array $root
+   * @param string $childrenKey
+   */
   public static function tree2List(array $root, string $childrenKey = 'children')
   {
     $list = [];
@@ -37,6 +54,4 @@ class Tree
     }
     return $list;
   }
-
-  
 }

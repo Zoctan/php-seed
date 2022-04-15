@@ -3,51 +3,47 @@
 return [
     // enable global debug
     'debug' => true,
+    // api base url
+    'baseUrl' => 'http://127.0.0.1/php-seed',
     'app' => [
         'name' => 'phpseed-development',
         'description' => 'PHP Seed Development',
-        'baseUrl' => 'http://127.0.0.1/php-seed',
-        'routerPath' => $basePath . '/router.php',
-        'routesCachePath' => $basePath . '/routes-development.cache',
-        // response cofig
-        'response' => [
-            // response data type
-            'type' => 'json',
-            // response data structure map
-            'structureMap' => [
-                // status code key
-                'errno' => 'errno',
-                // message key
-                'msg'   => 'msg',
-                // data key
-                'data'  => 'data',
-                // debug key
-                'debug' => 'debug',
-            ],
+    ],
+    // router config
+    'router' => [
+        // router.php saving path
+        'path' => $basePath . '/router.php',
+        // routes.cache saving path
+        'cachePath' => $basePath . '/routes-development.cache',
+    ],
+    // upload config
+    'upload' => [
+        // image file type
+        'image' => [
+            // local disk path
+            'localPath' => 'upload/image',
+            // remote network path
+            'remotePath' => '',
+            // allow type list
+            'allowType' => ['image/jpeg', 'image/png', 'image/gif'],
+            // minimum file size(kb)
+            'minKB' => 1,
+            // maximum file size(kb)
+            'maxKB' => 100 * 1024,
         ],
-        // 控制器的命名空间
-        'controllerNamespace' => 'App\\Controller\\',
-        'upload' => [
-            'image' => [
-                // 本地相对路径
-                'localPath' => 'upload/image',
-                // 远程路径
-                'remotePath' => '',
-                'allowType' => ['image/jpeg', 'image/png', 'image/gif'],
-                'minKB' => 1,
-                'maxKB' => 100 * 1024,
-            ],
-            'video' => [
-                'localPath' => 'upload/video',
-                'remotePath' => '',
-                'allowType' => ['video/mp4', 'video/3gpp', 'video/x-msvideo', 'video/mpeg', 'video/quicktime'],
-                'minKB' => 1,
-                'maxKB' => 100 * 1024,
-            ],
+        'video' => [
+            'localPath' => 'upload/video',
+            'remotePath' => '',
+            'allowType' => ['video/mp4', 'video/3gpp', 'video/x-msvideo', 'video/mpeg', 'video/quicktime'],
+            'minKB' => 1,
+            'maxKB' => 100 * 1024,
         ],
     ],
+    // datasource config
     'datasource' => [
+        // mysql config
         'mysql' => [
+            // master database config list
             'master' => [
                 [
                     // https://medoo.in/api/new
@@ -72,15 +68,15 @@ return [
                     // Error mode
                     // Error handling strategies when error is occurred.
                     // PDO::ERRMODE_SILENT (default) | PDO::ERRMODE_WARNING | PDO::ERRMODE_EXCEPTION
-                    // Read more from https://www.php.net/manual/en/pdo.error-handling.php.
+                    // Read more from https://www.php.net/manual/en/pdo.error-handling.php
                     'error' => PDO::ERRMODE_SILENT,
 
                     // [optional]
                     // The driver_option for connection.
-                    // Read more from http://www.php.net/manual/en/pdo.setattribute.php.
+                    // Read more from https://www.php.net/manual/en/pdo.setattribute.php
                     'option' => [
-                        // PDO::ATTR_CASE：强制列名为指定的大小写
-                        //      PDO::CASE_NATURAL：保留数据库驱动返回的列名
+                        // PDO::ATTR_CASE: (force column names to a specific case)
+                        //      PDO::CASE_NATURAL (leave column names as returned by the database driver)
                         PDO::ATTR_CASE => PDO::CASE_NATURAL
                     ],
 
@@ -90,35 +86,42 @@ return [
                     ]
                 ]
             ],
+            // slave database config list
             'slave' => [
                 []
             ]
         ],
+        // redis config
         'redis' => [
+            // scheme
             'scheme' => 'tcp',
+            // host
             'host' => '127.0.0.1',
+            // port
             'port' => 6379,
-            // 数据库索引（默认为0）
+            // cache database index (default:0)
             'cache' => 0,
+            // password
             'password' => 'root',
         ]
     ],
+    // jwt config
     'jwt' => [
-        // 请求头或请求参数的key
+        // key in request header or data
         'header' => 'Authorization',
-        // 签发人
+        // issued by
         'issuedBy' => 'phpseed',
-        // 受众
+        // permitted for
         'permittedFor' => 'member',
-        // 签发id
+        // identified by
         'identifiedBy' => '123',
-        // 刷新时间（分钟）：这段时间内可以获取新 token
+        // refresh time (minute): can get new access token in this period
         'refreshMinutes' => 1440,
-        // 多久过期（分钟）
+        // expires time (minute)
         'expiresMinutes' => 1,
-        // 私钥
+        // private key
         'signingKey' => $basePath . '/rsa/private-key.pem',
-        // 公钥
+        // public key
         'verificationKey' => 'MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKw+D9cjGEbEuGEhGwe1dy0LP/ujK02wHZ5RfAnWp4Hg/PYEa6fbM/DLrSNbNsTj56Wr0r/B3gd1acBNSMNVitkCAwEAAQ==',
     ]
 ];

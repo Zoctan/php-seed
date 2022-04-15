@@ -2,6 +2,8 @@
 
 namespace App\Core\Http;
 
+use App\Core\Response\MimeType;
+
 class Route
 {
     /**
@@ -43,11 +45,11 @@ class Route
     public $permission = [];
 
     /**
-     * response type
+     * mimeType
      * 
      * @var string
      */
-    public $responseType = Response::RESPONSE_TYPE_JSON;
+    public $mimeType = MimeType::JSON;
 
     public function __construct($methods, $uri, $action)
     {
@@ -68,9 +70,9 @@ class Route
         return $this;
     }
 
-    public function setResponseType(array $responseType = Response::RESPONSE_TYPE_JSON)
+    public function setMimeType(array $mimeType = MimeType::JSON)
     {
-        $this->responseType = $responseType;
+        $this->mimeType = $mimeType;
         return $this;
     }
 }

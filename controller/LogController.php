@@ -4,8 +4,11 @@ namespace App\Controller;
 
 use App\Model\LogModel;
 use App\Core\BaseController;
-use App\Core\Response\ResultGenerator;
+use App\Core\Result\Result;
 
+/**
+ * LogController
+ */
 class LogController extends BaseController
 {
     /**
@@ -19,6 +22,15 @@ class LogController extends BaseController
         $this->logModel = $logModel;
     }
 
+    /**
+     * List log
+     * 
+     * @param int currentPage
+     * @param int pageSize
+     * @param int level
+     * @param string content
+     * @param string created_at
+     */
     public function list()
     {
         $currentPage = intval($this->request->get('currentPage', 0));
@@ -49,14 +61,21 @@ class LogController extends BaseController
             'extra [JSON]',
             'created_at',
         ], $where);
-        return ResultGenerator::successWithData($result);
+        return Result::success($result);
     }
 
+    /**
+     * Delete log
+     * 
+     * @param int id
+     */
     public function delete()
     {
-        $id = intval($this->request->get('id'));
-        $logModel = new LogModel();
-        $logModel->deleteById($id);
-        return ResultGenerator::success();
+        $logId = intval($this->request->get('id'));
+        if (empty($logId)) {
+            return Result::error('Log id does not exist');
+        }
+        $this->logModel->deleteById($logId);
+        return Result::success();
     }
 }

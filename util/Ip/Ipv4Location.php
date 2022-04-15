@@ -3,13 +3,13 @@
 namespace App\Util;
 
 /**
- * IP 地理位置查询类
+ * IPv4 location
  *
- * @author    赵彬言<itbudaoweng@gmail.com>
- * @version   2.0
- * @copyright 2012-2021 itbdw.com
+ * @author  赵彬言<itbudaoweng@gmail.com>
+ * @version 2.0
+ * @link    https://github.com/itbdw/ip-database
+ * @license https://github.com/itbdw/ip-database/blob/2.x/LICENSE
  */
-
 class Ipv4Location
 {
     private static $instance;

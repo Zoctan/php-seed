@@ -1,16 +1,16 @@
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role`
 (
-    `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '角色id',
-    `parent_id`    BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT '父角色id',
-    `name`         VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT '名称',
-    `has_all_rule` TINYINT(3) DEFAULT 0 COMMENT '是否拥有所有权限：0否|1是',
-    `lock`         TINYINT(3) DEFAULT 0 COMMENT '锁定，不可修改：0否|1是',
-    `created_at`   DATETIME DEFAULT NOW() COMMENT '创建于',
-    `updated_at`   DATETIME DEFAULT NULL COMMENT '更新于',
+    `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
+    `parent_id`    BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'parent id',
+    `name`         VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'name',
+    `has_all_rule` TINYINT(3) DEFAULT 0 COMMENT '0:no | 1:yes',
+    `lock`         TINYINT(3) DEFAULT 0 COMMENT 'unchangeable: 0:unlock | 1:lock',
+    `created_at`   DATETIME DEFAULT NOW() COMMENT 'created at',
+    `updated_at`   DATETIME DEFAULT NULL COMMENT 'updated at',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='角色表';
+  DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='role';
 
 INSERT INTO `role` VALUES
 (1, 0, 'SuperAdmin', 1, 1, '2022-01-01 00:00:00', NULL),

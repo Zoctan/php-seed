@@ -6,7 +6,7 @@ use App\Core\BaseException;
 use App\Core\Response\ResultCode;
 
 /**
- * Router exception
+ * RouterException
  */
 class RouterException extends BaseException
 {

@@ -11,14 +11,19 @@ class Router
 {
     protected $groupUri = '';
     protected $groupCallback = null;
-
     protected $routeList = [];
 
-    public function getrouteList()
+    public function getRouteList()
     {
         return $this->routeList;
     }
 
+    /**
+     * Add group
+     * 
+     * @param string $groupUri
+     * @param callback|string $groupCallback
+     */
     public function addGroup(string $groupUri = '', $groupCallback = null)
     {
         $this->groupUri = $groupUri;
@@ -27,7 +32,7 @@ class Router
     }
 
     /**
-     * add route
+     * Add route
      * 
      * @param array|string $methods ['GET', 'POST'] or just 'GET'
      * @param string $uri 'member/list' or '/member/list'
@@ -87,8 +92,8 @@ class Router
             if (isset($extra['permission'])) {
                 $route->setPermission($extra['permission']);
             }
-            if (isset($extra['responseType'])) {
-                $route->setResponseType($extra['responseType']);
+            if (isset($extra['mimeType'])) {
+                $route->setMimeType($extra['mimeType']);
             }
         }
 
@@ -97,32 +102,48 @@ class Router
         return $this;
     }
 
+    /**
+     * Load cache file
+     * 
+     * @param string $filePath
+     */
     public function loadCache($filePath)
     {
+        if (empty($filePath)) {
+            throw new RouterException('FilePath does not exist');
+        }
         $file = fopen($filePath, 'r');
         $this->routeList = unserialize(fread($file, filesize($filePath)));
         fclose($filePath);
     }
 
     /**
-     * do not cache when using closure function as addRoute() callback param
+     * Do not cache when using closure function as addRoute() callback param
+     * 
+     * @param string $filePath
      */
     public function cache($filePath)
     {
         if (empty($this->routeList)) {
-            throw new RouterException('route list empty, please add some routes.');
+            throw new RouterException('Route list empty, please add some routes first');
         }
 
         if (!file_put_contents($filePath, serialize($this->routeList))) {
-            throw new RouterException('cache routes error');
+            throw new RouterException('Cache routes error');
         }
         return $this;
     }
 
+    /**
+     * Dispatch request and response it
+     * 
+     * @param Request $request
+     * @param Response $response
+     */
     public function dispatch(Request $request, Response $response)
     {
         if (empty($this->routeList)) {
-            throw new RouterException('route list empty, please add some routes.');
+            throw new RouterException('Route list empty, please add some routes first');
         }
 
         $uri = $request->uri;
@@ -138,22 +159,23 @@ class Router
         }
 
         $callback = $route->action;
-        $response->setResponseType($route->responseType);
+        $response->setContentType($route->mimeType);
         if (is_callable($callback)) {
             // call closure function, like: $router->register('get', '/', function () { xxx });
-            call_user_func($callback);
+            $result = call_user_func($callback);
         } elseif (is_string($callback) && strpos($callback, '@') !== false) {
             // like: $router->register('get', '/', 'MemberController@list'); 
             list($controllerClass, $controllerMethod) = explode('@', $callback);
-            $controllerNamespace = \App\DI()->config['app']['controllerNamespace'];
+            $controllerNamespace = \App\DI()->config['controller']['namespace'];
             // App\Controller\XXController
             $controllerClass = $controllerNamespace . $controllerClass;
             // new class instance
             $controllerInstance = \App\DI()->newInstance($controllerClass);
             // call method
-            $controllerInstance->$controllerMethod();
+            $result = $controllerInstance->$controllerMethod();
         } else {
             throw new RouterException('route inside error, please contract with administrator');
         }
+        $response->setData($result->get())->send();
     }
 }

@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Util\Util;
 use App\Util\File;
 use App\Core\BaseController;
-use App\Core\Response\ResultGenerator;
+use App\Core\Result\Result;
 
+/**
+ * UploadController
+ */
 class UploadController extends BaseController
 {
     private $basePath;
@@ -17,24 +20,40 @@ class UploadController extends BaseController
     {
         parent::__construct();
         $this->basePath = \App\DI()->config['basePath'];
-        $this->baseUrl = \App\DI()->config['app']['baseUrl'];
-        $this->config = \App\DI()->config['app']['upload'];
+        $this->baseUrl = \App\DI()->config['baseUrl'];
+        $this->config = \App\DI()->config['upload'];
     }
 
+    /**
+     * Download file
+     * 
+     * @param string filename
+     * @param string type
+     */
     public function download()
     {
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return ResultGenerator::errorWithMsg('filename or type does not exist');
+            return Result::error('Filename or type does not exist');
         }
+
         $filePath = implode('/', [$this->config[$type]['localPath'], $filename]);
         $file = new File($filePath, $this->basePath);
         if (!$file->download()) {
-            return ResultGenerator::errorWithMsg('download error');
+            return Result::error('Download error');
         }
     }
 
+    /**
+     * Upload file
+     * 
+     * @param string targetDir
+     * @param bool useTimeDir
+     * @param bool useRandomName
+     * @param string type
+     * @param bool overwrite
+     */
     public function add()
     {
         // target directory, like: /test/abc/
@@ -82,13 +101,13 @@ class UploadController extends BaseController
             $fileTmp = $item['tmp_name'];
 
             if ($this->config[$type]['minKB'] > $fileSizeKB) {
-                return ResultGenerator::errorWithMsg('File is too smaller: ' . $fileSizeKB . ', min limit: ' . $this->config[$type]['minKB']);
+                return Result::error('File is too smaller: ' . $fileSizeKB . ', min limit: ' . $this->config[$type]['minKB']);
             }
             if ($this->config[$type]['maxKB'] < $fileSizeKB) {
-                return ResultGenerator::errorWithMsg('File is too bigger: ' . $fileSizeKB . ', max limit: ' . $this->config[$type]['maxKB']);
+                return Result::error('File is too bigger: ' . $fileSizeKB . ', max limit: ' . $this->config[$type]['maxKB']);
             }
             if (!in_array($fileType, $this->config[$type]['allowType'])) {
-                return ResultGenerator::errorWithMsg('File type not allow: ' . $fileType . ', allow type: ' . json_encode($this->config[$type]['allowType']));
+                return Result::error('File type not allow: ' . $fileType . ', allow type: ' . json_encode($this->config[$type]['allowType']));
             }
 
             // upload fail
@@ -99,7 +118,6 @@ class UploadController extends BaseController
 
             $fileNameArray = explode('.', $fileNameWithExt);
             $fileExt = array_pop($fileNameArray);
-            $fileNameWithoutExt = implode('.', $fileNameArray);
             $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
 
             // overwrite exist file?
@@ -112,7 +130,7 @@ class UploadController extends BaseController
                 // rename upload file
                 while (file_exists($localUploadFile)) {
                     if (!$useRandomName) {
-                        return ResultGenerator::errorWithMsg(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
+                        return Result::error(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
                     }
                     // set random filename
                     // test.jpg -> asdfghjkl.jpg
@@ -134,26 +152,32 @@ class UploadController extends BaseController
         }
 
         if (count($successList) === 0) {
-            return ResultGenerator::errorWithMsg('upload failed: ' . json_encode($failList));
+            return Result::error('Upload failed: ' . json_encode($failList));
         }
-        return ResultGenerator::successWithData($successList);
+        return Result::success($successList);
     }
 
+    /**
+     * Delete file
+     * 
+     * @param string filename
+     * @param string type
+     */
     public function delete()
     {
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return ResultGenerator::errorWithMsg('filename or type does not exist');
+            return Result::error('Filename or type does not exist');
         }
 
         $localUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
         if (!file_exists($localUploadFile)) {
-            return ResultGenerator::errorWithMsg('file does not exist');
+            return Result::error('File does not exist');
         }
         if (!unlink($localUploadFile)) {
-            return ResultGenerator::errorWithMsg('delete failed');
+            return Result::error('Delete failed');
         }
-        return ResultGenerator::success();
+        return Result::success();
     }
 }

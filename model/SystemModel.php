@@ -4,6 +4,9 @@ namespace App\Model;
 
 use App\Core\BaseModel;
 
+/**
+ * SystemModel
+ */
 class SystemModel extends BaseModel
 {
     protected $table = 'system';

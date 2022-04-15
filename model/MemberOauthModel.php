@@ -4,6 +4,9 @@ namespace App\Model;
 
 use App\Core\BaseModel;
 
+/**
+ * MemberOauthModel
+ */
 class MemberOauthModel extends BaseModel
 {
     protected $table = 'member_oauth';

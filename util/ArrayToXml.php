@@ -7,8 +7,16 @@ use DOMElement;
 use DOMException;
 use Exception;
 
-// https://github.com/spatie/array-to-xml
-final class Array2Xml
+/**
+ * ArrayToXml
+ * a very simple class to convert an array to an xml string.
+ *
+ * @author  spatie
+ * @version 3.1.2
+ * @link    https://github.com/spatie/array-to-xml
+ * @license https://github.com/spatie/array-to-xml/blob/main/LICENSE.md
+ */
+final class ArrayToXml
 {
   protected DOMDocument $document;
 
@@ -222,7 +230,12 @@ final class Array2Xml
     $element->parentNode->appendChild($child);
   }
 
-  protected function isArrayAllKeySequential(array | string | null $value): bool
+  /**
+   * Is array all key sequential
+   * 
+   * @param  array|string|null $value
+   */
+  protected function isArrayAllKeySequential($value): bool
   {
     if (!is_array($value)) {
       return false;

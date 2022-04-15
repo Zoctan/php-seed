@@ -5,7 +5,7 @@ namespace App;
 use App\Core\Http\Router;
 
 $env = \App\DI()->config['env'];
-$routesCachePath = \App\DI()->config['app']['routesCachePath'];
+$routesCachePath = \App\DI()->config['router']['cachePath'];
 
 $router = new Router();
 

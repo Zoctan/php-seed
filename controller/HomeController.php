@@ -3,21 +3,32 @@
 namespace App\Controller;
 
 use App\Core\BaseController;
-use App\Core\Http\Response;
-use App\Core\Response\ResultGenerator;
+use App\Core\Http\MimeType;
+use App\Core\Result\Result;
 
+/**
+ * HomeController
+ */
 class HomeController extends BaseController
 {
+    /**
+     * Home
+     * do not visit this api
+     */
     public function home()
     {
-        return ResultGenerator::errorWithMsg('Please see the api document to use!');
+        return Result::error('Please see the api document to use!');
     }
 
-    public function exampleDifferentTypeResponse()
+    /**
+     * example for response in different mime type
+     */
+    public function exampleDifferentMimeType()
     {
-        // set response type when add route in router.php
+        // set mime type when add route in router.php
         // or like this:
-        // $this->response->setResponseType(Response::RESPONSE_TYPE_XML);
-        return ResultGenerator::successWithData('test xml');
+        // $this->response->setContentType(MimeType::XML);
+        // $this->response->setContentType(MimeType::JSON);
+        return Result::success('test xml');
     }
 }

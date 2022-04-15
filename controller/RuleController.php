@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
-use App\Util\Util;
 use App\Model\RuleModel;
 use App\Core\BaseController;
-use App\Core\Response\ResultGenerator;
+use App\Core\Result\Result;
 
+/**
+ * RuleController
+ */
 class RuleController extends BaseController
 {
     /**
@@ -20,14 +22,20 @@ class RuleController extends BaseController
         $this->ruleModel = $ruleModel;
     }
 
+    /**
+     * Add rule
+     * 
+     * @param int parent_id
+     * @param string description
+     * @param string permission
+     */
     public function add()
     {
         $parentId = intval($this->request->get('parent_id', 0));
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
-
         if (empty($description) || empty($permission)) {
-            return ResultGenerator::errorWithMsg('please input description and permission');
+            return Result::error('Description or permission does not exist');
         }
 
         $ruleId = $this->ruleModel->insert([
@@ -36,9 +44,12 @@ class RuleController extends BaseController
             'permission' => $permission,
         ]);
 
-        return ResultGenerator::successWithData($ruleId);
+        return Result::success($ruleId);
     }
 
+    /**
+     * List rule
+     */
     public function list()
     {
         $ruleList = [];
@@ -48,59 +59,81 @@ class RuleController extends BaseController
                 $ruleList[] = $rule;
             }
         );
-        return ResultGenerator::successWithData($ruleList);
+        return Result::success($ruleList);
     }
 
+    /**
+     * Update rule list
+     * 
+     * @param array ruleList
+     */
     public function updateList()
     {
         $ruleList = (array) $this->request->get('ruleList');
         if (empty($ruleList)) {
-            return ResultGenerator::errorWithMsg('ruleList does not exist');
+            return Result::error('RuleList does not exist');
         }
         foreach ($ruleList as $rule) {
             $this->ruleModel->updateById($rule, $rule['id']);
         }
-        return ResultGenerator::success();
+        return Result::success();
     }
 
+    /**
+     * Update rule
+     * 
+     * @param int id
+     * @param string description
+     * @param string permission
+     */
     public function update()
     {
         $ruleId = intval($this->request->get('id'));
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($ruleId)) {
-            return ResultGenerator::errorWithMsg('rule id does not exist');
+            return Result::error('Rule id does not exist');
         }
         if (empty($description) && empty($permission)) {
-            return ResultGenerator::errorWithMsg('please input description or permission');
+            return Result::error('Description and permission does not exist');
         }
 
         $this->ruleModel->updateById([
             'description' => $description,
             'permission' => $permission,
         ], $ruleId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 
+    /**
+     * Delete rule list by rule id list
+     * 
+     * @param array ruleIdList
+     */
     public function deleteList()
     {
-        $ruleIdList = $this->request->get('ruleIdList');
+        $ruleIdList = (array) $this->request->get('ruleIdList');
         if (empty($ruleIdList)) {
-            return ResultGenerator::errorWithMsg('ruleIdList does not exist');
+            return Result::error('Rule id list does not exist');
         }
         foreach ($ruleIdList as $id) {
             $this->ruleModel->deleteById($id);
         }
-        return ResultGenerator::success();
+        return Result::success();
     }
 
+    /**
+     * Delete rule by id
+     * 
+     * @param int id
+     */
     public function delete()
     {
-        $ruleId = intval($this->request->get('ruleId'));
+        $ruleId = intval($this->request->get('id'));
         if (empty($ruleId)) {
-            return ResultGenerator::errorWithMsg('rule id does not exist');
+            return Result::error('Rule id does not exist');
         }
         $this->ruleModel->deleteById($ruleId);
-        return ResultGenerator::success();
+        return Result::success();
     }
 }

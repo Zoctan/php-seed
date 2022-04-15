@@ -16,7 +16,7 @@ use Lcobucci\JWT\Validation\Constraint\PermittedFor;
 use Lcobucci\JWT\Validation\Constraint\ValidAt;
 use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
 
-class JwtUtil
+class Jwt
 {
     use Singleton;
 
@@ -36,7 +36,7 @@ class JwtUtil
     private $jwtConfig;
 
     /**
-     * date time zone
+     * Date time zone
      * @var string
      */
     private $dateTimeZone = 'Asia/Shanghai';
@@ -57,7 +57,7 @@ class JwtUtil
     }
 
     /**
-     * get token from request header or data
+     * Get token from request header or data
      * 
      * @param $request
      */
@@ -70,7 +70,7 @@ class JwtUtil
     }
 
     /**
-     * sign access token and refresh token
+     * Sign access token and refresh token
      * 
      * @param $memberId
      * @param $payload
@@ -87,7 +87,7 @@ class JwtUtil
     }
 
     /**
-     * sign access token
+     * Sign access token
      * 
      * @param $memberId
      * @param $payload
@@ -103,7 +103,7 @@ class JwtUtil
     }
 
     /**
-     * sign refresh token
+     * Sign refresh token
      * 
      * @param $memberId
      * @param $payload
@@ -114,7 +114,7 @@ class JwtUtil
     }
 
     /**
-     * sign token
+     * Sign token
      * 
      * @param $memberId
      * @param $expiresMinutes
@@ -135,9 +135,9 @@ class JwtUtil
 
         // put payload
         $jwtObj->withClaim('memberId', $memberId);
-        // 不适合放操作权限列表，token 后期可能会非常长
-        // 这里可能会有个疑惑，放不了什么东西，那为什么不用 UUID 这些做 token
-        // 因为 JWT 有私钥签名，安全性高，如果只是用作资源授权（到时即过期），这个 JWT 还是很好的
+        // jwt is very helpful when authenticate resource for third party using
+        // but do not put so much data in payload
+        // and token will be too long to transfer
         if (is_array($payload) && !empty($payload)) {
             foreach ($payload as $key => $value) {
                 $jwtObj->withClaim($key, $value);
@@ -153,23 +153,22 @@ class JwtUtil
     }
 
     /**
-     * save token to redis
+     * Save token to redis
      * 
      * @param $memberId
      * @param $token
      */
     public function save2Redis($memberId, $token)
     {
-        // 保存 token（1有效，0有效但已登出）
-        //      因为账户登出后 JWT 本身只要没过期就仍然有效，所以只能通过 redis 缓存来校验有无效
-        //      校验时只要 redis 中的 token 无效即可（JWT 本身可以校验有无过期，而 redis 过期即被删除了）
+        // save token itself (0:invalid | 1:valid)
         $this->cache->setex($token, $this->config['expiresMinutes'] * 60, 1);
-        // 成员无需重复请求签发 token
+        // save token in member id
+        // if member login again, give the redis token, not sign again
         $this->cache->setex($memberId, $this->config['expiresMinutes'] * 60, $token);
     }
 
     /**
-     * invalid redis token
+     * Invalid redis token
      * 
      * @param $memberId
      */
@@ -181,7 +180,7 @@ class JwtUtil
     }
 
     /**
-     * validate token self and redis token
+     * Validate token self and redis token
      * 
      * @param string $token
      */
@@ -196,7 +195,7 @@ class JwtUtil
     }
 
     /**
-     * validate token
+     * Validate token
      * 
      * @param string $token
      */
@@ -224,7 +223,7 @@ class JwtUtil
     }
 
     /**
-     * get authentication member
+     * Get authentication member
      * 
      * @param string $token
      */
@@ -235,11 +234,11 @@ class JwtUtil
             return null;
         }
         $memberId = $claims['memberId'];
-        return (new AuthMemberModel())->get($memberId);
+        return (new AuthMemberModel())->getByMemberId($memberId);
     }
 
     /**
-     * parse token
+     * Parse token
      * 
      * @param string $token
      */

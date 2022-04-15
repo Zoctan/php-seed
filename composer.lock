@@ -692,12 +692,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/predis/predis.git",
-                "reference": "acb2460f4c023cef319afe9a68bb12d391707912"
+                "reference": "d6da14daa81b63558ffd07ab5cc6946f207f4ac4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/predis/predis/zipball/acb2460f4c023cef319afe9a68bb12d391707912",
-                "reference": "acb2460f4c023cef319afe9a68bb12d391707912",
+                "url": "https://api.github.com/repos/predis/predis/zipball/d6da14daa81b63558ffd07ab5cc6946f207f4ac4",
+                "reference": "d6da14daa81b63558ffd07ab5cc6946f207f4ac4",
                 "shasum": ""
             },
             "require": {
@@ -751,7 +751,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-15T17:50:51+00:00"
+            "time": "2022-04-05T16:13:30+00:00"
         },
         {
             "name": "psr/http-client",
@@ -966,12 +966,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "6f981ee24cf69ee7ce9736146d1c57c2780598a8"
+                "reference": "e8b495ea28c1d97b5e0c121748d6f9b53d075c66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/6f981ee24cf69ee7ce9736146d1c57c2780598a8",
-                "reference": "6f981ee24cf69ee7ce9736146d1c57c2780598a8",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/e8b495ea28c1d97b5e0c121748d6f9b53d075c66",
+                "reference": "e8b495ea28c1d97b5e0c121748d6f9b53d075c66",
                 "shasum": ""
             },
             "require": {
@@ -1009,7 +1009,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/main"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/2.5"
             },
             "funding": [
                 {
@@ -1025,7 +1025,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-07-12T14:48:14+00:00"
+            "time": "2022-01-02T09:53:40+00:00"
         }
     ],
     "packages-dev": [],

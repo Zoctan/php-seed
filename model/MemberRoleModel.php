@@ -4,6 +4,9 @@ namespace App\Model;
 
 use App\Core\BaseModel;
 
+/**
+ * MemberRoleModel
+ */
 class MemberRoleModel extends BaseModel
 {
     protected $table = 'member_role';

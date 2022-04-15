@@ -5,9 +5,9 @@ ini_set('display_errors', true);
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Util\File;
+use App\Util\Collection;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Collection;
 use App\Core\Filter;
 use App\Core\Filter\CorsFilter;
 use App\Core\Filter\AuthenticationFilter;
@@ -29,7 +29,7 @@ class Bootstrap
     {
         // global exception handler
         ExceptionHandler::register();
-        
+
         $this->initTimezone();
 
         $this->initConfig();
@@ -85,7 +85,7 @@ class Bootstrap
     public function initRouter()
     {
         if (!$this->routerPath) {
-            $this->routerPath = $this->di->config['app']['routerPath'];
+            $this->routerPath = $this->di->config['router']['path'];
         }
         $this->di->router = require_once $this->routerPath;
         return $this;
@@ -112,8 +112,8 @@ class Bootstrap
     {
         $this->di->response = (new Response())
             ->setDebug($this->di->config['debug'])
-            ->setDebugKey($this->di->config['app']['response']['structureMap']['debug'])
-            ->setResponseType($this->di->config['app']['response']['type']);
+            ->setDebugKey($this->di->config['controller']['response']['structureMap']['debug'])
+            ->setContentType($this->di->config['controller']['response']['type']);
     }
 
     private function initCache()
