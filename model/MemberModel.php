@@ -23,6 +23,12 @@ class MemberModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
+    /**
+     * Add member
+     * 
+     * @param array $member
+     * @return mixed id
+     */
     public function add($member)
     {
         $member['password'] = password_hash($member['password'], PASSWORD_DEFAULT);
@@ -38,6 +44,11 @@ class MemberModel extends BaseModel
         return $memberId;
     }
 
+    /**
+     * Update member by id
+     * 
+     * @param array $member
+     */
     public function updateById($member)
     {
         if ($member['password'] != null) {
@@ -46,11 +57,23 @@ class MemberModel extends BaseModel
         parent::updateById($member, $member['id']);
     }
 
+    /**
+     * Update member logined time by id
+     * 
+     * @param mixed $id
+     */
     public function updateLoginedAtById($id)
     {
         parent::updateById(['logined_at' => Medoo::raw('NOW()')], $id);
     }
 
+    /**
+     * Verify member password
+     * 
+     * @param string $password
+     * @param string $passwordDB
+     * @return bool
+     */
     public function verifyPassword($password, $passwordDB)
     {
         return password_verify($password, $passwordDB);

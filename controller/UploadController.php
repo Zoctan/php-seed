@@ -29,6 +29,7 @@ class UploadController extends BaseController
      * 
      * @param string filename
      * @param string type
+     * @return File
      */
     public function download()
     {
@@ -48,24 +49,28 @@ class UploadController extends BaseController
     /**
      * Upload file
      * 
+     * @param string type
      * @param string targetDir
      * @param bool useTimeDir
      * @param bool useRandomName
-     * @param string type
      * @param bool overwrite
+     * @param bool compress
+     * @return Result
      */
     public function add()
     {
+        // upload file type
+        $type = strval($this->request->get('type', 'image'));
         // target directory, like: /test/abc/
         $targetDir = strval($this->request->get('targetDir'));
         // use time directory
         $useTimeDir = boolval($this->request->get('useTimeDir', false));
         // use random file name
         $useRandomName = boolval($this->request->get('useRandomName', false));
-        // upload file type
-        $type = strval($this->request->get('type', 'image'));
         // overwrite file
         $overwrite = boolval($this->request->get('overwrite', false));
+        // compress file
+        $compress = boolval($this->request->get('compress', false));
 
         // local saving directory
         $localUploadDir = implode('/', [$this->basePath, $this->config[$type]['localPath']]);
@@ -140,6 +145,11 @@ class UploadController extends BaseController
                 }
             }
 
+            // compress file
+            // todo
+            if ($compress) {
+            }
+
             // move temp file to local saving directory 
             if (move_uploaded_file($fileTmp, $localUploadFile)) {
                 $data = [
@@ -162,6 +172,7 @@ class UploadController extends BaseController
      * 
      * @param string filename
      * @param string type
+     * @return Result
      */
     public function delete()
     {

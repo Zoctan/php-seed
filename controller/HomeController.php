@@ -12,8 +12,9 @@ use App\Core\Result\Result;
 class HomeController extends BaseController
 {
     /**
-     * Home
-     * do not visit this api
+     * Home (do not visit this api)
+     * 
+     * @return Result
      */
     public function home()
     {
@@ -21,7 +22,9 @@ class HomeController extends BaseController
     }
 
     /**
-     * example for response in different mime type
+     * Example for response in different mime type
+     * 
+     * @return Result
      */
     public function exampleDifferentMimeType()
     {

@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `system`;
-CREATE TABLE `system`
+DROP TABLE IF EXISTS `pair`;
+CREATE TABLE `pair`
 (
     `id`            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
     `description`   LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'description',
@@ -9,4 +9,4 @@ CREATE TABLE `system`
     `updated_at`    DATETIME DEFAULT NULL COMMENT 'updated at',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='system dynamic key value pair';
+  DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='key value pair';

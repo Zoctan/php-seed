@@ -21,9 +21,14 @@ class RoleModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
+    /**
+     * List rule by role id
+     * 
+     * @param mixed $roleId
+     * @return array
+     */
     public function listRuleByRoleId($roleId)
     {
-        $ruleModel = new RuleModel();
         return $this->select(
             [
                 '[>]role_rule' => ['role.id' => 'role_id'],
@@ -43,6 +48,13 @@ class RoleModel extends BaseModel
         );
     }
 
+    /**
+     * List parent by parent id
+     * 
+     * @param mixed $parentId
+     * @param array $columns
+     * @return array
+     */
     public function listParentByParentId($parentId, $columns)
     {
         $parentList = [];

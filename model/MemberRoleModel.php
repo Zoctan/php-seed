@@ -19,6 +19,12 @@ class MemberRoleModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
+    /**
+     * List role by member id
+     * 
+     * @param mixed $memberId
+     * @return array
+     */
     public function listRoleByMemberId($memberId)
     {
         $roleModel = new RoleModel();
@@ -33,6 +39,12 @@ class MemberRoleModel extends BaseModel
         );
     }
 
+    /**
+     * List rule by member id
+     * 
+     * @param mixed $memberId
+     * @return array
+     */
     public function listRuleByMemberId($memberId)
     {
         $ruleModel = new RuleModel();
@@ -48,6 +60,12 @@ class MemberRoleModel extends BaseModel
         );
     }
 
+    /**
+     * Get permission list
+     * 
+     * @param array $ruleTree
+     * @return array
+     */
     public function getPermissionList($ruleTree)
     {
         $permissionList = [];

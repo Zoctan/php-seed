@@ -13,7 +13,7 @@ class AuthMemberModel
     /**
      * Get authentication member by member id
      * 
-     * @param $memberId
+     * @param mixed $memberId
      */
     public function getByMemberId($memberId)
     {

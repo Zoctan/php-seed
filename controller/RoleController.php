@@ -34,6 +34,7 @@ class RoleController extends BaseController
      * 
      * @param object role
      * @param object ruleList
+     * @return Result
      */
     public function add()
     {
@@ -55,6 +56,7 @@ class RoleController extends BaseController
      * @param int currentPage
      * @param int pageSize
      * @param object role
+     * @return Result
      */
     public function list()
     {
@@ -92,6 +94,7 @@ class RoleController extends BaseController
      * Get role and rule list by id
      * 
      * @param int id
+     * @return Result
      */
     public function detail()
     {
@@ -117,6 +120,7 @@ class RoleController extends BaseController
      * List parent role
      * 
      * @param int parentId
+     * @return Result
      */
     public function listParent()
     {
@@ -132,6 +136,7 @@ class RoleController extends BaseController
      * Update role
      * 
      * @param object role
+     * @return Result
      */
     public function update()
     {
@@ -150,6 +155,7 @@ class RoleController extends BaseController
      * Delete role by id
      * 
      * @param int id
+     * @return Result
      */
     public function delete()
     {
@@ -166,6 +172,7 @@ class RoleController extends BaseController
      * 
      * @param int memberId
      * @param int roleId
+     * @return Result
      */
     public function addMemberRole()
     {
@@ -185,6 +192,7 @@ class RoleController extends BaseController
      * 
      * @param int memberId
      * @param int roleId
+     * @return Result
      */
     public function deleteMemberRole()
     {

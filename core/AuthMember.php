@@ -24,7 +24,7 @@ class AuthMember
     /**
      * role list
      * 
-     * @var object
+     * @var array
      */
     public $roleList;
 
@@ -35,6 +35,14 @@ class AuthMember
      */
     public $permissionList;
 
+    /**
+     * Initializes authentication member
+     * 
+     * @param object $member
+     * @param object $memberData
+     * @param array $roleList
+     * @param array $permissionList
+     */
     public function __construct($member, $memberData, $roleList, $permissionList)
     {
         $this->member = $member;
@@ -47,6 +55,7 @@ class AuthMember
      * Check member has target permission or not
      * 
      * @param array $need
+     * @return bool
      */
     public function checkPermission(array $need)
     {

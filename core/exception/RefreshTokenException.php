@@ -3,7 +3,7 @@
 namespace App\Core\Exception;
 
 use App\Core\BaseException;
-use App\Core\Response\ResultCode;
+use App\Core\Result\ResultCode;
 
 /**
  * RefreshTokenException

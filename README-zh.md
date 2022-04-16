@@ -13,7 +13,7 @@
 
 ## Mysql
 
-创建数据库：dqe_ee_system，把 sql 文件夹下的 sql 全部导入。
+创建数据库：phpseed，把 sql 文件夹下的 sql 全部导入。
 
 ## Apache
 

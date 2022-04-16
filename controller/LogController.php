@@ -30,6 +30,7 @@ class LogController extends BaseController
      * @param int level
      * @param string content
      * @param string created_at
+     * @return Result
      */
     public function list()
     {
@@ -68,6 +69,7 @@ class LogController extends BaseController
      * Delete log
      * 
      * @param int id
+     * @return Result
      */
     public function delete()
     {

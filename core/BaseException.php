@@ -3,7 +3,7 @@
 namespace App\Core;
 
 /**
- * Base exception
+ * Customize base exception class
  */
 class BaseException extends \Exception
 {

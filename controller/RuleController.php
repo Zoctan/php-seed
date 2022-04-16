@@ -28,6 +28,7 @@ class RuleController extends BaseController
      * @param int parent_id
      * @param string description
      * @param string permission
+     * @return Result
      */
     public function add()
     {
@@ -49,6 +50,8 @@ class RuleController extends BaseController
 
     /**
      * List rule
+     * 
+     * @return Result
      */
     public function list()
     {
@@ -66,6 +69,7 @@ class RuleController extends BaseController
      * Update rule list
      * 
      * @param array ruleList
+     * @return Result
      */
     public function updateList()
     {
@@ -85,6 +89,7 @@ class RuleController extends BaseController
      * @param int id
      * @param string description
      * @param string permission
+     * @return Result
      */
     public function update()
     {
@@ -109,6 +114,7 @@ class RuleController extends BaseController
      * Delete rule list by rule id list
      * 
      * @param array ruleIdList
+     * @return Result
      */
     public function deleteList()
     {
@@ -126,6 +132,7 @@ class RuleController extends BaseController
      * Delete rule by id
      * 
      * @param int id
+     * @return Result
      */
     public function delete()
     {

@@ -3,26 +3,34 @@
 namespace App\Core;
 
 /**
- *  Dependency Injection 依赖注入容器
+ *  Dependency Injection
  *  
- * - 调用的方式有：set/get函数、魔法方法setX/getX、类变量$fdi->X、数组$fdi['X]
- * - 初始化的途径：直接赋值、类名、匿名函数
+ * Call method:
+ * - setter/getter: set(key, value), get(key)
+ * - magic setter/getter: setKey(value), getKey()
+ * - object attribution: ->key
+ * - array attribution: [key]
+ * 
+ * Initializes method:
+ * - define value directly
+ * - define class name
+ * - define closure function
  *
- *  示例：
+ *  eg.
  *       $di = new DI();
- *      
- *       // 用的方式有：set/get函数  魔法方法setX/getX、类属性$di->X、数组$di['X']
+ * 
+ *       // Call method:
  *       $di->key = 'value';
  *       $di['key'] = 'value';
  *       $di->set('key', 'value');
  *       $di->setKey('value');
- *      
+ * 
  *       echo $di->key;
  *       echo $di['key'];
  *       echo $di->get('key');
  *       echo $di->getKey();
- *      
- *       // 初始化的途径：直接赋值、类名(会回调onInitialize函数)、匿名函数
+ * 
+ *       // Initializes method:
  *       $di->simpleKey = array('value');
  *       $di->classKey = 'DependenceInjection';
  *       $di->closureKey = function () {

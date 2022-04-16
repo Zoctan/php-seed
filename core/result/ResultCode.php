@@ -25,6 +25,6 @@ class ResultCode
     public const ACCESS_TOKEN_EXCEPTION = [4002, 'Access token exception'];
     public const REFRESH_TOKEN_EXCEPTION = [4003, 'Refresh token exception'];
     public const DATABASE_EXCEPTION = [4004, 'Datebase exception'];
-    public const VIOLATION_EXCEPTION = [4005, 'Violation exception'];
-    public const ROUTER_EXCEPTION = [4006, 'Router exception'];
+    public const ROUTER_EXCEPTION = [4005, 'Router exception'];
+    public const VIOLATION_EXCEPTION = [4006, 'Violation exception'];
 }

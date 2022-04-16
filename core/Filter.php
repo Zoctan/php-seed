@@ -7,5 +7,8 @@ namespace App\Core;
  */
 interface Filter
 {
+    /**
+     * Do what filter define
+     */
     public function doFilter();
 }

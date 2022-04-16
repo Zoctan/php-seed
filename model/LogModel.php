@@ -24,6 +24,12 @@ class LogModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
+    /**
+     * Add log
+     * 
+     * @param $data
+     * @return mixed id
+     */
     public function add($data)
     {
         $ip = Ipv4Location::getIp();
@@ -45,6 +51,13 @@ class LogModel extends BaseModel
         ]));
     }
 
+    /**
+     * Add info log
+     * 
+     * @param $content
+     * @param $extra
+     * @return mixed id
+     */
     public function asInfo($content, $extra = null)
     {
         return $this->add([
@@ -54,7 +67,13 @@ class LogModel extends BaseModel
         ]);
     }
 
-
+    /**
+     * Add warn log
+     * 
+     * @param $content
+     * @param $extra
+     * @return mixed id
+     */
     public function asWarn($content, $extra = null)
     {
         return $this->add([
@@ -64,7 +83,13 @@ class LogModel extends BaseModel
         ]);
     }
 
-
+    /**
+     * Add error log
+     * 
+     * @param $content
+     * @param $extra
+     * @return mixed id
+     */
     public function asError($content, $extra = null)
     {
         return $this->add([

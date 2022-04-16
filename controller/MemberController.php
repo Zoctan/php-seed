@@ -8,8 +8,9 @@ use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
 use App\Core\BaseController;
+use App\Core\Exception\AccessTokenException;
+use App\Core\Exception\RefreshTokenException;
 use App\Core\Result\Result;
-use App\Core\Result\ResultCode;
 
 /**
  * MemberController
@@ -36,6 +37,7 @@ class MemberController extends BaseController
      * Is member exist
      * 
      * @param string username
+     * @return Result
      */
     public function isMemberExist()
     {
@@ -59,6 +61,7 @@ class MemberController extends BaseController
      * Validate old password
      * 
      * @param string oldPassword
+     * @return Result
      */
     public function validateOldPassword()
     {
@@ -81,6 +84,7 @@ class MemberController extends BaseController
      * 
      * @param string username
      * @param string password
+     * @return Result
      */
     public function register()
     {
@@ -106,6 +110,7 @@ class MemberController extends BaseController
      * 
      * @param string username
      * @param string password
+     * @return Result
      */
     public function login()
     {
@@ -135,6 +140,8 @@ class MemberController extends BaseController
 
     /**
      * Member logout
+     * 
+     * @return Result
      */
     public function logout()
     {
@@ -147,6 +154,9 @@ class MemberController extends BaseController
 
     /**
      * Validate access token
+     * 
+     * @return Result
+     * @throws AccessTokenException
      */
     public function validateAccessToken()
     {
@@ -154,44 +164,47 @@ class MemberController extends BaseController
         // if use POST or GET data, make sure the access token had been changed when refresh token
         $accessToken = $this->jwt->getTokenFromRequest();
         if (empty($accessToken)) {
-            return Result::error('AccessToken does not exist', ResultCode::ACCESS_TOKEN_EXCEPTION);
+            throw new AccessTokenException('AccessToken does not exist');
         }
         $accessTokenValidation = $this->jwt->validateTokenRedis($accessToken);
         if (!$accessTokenValidation) {
-            return Result::error('Invalid accessToken', ResultCode::ACCESS_TOKEN_EXCEPTION);
+            throw new AccessTokenException('Invalid accessToken');
         }
         return Result::success();
     }
 
     /**
      * Refresh access token
+     * 
+     * @return Result
+     * @throws RefreshTokenException
      */
     public function refreshToken()
     {
         // Check old access token
         $oldAccessToken = $this->jwt->getTokenFromRequest();
         if (empty($oldAccessToken)) {
-            return Result::error('Old accessToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            throw new RefreshTokenException('Old accessToken does not exist');
         }
         $oldAuthMember = $this->jwt->getAuthMember($oldAccessToken);
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
-            return Result::error('Old authMember does not exist, old accessToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            throw new RefreshTokenException('Old authMember does not exist, old accessToken error');
         }
         // Check refresh token
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
-            return Result::error('RefreshToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            throw new RefreshTokenException('RefreshToken does not exist');
         }
         if (!$this->jwt->validateToken($refreshToken)) {
-            return Result::error('Invalid refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            throw new RefreshTokenException('Invalid refreshToken');
         }
         $authMember = $this->jwt->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            return Result::error('New authMember does not exist, refreshToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            throw new RefreshTokenException('New authMember does not exist, refreshToken error');
         }
         // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            return Result::error('AccessToken does not match the refreshToken', ResultCode::TOKEN_EXCEPTION);
+            throw new RefreshTokenException('AccessToken does not match the refreshToken');
         }
         $result = $this->jwt->signAccessToken($authMember->member['id']);
         return Result::success($result);
@@ -201,6 +214,7 @@ class MemberController extends BaseController
      * Get member and member data and role list by id
      * 
      * @param int id
+     * @return Result
      */
     public function detail()
     {
@@ -232,6 +246,8 @@ class MemberController extends BaseController
 
     /**
      * Logined member profile
+     * 
+     * @return Result
      */
     public function profile()
     {
@@ -246,6 +262,7 @@ class MemberController extends BaseController
      * @param object member
      * @param object memberData
      * @param object role
+     * @return Result
      */
     public function list()
     {
@@ -366,6 +383,7 @@ class MemberController extends BaseController
      * Update logined member password
      * 
      * @param string password
+     * @return Result
      */
     public function updatePassword()
     {
@@ -382,6 +400,7 @@ class MemberController extends BaseController
      * Update logined member
      * 
      * @param object profile
+     * @return Result
      */
     public function updateProfile()
     {
@@ -400,6 +419,7 @@ class MemberController extends BaseController
      * 
      * @param object member
      * @param object memberData
+     * @return Result
      */
     public function updateDetail()
     {
@@ -424,6 +444,7 @@ class MemberController extends BaseController
      * @param object member
      * @param object memberData
      * @param object role
+     * @return Result
      */
     public function add()
     {
@@ -449,6 +470,7 @@ class MemberController extends BaseController
      * Delete member by id
      * 
      * @param int id
+     * @return Result
      */
     public function delete()
     {

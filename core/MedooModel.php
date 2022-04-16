@@ -7,7 +7,17 @@ use Medoo\Medoo;
 use App\Core\exception\DatabaseException;
 
 /**
- * https://medoo.in/doc
+ * Customize medoo
+ * 
+ * Call method:
+ * same as medoo official document, but note:
+ * $table is inherited and defined by subClass, so don't input $table when call below method.
+ * 
+ * Magic method:
+ * 'By':
+ *    using 'By' column key to call method, like: selectByColumn(), deleteByColumn() ...
+ * 
+ * Read for more: https://medoo.in/doc
  * 
  * // Supported data type: [String | Bool | Int | Number | Object | JSON]
  * // [String] is the default type for all output data.
@@ -151,7 +161,7 @@ abstract class MedooModel
         $this->connection()->insert($this->table, $values);
         $id = $this->id();
         if (empty($id)) {
-            throw new DatabaseException('insert error');
+            throw new DatabaseException('Insert error');
         }
         return $id;
     }
@@ -390,13 +400,12 @@ abstract class MedooModel
     }
 
     /**
-     * Magic function
-     * 
-     * @param $method
-     * @param $arguments
-     * @return mixed
+     * call method using By key
+     *
+     * @param string &$method
+     * @param array &$arguments
      */
-    public function __call($method, $arguments)
+    private function callMethodUsingByKey(&$method, &$arguments)
     {
         // use 'By' to set $where directly
         // like: 
@@ -488,6 +497,18 @@ abstract class MedooModel
                 $arguments[$wherePosition] = $where;
             }
         }
+    }
+
+    /**
+     * Magic function
+     * 
+     * @param $method
+     * @param $arguments
+     * @return mixed
+     */
+    public function __call($method, $arguments)
+    {
+        $this->callMethodUsingByKey($method, $arguments);
 
         // read method
         $this->read = in_array($method, ['select', 'get', 'has', 'count',  'sum', 'max', 'min', 'avg']);

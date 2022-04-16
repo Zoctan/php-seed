@@ -5,11 +5,11 @@ namespace App\Model;
 use App\Core\BaseModel;
 
 /**
- * SystemModel
+ * PairModel
  */
-class SystemModel extends BaseModel
+class PairModel extends BaseModel
 {
-    protected $table = 'system';
+    protected $table = 'pair';
 
     protected $columns = [
         'id' => 'id [Int]',
@@ -21,8 +21,10 @@ class SystemModel extends BaseModel
     ];
 
     /**
+     * Get value
+     * 
      * @param string|array $key
-     * @return string|array
+     * @return string|array value
      */
     public function getValue($key)
     {
@@ -30,6 +32,14 @@ class SystemModel extends BaseModel
         return $this->$method($this->getColumns('value'), $key);
     }
 
+    /**
+     * Add pair
+     * 
+     * @param string $description
+     * @param string $key
+     * @param mixed $value
+     * @return mixed id
+     */
     public function add($description, $key, $value)
     {
         return $this->insert([
@@ -39,17 +49,29 @@ class SystemModel extends BaseModel
         ]);
     }
 
+    /**
+     * Update value
+     * 
+     * @param string $key
+     * @param mixed $value
+     */
     public function updateValue($key, $value)
     {
-        $this->updateByKey(['value [JSON]' => $value], $key);
+        parent::updateByKey(['value [JSON]' => $value], $key);
     }
 
-    public function updateById($values, $id): void
+    /**
+     * Update by id
+     * 
+     * @param array $data
+     * @param mixed $id
+     */
+    public function updateById($data, $id)
     {
         parent::updateById([
-            'key' => $values['key'],
-            'value [JSON]' => $values['value'],
-            'description' => $values['description'],
+            'description' => $data['description'],
+            'key' => $data['key'],
+            'value [JSON]' => $data['value'],
         ], $id);
     }
 }

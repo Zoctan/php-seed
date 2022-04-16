@@ -57,11 +57,14 @@ if ($env === 'development') {
     ->addRoute(['GET', 'POST'], '/add', 'add')
     ->addRoute(['GET', 'POST', 'DELETE'], '/delete', 'delete');
 
-  $router->addGroup('/system', 'SystemController')
+  $router->addGroup('/pair', 'PairController')
     ->addRoute('POST', '/getValue', 'getValue')
     ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/update', 'update')
     ->addRoute('DELETE', '/delete', 'delete');
+
+    $router->addGroup('/fake', 'FakeController')
+      ->addRoute('GET', '/getFakeName', 'getFakeName');
 
   $router->cache($routesCachePath);
 

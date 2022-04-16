@@ -20,6 +20,12 @@ class RoleRuleModel extends BaseModel
         'updated_at' => 'updated_at'
     ];
 
+    /**
+     * Update rule by role id
+     * 
+     * @param array $ruleIdList
+     * @param mixed $roleId
+     */
     public function updateRuleByRoleId($ruleIdList, $roleId)
     {
         // list old rule first

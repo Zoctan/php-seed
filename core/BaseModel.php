@@ -3,11 +3,15 @@
 namespace App\Core;
 
 /**
- * Base model
+ * Customize base model class
  */
 class BaseModel extends MedooModel
 {
-
+    /**
+     * Model columns
+     * 
+     * @var array
+     */
     protected $columns = [];
 
     public function __construct()
