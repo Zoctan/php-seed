@@ -66,9 +66,9 @@ class BaseModel extends MedooModel
     private function splitIfString($keys)
     {
         if (is_string($keys)) {
-            if (strpos('&', $keys) !== false) {
+            if (strpos($keys, '&') !== false) {
                 return explode('&', $keys);
-            } else if (strpos(',', $keys) !== false) {
+            } else if (strpos($keys, ',') !== false) {
                 return explode(',', $keys);
             } else {
                 return [$keys];

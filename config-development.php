@@ -24,8 +24,19 @@ return [
             'localPath' => 'upload/image',
             // remote network path
             'remotePath' => '',
-            // allow type list
-            'allowType' => ['image/jpeg', 'image/png', 'image/gif'],
+            // allow mime type list
+            'allowMimeType' => ['image/jpeg', 'image/png', 'image/gif'],
+            // compress config
+            'compressConfig' => [
+                'quality' => 70,
+            ],
+            // watermark config
+            'watermarkConfig' => [
+                'path' => $basePath . '/upload/image/watermark.png',
+                'position' => 'bottom-right',
+                'x' => 10,
+                'y' => 10,
+            ],
             // minimum file size(kb)
             'minKB' => 1,
             // maximum file size(kb)
@@ -34,7 +45,7 @@ return [
         'video' => [
             'localPath' => 'upload/video',
             'remotePath' => '',
-            'allowType' => ['video/mp4', 'video/3gpp', 'video/x-msvideo', 'video/mpeg', 'video/quicktime'],
+            'allowMimeType' => ['video/mp4', 'video/3gpp', 'video/x-msvideo', 'video/mpeg', 'video/quicktime'],
             'minKB' => 1,
             'maxKB' => 100 * 1024,
         ],

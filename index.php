@@ -28,7 +28,7 @@ class Bootstrap
     public function init()
     {
         // global exception handler
-        ExceptionHandler::register();
+        //ExceptionHandler::register();
 
         $this->initTimezone();
 
@@ -41,6 +41,8 @@ class Bootstrap
         $this->initCache();
 
         $this->initRouter();
+
+        $this->initUtil();
 
         return $this;
     }
@@ -70,7 +72,7 @@ class Bootstrap
     {
         $config = require_once $this->configPath;
         $basePath = $config['basePath'];
-        $configFile = new File($this->configPath, $basePath);
+        $configFile = (new File())->setAbsolutePath($this->configPath);
         // $basePath is from config.php, so require config.php first
         $configEnv = require_once sprintf('%s/%s-%s.%s', $basePath, $configFile->fileNameWithoutExt, $config['env'], $configFile->fileExt);
         $this->di->config = new Collection(array_merge($config, $configEnv));

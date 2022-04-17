@@ -15,12 +15,36 @@ class ExceptionHandler
 
     public static function register()
     {
+        self::setFatalErrorHandler();
         self::setErrorHandler();
         self::setExceptionHandler();
     }
 
     /**
-     * handle custom throw exception
+     * Handle fatal error
+     */
+    private static function setFatalErrorHandler()
+    {
+        register_shutdown_function(function () {
+            $error = error_get_last();
+            if ($error !== NULL) {
+                $resultCode = ResultCode::FAILED;
+                // todo test
+                $errno   = $error['type'];
+                $errfile = $error['file'];
+                $errline = $error['line'];
+                $errstr  = $error['message'];
+                // Fatal error, E_ERROR === 1
+                if ($error['type'] === E_ERROR) {
+                    $msg = sprintf('%s => %s', $resultCode[1], $errstr);
+                }
+                Result::error($msg, $resultCode);
+            }
+        });
+    }
+
+    /**
+     * Handle custom throw exception
      */
     private static function setExceptionHandler()
     {
@@ -43,7 +67,7 @@ class ExceptionHandler
     }
 
     /**
-     * handle custom throw error
+     * Handle custom throw error
      */
     private static function setErrorHandler()
     {

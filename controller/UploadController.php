@@ -40,7 +40,7 @@ class UploadController extends BaseController
         }
 
         $filePath = implode('/', [$this->config[$type]['localPath'], $filename]);
-        $file = new File($filePath, $this->basePath);
+        $file = (new File())->setAbsolutePath($filePath);
         if (!$file->download()) {
             return Result::error('Download error');
         }
@@ -54,7 +54,9 @@ class UploadController extends BaseController
      * @param bool useTimeDir
      * @param bool useRandomName
      * @param bool overwrite
-     * @param bool compress
+     * @param object reizeConfig     {enable: true/false, width: null, width: height}
+     * @param object compressConfig  {enable: true/false, quality: 0-100}
+     * @param object watermarkConfig {enable: true/false, path: '', x: 0, y: 0, position: top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right}
      * @return Result
      */
     public function add()
@@ -69,8 +71,12 @@ class UploadController extends BaseController
         $useRandomName = boolval($this->request->get('useRandomName', false));
         // overwrite file
         $overwrite = boolval($this->request->get('overwrite', false));
-        // compress file
-        $compress = boolval($this->request->get('compress', false));
+        // reize config
+        $reizeConfig = $this->request->get('reizeConfig');
+        // compress config
+        $compressConfig = $this->request->get('compressConfig');
+        // watermark config
+        $watermarkConfig = $this->request->get('watermarkConfig');
 
         // local saving directory
         $localUploadDir = implode('/', [$this->basePath, $this->config[$type]['localPath']]);
@@ -111,8 +117,12 @@ class UploadController extends BaseController
             if ($this->config[$type]['maxKB'] < $fileSizeKB) {
                 return Result::error('File is too bigger: ' . $fileSizeKB . ', max limit: ' . $this->config[$type]['maxKB']);
             }
-            if (!in_array($fileType, $this->config[$type]['allowType'])) {
-                return Result::error('File type not allow: ' . $fileType . ', allow type: ' . json_encode($this->config[$type]['allowType']));
+
+            // wrap file
+            $file = (new File())->setAbsolutePath($fileTmp);
+            // check file type
+            if ($file->mimeType !== false && !in_array($file->mimeType, $this->config[$type]['allowMimeType'])) {
+                return Result::error('File type not allow: ' . $file->mimeType . ', allow type: ' . json_encode($this->config[$type]['allowMimeType']));
             }
 
             // upload fail
@@ -121,8 +131,7 @@ class UploadController extends BaseController
                 continue;
             }
 
-            $fileNameArray = explode('.', $fileNameWithExt);
-            $fileExt = array_pop($fileNameArray);
+            // set local upload file path
             $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
 
             // overwrite exist file?
@@ -138,20 +147,42 @@ class UploadController extends BaseController
                         return Result::error(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
                     }
                     // set random filename
-                    // test.jpg -> asdfghjkl.jpg
+                    // test.jpg => renamexxxxxx.jpg
                     $randomStr = Util::randomStr(15);
-                    $fileNameWithExt = implode('.', [$randomStr, $fileExt]);
+                    $fileNameWithExt = implode('.', [$randomStr, $file->fileExt]);
                     $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
                 }
             }
-
-            // compress file
-            // todo
-            if ($compress) {
-            }
-
             // move temp file to local saving directory 
             if (move_uploaded_file($fileTmp, $localUploadFile)) {
+
+                if ($type === 'image') {
+                    // reize config
+                    if ($reizeConfig && $reizeConfig['enable'] && ($reizeConfig['width'] || $reizeConfig['height'])) {
+                        \App\DI()->image::make($localUploadFile)
+                            ->resize($reizeConfig['width'], $reizeConfig['height'])
+                            ->save();
+                    }
+                    // compress config
+                    if ($compressConfig && $compressConfig['enable'] && ($file->mimeType === 'image/jpeg' || $file->mimeType === 'image/png')) {
+                        $compressConfig['quality'] = isset($compressConfig['quality']) ? $compressConfig['quality'] : $this->config[$type]['compressConfig']['quality'];
+                        \App\DI()->image::make($localUploadFile)
+                            ->encode('jpg', $compressConfig['quality'])
+                            ->save();
+                        $fileNameWithExt = File::rewriteType($fileNameWithExt, 'jpg');
+                    }
+                    // watermark config
+                    if ($watermarkConfig && $watermarkConfig['enable']) {
+                        $watermarkConfig['path'] = isset($watermarkConfig['path']) ? $watermarkConfig['path'] : $this->config[$type]['watermarkConfig']['path'];
+                        $watermarkConfig['position'] = isset($watermarkConfig['position']) ? $watermarkConfig['position'] : $this->config[$type]['watermarkConfig']['position'];
+                        $watermarkConfig['x'] = isset($watermarkConfig['x']) ? $watermarkConfig['x'] : $this->config[$type]['watermarkConfig']['x'];
+                        $watermarkConfig['y'] = isset($watermarkConfig['y']) ? $watermarkConfig['y'] : $this->config[$type]['watermarkConfig']['y'];
+                        \App\DI()->image::make($localUploadFile)
+                            ->insert($watermarkConfig['path'], $watermarkConfig['position'], $watermarkConfig['x'], $watermarkConfig['y'])
+                            ->save();
+                    }
+                }
+
                 $data = [
                     'name' => $fileNameWithExt,
                     // splice visit url

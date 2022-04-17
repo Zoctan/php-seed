@@ -24,4 +24,8 @@ INSERT INTO `rule` VALUES
 (9, 7, 'Delete', 'delete', '2022-01-01 00:00:00', NULL),
 (10, 7, 'Update', 'update', '2022-01-01 00:00:00', NULL),
 (11, 7, 'List', 'list', '2022-01-01 00:00:00', NULL),
-(12, 7, 'Detail', 'detail', '2022-01-01 00:00:00', NULL);
+(12, 7, 'Detail', 'detail', '2022-01-01 00:00:00', NULL),
+
+(13, 0, 'Log', 'log', '2022-01-01 00:00:00', NULL),
+(14, 13, 'Delete', 'delete', '2022-01-01 00:00:00', NULL),
+(15, 13, 'List', 'list', '2022-01-01 00:00:00', NULL);

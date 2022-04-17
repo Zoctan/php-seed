@@ -6,7 +6,7 @@ return [
     // enable which env
     'env' => 'development',
     // project base path
-    'basePath' => 'C:/phpstudy/WWW/php-seed',
+    'basePath' => __DIR__,
     // app config
     'app' => [
         // app name
