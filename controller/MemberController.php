@@ -11,6 +11,7 @@ use App\Core\BaseController;
 use App\Core\Exception\AccessTokenException;
 use App\Core\Exception\RefreshTokenException;
 use App\Core\Result\Result;
+use App\Core\Result\ResultCode;
 
 /**
  * MemberController
@@ -131,7 +132,7 @@ class MemberController extends BaseController
         if ($member['status'] !== 1) {
             return Result::error('Member status error');
         }
-
+        
         $this->memberModel->updateLoginedAtById($member['id']);
 
         $result = $this->jwt->sign($member['id']);
@@ -156,7 +157,6 @@ class MemberController extends BaseController
      * Validate access token
      * 
      * @return Result
-     * @throws AccessTokenException
      */
     public function validateAccessToken()
     {
@@ -164,11 +164,11 @@ class MemberController extends BaseController
         // if use POST or GET data, make sure the access token had been changed when refresh token
         $accessToken = $this->jwt->getTokenFromRequest();
         if (empty($accessToken)) {
-            throw new AccessTokenException('AccessToken does not exist');
+            return Result::error('AccessToken does not exist', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
         $accessTokenValidation = $this->jwt->validateTokenRedis($accessToken);
         if (!$accessTokenValidation) {
-            throw new AccessTokenException('Invalid accessToken');
+            return Result::error('Invalid accessToken', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
         return Result::success();
     }
@@ -177,34 +177,33 @@ class MemberController extends BaseController
      * Refresh access token
      * 
      * @return Result
-     * @throws RefreshTokenException
      */
     public function refreshToken()
     {
         // Check old access token
         $oldAccessToken = $this->jwt->getTokenFromRequest();
         if (empty($oldAccessToken)) {
-            throw new RefreshTokenException('Old accessToken does not exist');
+            return Result::error('Old accessToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $oldAuthMember = $this->jwt->getAuthMember($oldAccessToken);
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
-            throw new RefreshTokenException('Old authMember does not exist, old accessToken error');
+            return Result::error('Old authMember does not exist, old accessToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // Check refresh token
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
-            throw new RefreshTokenException('RefreshToken does not exist');
+            return Result::error('RefreshToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         if (!$this->jwt->validateToken($refreshToken)) {
-            throw new RefreshTokenException('Invalid refreshToken');
+            return Result::error('Invalid refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $authMember = $this->jwt->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            throw new RefreshTokenException('New authMember does not exist, refreshToken error');
+            return Result::error('New authMember does not exist, refreshToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            throw new RefreshTokenException('AccessToken does not match the refreshToken');
+            return Result::error('AccessToken does not match the refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $result = $this->jwt->signAccessToken($authMember->member['id']);
         return Result::success($result);

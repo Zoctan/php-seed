@@ -39,8 +39,10 @@ class UploadController extends BaseController
             return Result::error('Filename or type does not exist');
         }
 
-        $filePath = implode('/', [$this->config[$type]['localPath'], $filename]);
+        $filePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
         $file = (new File())->setAbsolutePath($filePath);
+        // \App\debug('x', $file->getAbsolutePath());
+        // return Result::success('');
         if (!$file->download()) {
             return Result::error('Download error');
         }

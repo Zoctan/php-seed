@@ -2,6 +2,8 @@
 
 namespace App\Core\Result;
 
+use App\Core\Http\Response;
+
 /**
  * Result
  */
@@ -12,9 +14,16 @@ class Result
     private $data;
     private $structureMap;
 
-    public function __construct()
+    private function __construct()
     {
-        $this->structureMap = \App\DI()->config['controller']['response']['structureMap'];
+        $this->structureMap = \App\DI()->config
+            ? \App\DI()->config['controller']['response']['structureMap']
+            : [
+                'errno' => 'errno',
+                'msg'   => 'msg',
+                'data'  => 'data',
+                'debug' => 'debug',
+            ];
     }
 
     /**
@@ -29,10 +38,11 @@ class Result
         if ($resultCode[0] !== 0) {
             throw new \Exception('Do not use error result code by call success function');
         }
-        return (new Result())
+        (new Result())
             ->setErrno($resultCode[0])
             ->setData($data)
-            ->setMsg(!empty($msg) ? $msg : $resultCode[1]);
+            ->setMsg(!empty($msg) ? $msg : $resultCode[1])
+            ->send();
     }
 
     /**
@@ -46,9 +56,10 @@ class Result
         if ($resultCode[0] === 0) {
             throw new \Exception('Do not use success result code by call error function');
         }
-        return (new Result())
+        (new Result())
             ->setErrno($resultCode[0])
-            ->setMsg(!empty($msg) ? $msg : $resultCode[1]);
+            ->setMsg(!empty($msg) ? $msg : $resultCode[1])
+            ->send();
     }
 
     private function setErrno($errno)
@@ -57,13 +68,13 @@ class Result
         return $this;
     }
 
-    public function setMsg($msg)
+    private function setMsg($msg)
     {
         $this->msg = $msg;
         return $this;
     }
 
-    public function setData($data)
+    private function setData($data)
     {
         $this->data = $data;
         return $this;
@@ -72,7 +83,7 @@ class Result
     /**
      * Using structure map to wrap result and get it
      */
-    public function get()
+    private function get()
     {
         $result = [];
         $result[$this->structureMap['errno']] = $this->errno;
@@ -83,5 +94,15 @@ class Result
             $result[$this->structureMap['data']] = $this->data;
         }
         return $result;
+    }
+
+    /**
+     * Send response
+     */
+    private function send()
+    {
+        \App\DI()->get('response', new Response())
+            ->setData($this->get())
+            ->send();
     }
 }

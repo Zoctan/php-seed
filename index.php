@@ -96,7 +96,7 @@ class Bootstrap
     public function initUtil()
     {
         // faker data util
-        $this->di->faker = Faker\Factory::create('zh_CN');
+        $this->di->faker = Faker\Factory::create('en_US');
 
         // http client util
         $this->di->curl = new GuzzleHttp\Client();

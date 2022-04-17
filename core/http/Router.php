@@ -47,7 +47,7 @@ class Router
         $uri = $this->groupUri !== '' ? $this->groupUri . $uri : $uri;
 
         if (isset($this->routeList[$uri])) {
-            throw new RouterException('url repeat: ' . $uri);
+            throw new RouterException('Url repeat: ' . $uri);
         }
 
         // 'GET' => ['GET']
@@ -150,19 +150,19 @@ class Router
         $method = $request->getMethod();
 
         if (!isset($this->routeList[$uri])) {
-            throw new RouterException('unknown route');
+            throw new RouterException('Unknown route');
         }
 
         $route = $this->routeList[$uri];
         if (!in_array($method, $route->methods)) {
-            throw new RouterException('route method error');
+            throw new RouterException('Route method error');
         }
 
         $callback = $route->action;
         $response->setContentType($route->mimeType);
         if (is_callable($callback)) {
             // call closure function, like: $router->register('get', '/', function () { xxx });
-            $result = call_user_func($callback);
+            call_user_func($callback);
         } elseif (is_string($callback) && strpos($callback, '@') !== false) {
             // like: $router->register('get', '/', 'MemberController@list'); 
             list($controllerClass, $controllerMethod) = explode('@', $callback);
@@ -172,10 +172,9 @@ class Router
             // new class instance
             $controllerInstance = \App\DI()->newInstance($controllerClass);
             // call method
-            $result = $controllerInstance->$controllerMethod();
+            $controllerInstance->$controllerMethod();
         } else {
-            throw new RouterException('route inside error, please contract with administrator');
+            throw new RouterException('Route inside error, please contract with administrator');
         }
-        $response->setData($result->get())->send();
     }
 }

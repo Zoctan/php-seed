@@ -14,13 +14,13 @@ class File
 
     public function setBasePath($basePath)
     {
-        $this->basePath = $basePath;
+        $this->basePath = $this->platformSlashes($basePath);
         return $this;
     }
 
     public function setAbsolutePath($absolutePath)
     {
-        $this->absolutePath = $absolutePath;
+        $this->absolutePath = $this->platformSlashes($absolutePath);
         $this->init();
         $this->relativePath = $this->getRelativePath($this->absolutePath);
         return $this;
@@ -28,7 +28,7 @@ class File
 
     public function setRelativePath($relativePath)
     {
-        $this->relativePath = ltrim($relativePath, '/');
+        $this->relativePath = $this->platformSlashes(ltrim($relativePath, '/'));
         $this->init();
         $this->absolutePath = $this->getAbsolutePath($this->absolutePath);
         return $this;
@@ -71,7 +71,7 @@ class File
         // C:\\dir\demo
         // /dir/demo
         if (empty($this->basePath)) {
-            $this->basePath = $fileInfo['dirname'];
+            $this->setBasePath($fileInfo['dirname']);
         }
         // x.test.txt
         $this->fileNameWithExt = $fileInfo['basename'];
@@ -99,9 +99,13 @@ class File
         return $fileNameWithExt;
     }
 
+    public function platformSlashes($path)
+    {
+        return str_replace(['/', '\\'], '/', $path);
+    }
+
     public function download()
     {
-        // \App\debug('download', $this->absolutePath);
         if (!file_exists($this->absolutePath)) {
             header('HTTP/1.1 404 NOT FOUND');
             return false;

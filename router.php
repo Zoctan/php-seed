@@ -53,7 +53,7 @@ if ($env === 'development') {
     ->addRoute('DELETE', '/delete', 'delete');
 
   $router->addGroup('/upload', 'UploadController')
-    ->addRoute('GET', '/', 'download', ['auth' => false])
+    ->addRoute('GET', '', 'download', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/add', 'add')
     ->addRoute(['GET', 'POST', 'DELETE'], '/delete', 'delete');
 
@@ -64,7 +64,7 @@ if ($env === 'development') {
     ->addRoute('DELETE', '/delete', 'delete');
 
     $router->addGroup('/fake', 'FakeController')
-      ->addRoute('GET', '/getFakeName', 'getFakeName');
+      ->addRoute('GET', '/getName', 'getName');
 
   $router->cache($routesCachePath);
 

@@ -37,18 +37,18 @@ class AuthenticationFilter implements Filter
             $jwt = Jwt::getInstance();
             $token = $jwt->getTokenFromRequest();
             if (empty($token)) {
-                throw new AccessTokenException('empty token');
+                throw new AccessTokenException('Empty token');
                 return false;
             }
             if (!$jwt->validateTokenRedis($token)) {
-                throw new AccessTokenException('invalid token');
+                throw new AccessTokenException('Invalid token');
                 return false;
             }
             // check permission
             $needPermissionList = $this->routeList[$uri]->permission;
             $authMember = $jwt->getAuthMember($token);
             if (!$authMember->checkPermission($needPermissionList)) {
-                throw new AccessTokenException('no permission to visit this route');
+                throw new AccessTokenException('No permission to visit this route');
                 return false;
             }
             // inject authentication member

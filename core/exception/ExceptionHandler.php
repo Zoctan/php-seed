@@ -27,18 +27,21 @@ class ExceptionHandler
     {
         register_shutdown_function(function () {
             $error = error_get_last();
-            if ($error !== NULL) {
+            if (!empty($error)) {
                 $resultCode = ResultCode::FAILED;
-                // todo test
                 $errno   = $error['type'];
                 $errfile = $error['file'];
                 $errline = $error['line'];
                 $errstr  = $error['message'];
                 // Fatal error, E_ERROR === 1
-                if ($error['type'] === E_ERROR) {
-                    $msg = sprintf('%s => %s', $resultCode[1], $errstr);
+                if ($errno === E_ERROR) {
+                    if (self::$showFileLine) {
+                        $msg = sprintf('%s => %s[%s] => %s', $resultCode[1], $errfile, $errline, $errstr);
+                    } else {
+                        $msg = sprintf('%s => %s', $resultCode[1], $errstr);
+                    }
+                    Result::error($msg, $resultCode);
                 }
-                Result::error($msg, $resultCode);
             }
         });
     }

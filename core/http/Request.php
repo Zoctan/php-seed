@@ -189,7 +189,7 @@ final class Request
                         $this->data->setData($data);
                     }
                 } catch (\Exception $exception) {
-                    throw new \Exception('can not parse json data: ' . $exception->getMessage());
+                    throw new \Exception('Can not parse json data: ' . $exception->getMessage());
                 }
             }
         }

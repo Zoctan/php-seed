@@ -75,9 +75,9 @@ class Response
 
     protected int $code = 200;
 
-    protected array $header = [];
+    protected string $mimeType = MimeType::JSON;
 
-    protected string $content = '';
+    protected array $header = [];
 
     protected bool $sent = false;
 
@@ -87,9 +87,9 @@ class Response
 
     protected array $debugData = [];
 
-    protected string $mimeType = MimeType::JSON;
-
     protected array $data = [];
+
+    protected string $content = '';
 
     public function setDebug(bool $isDebug)
     {
@@ -154,18 +154,6 @@ class Response
     public function setContentType(?string $mimeType = MimeType::JSON): self
     {
         $this->appendHeader('Content-type', $mimeType);
-        return $this;
-    }
-
-    public function appendContent(?string $content): self
-    {
-        $this->content .= $content ?? '';
-        return $this;
-    }
-
-    public function setContent(?string $content): self
-    {
-        $this->content = $content ?? '';
         return $this;
     }
 
@@ -261,14 +249,13 @@ class Response
             case MimeType::TXT:
                 break;
             case MimeType::XML:
-                $this->setContent(ArrayToXml::convert($this->data));
+                $this->content = ArrayToXml::convert($this->data);
                 break;
             case MimeType::HTML:
                 break;
             default:
             case MimeType::JSON:
-                // JSON_UNESCAPED_UNICODE can encode chinese
-                $this->setContent(json_encode($this->data, JSON_UNESCAPED_UNICODE));
+                $this->content = json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
                 break;
             case MimeType::STREAM:
                 break;

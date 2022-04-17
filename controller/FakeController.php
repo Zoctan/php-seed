@@ -15,7 +15,7 @@ class FakeController extends BaseController
      * 
      * @return Result
      */
-    public function getFakeName()
+    public function getName()
     {
         $name = \App\DI()->faker->name;
         return Result::success($name);

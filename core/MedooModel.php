@@ -141,7 +141,7 @@ abstract class MedooModel
     public function __construct(array $config)
     {
         if (empty($config)) {
-            throw new DatabaseException('empty database config');
+            throw new DatabaseException('Empty database config');
         }
         $this->config = $config;
         $this->database = $config['master'][0]['database'];
@@ -414,7 +414,7 @@ abstract class MedooModel
         if (strpos($method, 'By') !== false) {
             list($method, $whereKeyString) = explode('By', $method);
             if ($whereKeyString === '') {
-                throw new DatabaseException('empty where string when using "By".');
+                throw new DatabaseException('Empty where string when using "By".');
             } else {
                 $whereKeyList = preg_split("/(?=[A-Z])/", $whereKeyString, -1, PREG_SPLIT_NO_EMPTY);
             }
