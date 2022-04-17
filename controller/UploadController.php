@@ -41,8 +41,6 @@ class UploadController extends BaseController
 
         $filePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
         $file = (new File())->setAbsolutePath($filePath);
-        // \App\debug('x', $file->getAbsolutePath());
-        // return Result::success('');
         if (!$file->download()) {
             return Result::error('Download error');
         }

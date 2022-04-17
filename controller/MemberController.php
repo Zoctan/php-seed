@@ -120,7 +120,7 @@ class MemberController extends BaseController
         if (empty($username) || empty($password)) {
             return Result::error('Username or password does not exist');
         }
-
+        
         $member = $this->memberModel->getByUsername($this->memberModel->getColumns(), $username);
 
         if (empty($member)) {

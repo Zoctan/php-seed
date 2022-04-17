@@ -28,7 +28,7 @@ class Bootstrap
     public function init()
     {
         // global exception handler
-        //ExceptionHandler::register();
+        ExceptionHandler::register();
 
         $this->initTimezone();
 

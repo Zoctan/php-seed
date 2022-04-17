@@ -16,7 +16,6 @@ class ExceptionHandler
     public static function register()
     {
         self::setFatalErrorHandler();
-        self::setErrorHandler();
         self::setExceptionHandler();
     }
 
@@ -67,21 +66,5 @@ class ExceptionHandler
             }
             Result::error($msg, $resultCode);
         });
-    }
-
-    /**
-     * Handle custom throw error
-     */
-    private static function setErrorHandler()
-    {
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-            $resultCode = ResultCode::FAILED;
-            if (self::$showFileLine) {
-                $msg = sprintf('%s => %s[%s] => %s', $resultCode[1], $errfile, $errline, $errstr);
-            } else {
-                $msg = sprintf('%s => %s', $resultCode[1], $errstr);
-            }
-            Result::error($msg, $resultCode);
-        }, E_ALL);
     }
 }
