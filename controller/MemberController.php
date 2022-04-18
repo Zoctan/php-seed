@@ -22,6 +22,10 @@ class MemberController extends BaseController
      */
     private $memberModel;
     /**
+     * @var LogModel
+     */
+    private $logModel;
+    /**
      * @var Jwt
      */
     private $jwt;

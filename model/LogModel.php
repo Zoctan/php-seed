@@ -3,7 +3,7 @@
 namespace App\Model;
 
 use App\Core\BaseModel;
-use APP\Util\Ipv4Location;
+use App\Util\Ipv4Location;
 
 /**
  * LogModel
@@ -43,10 +43,9 @@ class LogModel extends BaseModel
                 array_push($ipCity, $ipAddress[$i]);
             }
         }
-
         return $this->insert(array_merge($data, [
-            'member_id' => \App\DI()->authMember->member->id,
-            'member_username' => \App\DI()->authMember->member->username,
+            'member_id' => \App\DI()->authMember->member['id'],
+            'member_username' => \App\DI()->authMember->member['username'],
             'ip' => ip2long($ip),
             'ip_city' => implode('-', $ipCity),
         ]));
@@ -55,8 +54,8 @@ class LogModel extends BaseModel
     /**
      * Add info log
      * 
-     * @param $content
-     * @param $extra
+     * @param string $content
+     * @param object $extra
      * @return mixed id
      */
     public function asInfo($content, $extra = null)
@@ -71,8 +70,8 @@ class LogModel extends BaseModel
     /**
      * Add warn log
      * 
-     * @param $content
-     * @param $extra
+     * @param string $content
+     * @param object $extra
      * @return mixed id
      */
     public function asWarn($content, $extra = null)
@@ -87,8 +86,8 @@ class LogModel extends BaseModel
     /**
      * Add error log
      * 
-     * @param $content
-     * @param $extra
+     * @param string $content
+     * @param object $extra
      * @return mixed id
      */
     public function asError($content, $extra = null)

@@ -16,6 +16,10 @@ class PairController extends BaseController
      * @var PairModel
      */
     private $pairModel;
+    /**
+     * @var LogModel
+     */
+    private $logModel;
 
     public function __construct(PairModel $pairModel, LogModel $logModel)
     {

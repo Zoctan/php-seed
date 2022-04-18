@@ -16,6 +16,10 @@ class RuleController extends BaseController
      * @var RuleModel
      */
     private $ruleModel;
+    /**
+     * @var LogModel
+     */
+    private $logModel;
 
     public function __construct(RuleModel $ruleModel, LogModel $logModel)
     {

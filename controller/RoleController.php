@@ -22,6 +22,10 @@ class RoleController extends BaseController
      * @var RoleRuleModel
      */
     private $roleRuleModel;
+    /**
+     * @var LogModel
+     */
+    private $logModel;
 
     public function __construct(RoleModel $roleModel, RoleRuleModel $roleRuleModel, LogModel $logModel)
     {
@@ -47,9 +51,10 @@ class RoleController extends BaseController
         }
 
         $roleId = $this->roleModel->insert($role);
-        $this->logModel->asInfo(sprintf('Add [id:%d][name:%s] role.', $roleId, $role['name']));
 
         $this->roleRuleModel->updateRuleByRoleId($ruleList, $roleId);
+
+        $this->logModel->asInfo(sprintf('Add [id:%d][name:%s] role, ruleList: %s.', $roleId, $role['name'], json_encode($ruleList)));
         return Result::success($roleId);
     }
 

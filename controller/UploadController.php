@@ -16,6 +16,10 @@ class UploadController extends BaseController
     private $basePath;
     private $baseUrl;
     private $config;
+    /**
+     * @var LogModel
+     */
+    private $logModel;
 
     public function __construct(LogModel $logModel)
     {
