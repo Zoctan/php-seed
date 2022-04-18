@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Model\LogModel;
 use App\Model\RuleModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
@@ -16,10 +17,11 @@ class RuleController extends BaseController
      */
     private $ruleModel;
 
-    public function __construct(RuleModel $ruleModel)
+    public function __construct(RuleModel $ruleModel, LogModel $logModel)
     {
         parent::__construct();
         $this->ruleModel = $ruleModel;
+        $this->logModel = $logModel;
     }
 
     /**
@@ -36,7 +38,7 @@ class RuleController extends BaseController
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($description) || empty($permission)) {
-            return Result::error('Description or permission does not exist');
+            return Result::error('Description or permission does not exist.');
         }
 
         $ruleId = $this->ruleModel->insert([
@@ -44,6 +46,7 @@ class RuleController extends BaseController
             'description' => $description,
             'permission' => $permission,
         ]);
+        $this->logModel->asInfo(sprintf('Add [id:%d][permission:%s] rule.', $ruleId, $permission));
 
         return Result::success($ruleId);
     }
@@ -75,11 +78,12 @@ class RuleController extends BaseController
     {
         $ruleList = (array) $this->request->get('ruleList');
         if (empty($ruleList)) {
-            return Result::error('RuleList does not exist');
+            return Result::error('RuleList does not exist.');
         }
         foreach ($ruleList as $rule) {
             $this->ruleModel->updateById($rule, $rule['id']);
         }
+        $this->logModel->asInfo(sprintf('Update rule list: %s.', json_encode($ruleList)));
         return Result::success();
     }
 
@@ -97,16 +101,17 @@ class RuleController extends BaseController
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($ruleId)) {
-            return Result::error('Rule id does not exist');
+            return Result::error('Rule id does not exist.');
         }
         if (empty($description) && empty($permission)) {
-            return Result::error('Description and permission does not exist');
+            return Result::error('Description and permission does not exist.');
         }
 
         $this->ruleModel->updateById([
             'description' => $description,
             'permission' => $permission,
         ], $ruleId);
+        $this->logModel->asInfo(sprintf('Update [id:%d][permission:%s] rule.', $ruleId, $permission));
         return Result::success();
     }
 
@@ -120,11 +125,12 @@ class RuleController extends BaseController
     {
         $ruleIdList = (array) $this->request->get('ruleIdList');
         if (empty($ruleIdList)) {
-            return Result::error('Rule id list does not exist');
+            return Result::error('Rule id list does not exist.');
         }
         foreach ($ruleIdList as $id) {
             $this->ruleModel->deleteById($id);
         }
+        $this->logModel->asInfo(sprintf('Delete rule list by id list: %s.', json_encode($ruleIdList)));
         return Result::success();
     }
 
@@ -138,9 +144,10 @@ class RuleController extends BaseController
     {
         $ruleId = intval($this->request->get('id'));
         if (empty($ruleId)) {
-            return Result::error('Rule id does not exist');
+            return Result::error('Rule id does not exist.');
         }
         $this->ruleModel->deleteById($ruleId);
+        $this->logModel->asInfo(sprintf('Delete [id:%d] rule.', $ruleId));
         return Result::success();
     }
 }

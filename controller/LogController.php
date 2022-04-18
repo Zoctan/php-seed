@@ -27,9 +27,7 @@ class LogController extends BaseController
      * 
      * @param int currentPage
      * @param int pageSize
-     * @param int level
-     * @param string content
-     * @param string created_at
+     * @param object log {level:int, content:string, created_at:string}
      * @return Result
      */
     public function list()
@@ -37,31 +35,21 @@ class LogController extends BaseController
         $currentPage = intval($this->request->get('currentPage', 0));
         $pageSize = intval($this->request->get('pageSize', 20));
 
-        $level = intval($this->request->get('level'));
-        $content = strval($this->request->get('content'));
-        $created_at = strval($this->request->get('created_at'));
+        $log = $this->request->get('log');
 
         $where = [];
-        if (is_numeric($level)) {
-            $where['level'] = $level;
+        if ($log) {
+            if (isset($log['level']) && is_numeric($log['level'])) {
+                $where['level'] = $log['level'];
+            }
+            if (isset($log['content'])) {
+                $where['content[~]'] = $log['content'];
+            }
+            if (isset($log['created_at'])) {
+                $where['created_at'] = $log['created_at'];
+            }
         }
-        if (!empty($content)) {
-            $where['content[~]'] = $content;
-        }
-        if (!empty($created_at)) {
-            $where['created_at'] = $created_at;
-        }
-
-        $result =  $this->logModel->page($currentPage, $pageSize, [
-            'id [Int]',
-            'member_id [Int]',
-            'level [Int]',
-            'content',
-            'ip',
-            'ip_city',
-            'extra [JSON]',
-            'created_at',
-        ], $where);
+        $result = $this->logModel->page($currentPage, $pageSize, $this->logModel->getColumns(), $where);
         return Result::success($result);
     }
 
@@ -75,7 +63,7 @@ class LogController extends BaseController
     {
         $logId = intval($this->request->get('id'));
         if (empty($logId)) {
-            return Result::error('Log id does not exist');
+            return Result::error('Log id does not exist.');
         }
         $this->logModel->deleteById($logId);
         return Result::success();

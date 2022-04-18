@@ -15,6 +15,7 @@ class LogModel extends BaseModel
     protected $columns = [
         'id' => 'id [Int]',
         'member_id' => 'member_id [Int]',
+        'member_username' => 'member_username',
         'level' => 'level [Int]',
         'content' => 'content',
         'ip' => 'ip [Int]',
@@ -44,8 +45,8 @@ class LogModel extends BaseModel
         }
 
         return $this->insert(array_merge($data, [
-            'member_id' => \App\DI()->authMember->id,
-            'member_name' => \App\DI()->authMember->nickname,
+            'member_id' => \App\DI()->authMember->member->id,
+            'member_username' => \App\DI()->authMember->member->username,
             'ip' => ip2long($ip),
             'ip_city' => implode('-', $ipCity),
         ]));
@@ -63,7 +64,7 @@ class LogModel extends BaseModel
         return $this->add([
             'level' => 0,
             'content' => $content,
-            'extra' => $extra,
+            'extra [JSON]' => $extra,
         ]);
     }
 
@@ -79,7 +80,7 @@ class LogModel extends BaseModel
         return $this->add([
             'level' => 1,
             'content' => $content,
-            'extra' => $extra,
+            'extra [JSON]' => $extra,
         ]);
     }
 
@@ -95,7 +96,7 @@ class LogModel extends BaseModel
         return $this->add([
             'level' => 2,
             'content' => $content,
-            'extra' => $extra,
+            'extra [JSON]' => $extra,
         ]);
     }
 }

@@ -4,12 +4,11 @@ namespace App\Controller;
 
 use App\Util\Util;
 use App\Util\Jwt;
+use App\Model\LogModel;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
 use App\Core\BaseController;
-use App\Core\Exception\AccessTokenException;
-use App\Core\Exception\RefreshTokenException;
 use App\Core\Result\Result;
 use App\Core\Result\ResultCode;
 
@@ -27,10 +26,11 @@ class MemberController extends BaseController
      */
     private $jwt;
 
-    public function __construct(MemberModel $memberModel)
+    public function __construct(MemberModel $memberModel, LogModel $logModel)
     {
         parent::__construct();
         $this->memberModel = $memberModel;
+        $this->logModel = $logModel;
         $this->jwt = Jwt::getInstance();
     }
 
@@ -44,12 +44,12 @@ class MemberController extends BaseController
     {
         $username = strval($this->request->get('username'));
         if (empty($username)) {
-            return Result::error('Username does not exist');
+            return Result::error('Username does not exist.');
         }
 
         $existMember = $this->memberModel->countByUsername($username) === 1;
         if ($existMember) {
-            return Result::error('Username already exists');
+            return Result::error('Username already existed.');
         }
 
         // other attributions that can find the unique member
@@ -68,14 +68,14 @@ class MemberController extends BaseController
     {
         $oldPassword = strval($this->request->get('oldPassword'));
         if (empty($oldPassword)) {
-            return Result::error('Old password does not exist');
+            return Result::error('Old password does not exist.');
         }
 
         $memberId = $this->authMember->member['id'];
         $member = $this->memberModel->getById(['password'], $memberId);
 
         if (!$this->memberModel->verifyPassword($oldPassword, $member['password'])) {
-            return Result::error('Old password error');
+            return Result::error('Old password error.');
         }
         return Result::success();
     }
@@ -92,7 +92,7 @@ class MemberController extends BaseController
         $username = strval($this->request->get('username'));
         $password = strval($this->request->get('password'));
         if (empty($username) || empty($password)) {
-            return Result::error('Username or password does not exist');
+            return Result::error('Username or password does not exist.');
         }
 
         $memberId = $this->memberModel->add([
@@ -118,21 +118,22 @@ class MemberController extends BaseController
         $username = strval($this->request->get('username'));
         $password = strval($this->request->get('password'));
         if (empty($username) || empty($password)) {
-            return Result::error('Username or password does not exist');
+            return Result::error('Username or password does not exist.');
         }
-        
+
         $member = $this->memberModel->getByUsername($this->memberModel->getColumns(), $username);
 
         if (empty($member)) {
             return Result::error('Username error');
         }
         if (!$this->memberModel->verifyPassword($password, $member['password'])) {
-            return Result::error('Password error');
+            $this->logModel->asInfo('Try login, but password error.');
+            return Result::error('Password error.');
         }
         if ($member['status'] !== 1) {
-            return Result::error('Member status error');
+            return Result::error('Member status error.');
         }
-        
+
         $this->memberModel->updateLoginedAtById($member['id']);
 
         $result = $this->jwt->sign($member['id']);
@@ -164,11 +165,11 @@ class MemberController extends BaseController
         // if use POST or GET data, make sure the access token had been changed when refresh token
         $accessToken = $this->jwt->getTokenFromRequest();
         if (empty($accessToken)) {
-            return Result::error('AccessToken does not exist', ResultCode::ACCESS_TOKEN_EXCEPTION);
+            return Result::error('AccessToken does not exist.', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
         $accessTokenValidation = $this->jwt->validateTokenRedis($accessToken);
         if (!$accessTokenValidation) {
-            return Result::error('Invalid accessToken', ResultCode::ACCESS_TOKEN_EXCEPTION);
+            return Result::error('Invalid accessToken.', ResultCode::ACCESS_TOKEN_EXCEPTION);
         }
         return Result::success();
     }
@@ -178,32 +179,34 @@ class MemberController extends BaseController
      * 
      * @return Result
      */
-    public function refreshToken()
+    public function refreshAccessToken()
     {
         // Check old access token
         $oldAccessToken = $this->jwt->getTokenFromRequest();
         if (empty($oldAccessToken)) {
-            return Result::error('Old accessToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            return Result::error('Old accessToken does not exist.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $oldAuthMember = $this->jwt->getAuthMember($oldAccessToken);
         if (empty($oldAuthMember) || empty($oldAuthMember->member['id'])) {
-            return Result::error('Old authMember does not exist, old accessToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            return Result::error('Old authMember does not exist, old accessToken error.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // Check refresh token
         $refreshToken = strval($this->request->get('refreshToken'));
         if (empty($refreshToken)) {
-            return Result::error('RefreshToken does not exist', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            return Result::error('RefreshToken does not exist.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         if (!$this->jwt->validateToken($refreshToken)) {
-            return Result::error('Invalid refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            return Result::error('Invalid refreshToken.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $authMember = $this->jwt->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            return Result::error('New authMember does not exist, refreshToken error', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            $this->logModel->asInfo('Try refresh access token, but refreshToken error.');
+            return Result::error('New authMember does not exist, refreshToken error.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            return Result::error('AccessToken does not match the refreshToken', ResultCode::REFRESH_TOKEN_EXCEPTION);
+            $this->logModel->asInfo('Try refresh access token, but accessToken does not match the refreshToken.');
+            return Result::error('AccessToken does not match the refreshToken.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $result = $this->jwt->signAccessToken($authMember->member['id']);
         return Result::success($result);
@@ -219,7 +222,7 @@ class MemberController extends BaseController
     {
         $memberId = intval($this->request->get('id'));
         if (empty($memberId)) {
-            return Result::error('Member id does not exist');
+            return Result::error('Member id does not exist.');
         }
 
         $member = $this->memberModel->getById(
@@ -227,7 +230,7 @@ class MemberController extends BaseController
             $memberId
         );
         if (empty($member)) {
-            return Result::error('Id error, member does not exist');
+            return Result::error('Id error, member does not exist.');
         }
 
         $memberDataModel = new MemberDataModel();
@@ -276,14 +279,14 @@ class MemberController extends BaseController
         $memberRoleModel = new MemberRoleModel();
 
         $conditionList = [];
-        // 先查询其他表，根据其他表的结果再查主表
+        // select addition table first, and select main table second
         $memberDataList = [];
         if ($memberData) {
             $memberDataWhere = [];
-            if (!empty($memberData['nickname'])) {
+            if (isset($memberData['nickname'])) {
                 $memberDataWhere['nickname[~]'] = $memberData['nickname'];
             }
-            if (is_numeric($memberData['gender'])) {
+            if (isset($memberData['gender']) && is_numeric($memberData['gender'])) {
                 $memberDataWhere['gender'] = $memberData['gender'];
             }
 
@@ -301,7 +304,7 @@ class MemberController extends BaseController
         $memberRoleList = [];
         if ($role) {
             $memberRoleWhere = [];
-            if (is_numeric($role['id'])) {
+            if (isset($role['id']) && is_numeric($role['id'])) {
                 $memberRoleWhere['role_id'] = $role['id'];
             }
 
@@ -319,10 +322,10 @@ class MemberController extends BaseController
         $memberList = [];
         if ($member) {
             $memberWhere = [];
-            if (!empty($member['username'])) {
+            if (isset($member['username'])) {
                 $memberWhere['username[~]'] = $member['username'];
             }
-            if (is_numeric($member['status'])) {
+            if (isset($member['status']) && is_numeric($member['status'])) {
                 $memberWhere['status'] = $member['status'];
             }
 
@@ -337,9 +340,9 @@ class MemberController extends BaseController
                 array_push($conditionList, Util::getValueList('member_id', $memberList));
             }
         }
-        \App\debug('memberDataList', $memberDataList);
-        \App\debug('memberRoleList', $memberRoleList);
-        \App\debug('memberList', $memberList);
+        // \App\debug('memberDataList', $memberDataList);
+        // \App\debug('memberRoleList', $memberRoleList);
+        // \App\debug('memberList', $memberList);
         // all subsets make intersect
         $memberPageWhere = [];
         if (!empty($conditionList)) {
@@ -388,8 +391,9 @@ class MemberController extends BaseController
     {
         $password = strval($this->request->get('password'));
         if (empty($password)) {
-            return Result::error('Password does not exist');
+            return Result::error('Password does not exist.');
         }
+        $this->logModel->asInfo('Update password.');
         $memberId = $this->authMember->member['id'];
         $this->memberModel->updateById(['password' => $password], $memberId);
         return Result::success();
@@ -407,6 +411,7 @@ class MemberController extends BaseController
         if (empty($profile)) {
             return Result::error('Profile does not exist');
         }
+        $this->logModel->asInfo('Update profile.');
         $memberId = $this->authMember->member['id'];
         $this->memberModel->updateById($profile, $memberId);
         return Result::success();
@@ -425,9 +430,10 @@ class MemberController extends BaseController
         $member = $this->request->get('member');
         $memberData = $this->request->get('memberData');
         if (empty($member) || empty($memberData)) {
-            return Result::error('Member or memberData does not exist');
+            return Result::error('Member or memberData does not exist.');
         }
         if (!empty($member)) {
+            $this->logModel->asInfo(sprintf('Update [id:%d][username:%s] detail.', $member['id'], $member['username']));
             $this->memberModel->update($member, $member['id']);
         }
         if (!empty($memberData)) {
@@ -451,9 +457,10 @@ class MemberController extends BaseController
         $memberData = $this->request->get('memberData');
         $role = $this->request->get('role');
         if (empty($member)) {
-            return Result::error('Member does not exist');
+            return Result::error('Member does not exist.');
         }
         $memberId = $this->memberModel->add($member);
+        $this->logModel->asInfo(sprintf('Add [id:%d][username:%s] member.', $member['id'], $member['username']));
         if (!empty($memberData)) {
             $memberDataModel = new MemberDataModel();
             $memberDataModel->updateByMember_id($memberData, $memberId);
@@ -475,9 +482,11 @@ class MemberController extends BaseController
     {
         $memberId = intval($this->request->get('id'));
         if (empty($memberId)) {
-            return Result::error('Member id does not exist');
+            return Result::error('Member id does not exist.');
         }
         $this->memberModel->deleteById($memberId);
+        $this->logModel->asInfo(sprintf('Delete [id:%d] member.', $memberId));
+
         $memberDataModel = new MemberDataModel();
         $memberDataModel->deleteByMember_id($memberId);
 

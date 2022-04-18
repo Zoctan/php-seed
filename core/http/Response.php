@@ -2,9 +2,8 @@
 
 namespace App\Core\Http;
 
-use App\Core\Response\MimeType;
-use App\Core\Response\ResponseType;
 use App\Util\ArrayToXml;
+use App\Core\Response\MimeType;
 
 class Response
 {
@@ -255,7 +254,7 @@ class Response
                 break;
             default:
             case MimeType::JSON:
-                $this->content = json_encode($this->data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                $this->content = json_encode($this->data);
                 break;
             case MimeType::STREAM:
                 break;

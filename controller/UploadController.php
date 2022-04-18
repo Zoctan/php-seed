@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Util\Util;
 use App\Util\File;
+use App\Model\LogModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
 
@@ -16,12 +17,13 @@ class UploadController extends BaseController
     private $baseUrl;
     private $config;
 
-    public function __construct()
+    public function __construct(LogModel $logModel)
     {
         parent::__construct();
         $this->basePath = \App\DI()->config['basePath'];
         $this->baseUrl = \App\DI()->config['baseUrl'];
         $this->config = \App\DI()->config['upload'];
+        $this->logModel = $logModel;
     }
 
     /**
@@ -36,13 +38,13 @@ class UploadController extends BaseController
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return Result::error('Filename or type does not exist');
+            return Result::error('Filename or type does not exist.');
         }
 
         $filePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
         $file = (new File())->setAbsolutePath($filePath);
         if (!$file->download()) {
-            return Result::error('Download error');
+            return Result::error('Download error.');
         }
     }
 
@@ -112,21 +114,22 @@ class UploadController extends BaseController
             $fileTmp = $item['tmp_name'];
 
             if ($this->config[$type]['minKB'] > $fileSizeKB) {
-                return Result::error('File is too smaller: ' . $fileSizeKB . ', min limit: ' . $this->config[$type]['minKB']);
+                return Result::error(sprintf('File is too smaller: %d, min limit: %d', $fileSizeKB, $this->config[$type]['minKB']));
             }
             if ($this->config[$type]['maxKB'] < $fileSizeKB) {
-                return Result::error('File is too bigger: ' . $fileSizeKB . ', max limit: ' . $this->config[$type]['maxKB']);
+                return Result::error(sprintf('File is too bigger: %d, max limit: %d', $fileSizeKB, $this->config[$type]['maxKB']));
             }
 
             // wrap file
             $file = (new File())->setAbsolutePath($fileTmp);
             // check file type
             if ($file->mimeType !== false && !in_array($file->mimeType, $this->config[$type]['allowMimeType'])) {
-                return Result::error('File type not allow: ' . $file->mimeType . ', allow type: ' . json_encode($this->config[$type]['allowMimeType']));
+                return Result::error(sprintf('File type not allow: %d, allow type: %s', $file->mimeType, json_encode($this->config[$type]['allowMimeType'])));
             }
 
-            // upload fail
+            // upload failed
             if (!is_uploaded_file($fileTmp)) {
+                $this->logModel->asInfo(sprintf('Upload file failed: %s.', $fileNameWithExt));
                 array_push($failList, $fileNameWithExt);
                 continue;
             }
@@ -188,12 +191,13 @@ class UploadController extends BaseController
                     // splice visit url
                     'url' => sprintf('%s?file=%s', $uploadUrl, $fileNameWithExt),
                 ];
+                $this->logModel->asInfo(sprintf('Upload file success: %s.', $fileNameWithExt));
                 array_push($successList, $data);
             }
         }
 
         if (count($successList) === 0) {
-            return Result::error('Upload failed: ' . json_encode($failList));
+            return Result::error(sprintf('Upload failed: %s', json_encode($failList)));
         }
         return Result::success($successList);
     }
@@ -210,16 +214,18 @@ class UploadController extends BaseController
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return Result::error('Filename or type does not exist');
+            return Result::error('Filename or type does not exist.');
         }
 
         $localUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
         if (!file_exists($localUploadFile)) {
-            return Result::error('File does not exist');
+            return Result::error('File does not exist.');
         }
         if (!unlink($localUploadFile)) {
-            return Result::error('Delete failed');
+            $this->logModel->asInfo(sprintf('Delete file failed: %s.', $filename));
+            return Result::error('Delete failed.');
         }
+        $this->logModel->asInfo(sprintf('Delete file success: %s.', $filename));
         return Result::success();
     }
 }

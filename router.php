@@ -24,7 +24,7 @@ if ($env === 'development') {
     ->addRoute(['GET', 'POST'], '/login', 'login', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/validateAccessToken', 'validateAccessToken', ['auth' => false])
     ->addRoute('DELETE', '/logout', 'logout', ['auth' => false])
-    ->addRoute('PUT', '/refreshToken', 'refreshToken', ['auth' => false])
+    ->addRoute('PUT', '/refreshAccessToken', 'refreshAccessToken', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/detail', 'detail')
     ->addRoute(['GET', 'POST'], '/profile', 'profile')
     ->addRoute('POST', '/list', 'list', ['permission' => ['member:list']])
@@ -63,8 +63,12 @@ if ($env === 'development') {
     ->addRoute('PUT', '/update', 'update')
     ->addRoute('DELETE', '/delete', 'delete');
 
-    $router->addGroup('/fake', 'FakeController')
-      ->addRoute('GET', '/getName', 'getName');
+  $router->addGroup('/log', 'LogController')
+    ->addRoute('POST', '/list', 'list')
+    ->addRoute('DELETE', '/delete', 'delete');
+
+  $router->addGroup('/fake', 'FakeController')
+    ->addRoute('GET', '/getName', 'getName');
 
   $router->cache($routesCachePath);
 
