@@ -29,6 +29,23 @@ class RuleController extends BaseController
     }
 
     /**
+     * List rule
+     * 
+     * @return Result
+     */
+    public function list()
+    {
+        $ruleList = [];
+        $this->ruleModel->select(
+            $this->ruleModel->getColumns(),
+            function ($rule) use (&$ruleList) {
+                $ruleList[] = $rule;
+            }
+        );
+        return Result::success($ruleList);
+    }
+
+    /**
      * Add rule
      * 
      * @param int parent_id
@@ -53,23 +70,6 @@ class RuleController extends BaseController
         $this->logModel->asInfo(sprintf('Add [id:%d][permission:%s] rule.', $ruleId, $permission));
 
         return Result::success($ruleId);
-    }
-
-    /**
-     * List rule
-     * 
-     * @return Result
-     */
-    public function list()
-    {
-        $ruleList = [];
-        $this->ruleModel->select(
-            $this->ruleModel->getColumns(),
-            function ($rule) use (&$ruleList) {
-                $ruleList[] = $rule;
-            }
-        );
-        return Result::success($ruleList);
     }
 
     /**

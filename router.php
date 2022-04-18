@@ -35,18 +35,18 @@ if ($env === 'development') {
     ->addRoute('DELETE', '/delete', 'delete');
 
   $router->addGroup('/role', 'RoleController')
-    ->addRoute('POST', '/add', 'add')
     ->addRoute('POST', '/list', 'list')
     ->addRoute('POST', '/listParent', 'listParent')
     ->addRoute(['GET', 'POST'], '/detail', 'detail')
+    ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/update', 'update')
     ->addRoute('DELETE', '/delete', 'delete')
     ->addRoute('POST', '/addMemberRole', 'addMemberRole')
     ->addRoute('DELETE', '/deleteMemberRole', 'deleteMemberRole');
 
   $router->addGroup('/rule', 'RuleController')
-    ->addRoute('POST', '/add', 'add')
     ->addRoute('POST', '/list', 'list')
+    ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/updateList', 'updateList')
     ->addRoute('PUT', '/update', 'update')
     ->addRoute('DELETE', '/deleteList', 'deleteList')
@@ -58,6 +58,7 @@ if ($env === 'development') {
     ->addRoute(['GET', 'POST', 'DELETE'], '/delete', 'delete');
 
   $router->addGroup('/pair', 'PairController')
+    ->addRoute('POST', '/list', 'list')
     ->addRoute('POST', '/getValue', 'getValue')
     ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/update', 'update')

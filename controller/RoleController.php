@@ -36,29 +36,6 @@ class RoleController extends BaseController
     }
 
     /**
-     * Add role
-     * 
-     * @param object role
-     * @param object ruleList
-     * @return Result
-     */
-    public function add()
-    {
-        $role = $this->request->get('role');
-        $ruleList = $this->request->get('ruleList');
-        if (empty($role)) {
-            return Result::error('Role does not exist.');
-        }
-
-        $roleId = $this->roleModel->insert($role);
-
-        $this->roleRuleModel->updateRuleByRoleId($ruleList, $roleId);
-
-        $this->logModel->asInfo(sprintf('Add [id:%d][name:%s] role, ruleList: %s.', $roleId, $role['name'], json_encode($ruleList)));
-        return Result::success($roleId);
-    }
-
-    /**
      * List role
      * 
      * @param int currentPage
@@ -99,6 +76,22 @@ class RoleController extends BaseController
     }
 
     /**
+     * List parent role
+     * 
+     * @param int parentId
+     * @return Result
+     */
+    public function listParent()
+    {
+        $parentId = intval($this->request->get('parentId'));
+        if (empty($parentId)) {
+            return Result::error('Parent id does not exist.');
+        }
+        $parentList = $this->roleModel->listParentByParentId($parentId, $this->roleModel->getColumns());
+        return Result::success($parentList);
+    }
+
+    /**
      * Get role and rule list by id
      * 
      * @param int id
@@ -125,19 +118,26 @@ class RoleController extends BaseController
     }
 
     /**
-     * List parent role
+     * Add role
      * 
-     * @param int parentId
+     * @param object role
+     * @param object ruleList
      * @return Result
      */
-    public function listParent()
+    public function add()
     {
-        $parentId = intval($this->request->get('parentId'));
-        if (empty($parentId)) {
-            return Result::error('Parent id does not exist.');
+        $role = $this->request->get('role');
+        $ruleList = $this->request->get('ruleList');
+        if (empty($role)) {
+            return Result::error('Role does not exist.');
         }
-        $parentList = $this->roleModel->listParentByParentId($parentId, $this->roleModel->getColumns());
-        return Result::success($parentList);
+
+        $roleId = $this->roleModel->insert($role);
+
+        $this->roleRuleModel->updateRuleByRoleId($ruleList, $roleId);
+
+        $this->logModel->asInfo(sprintf('Add [id:%d][name:%s] role, ruleList: %s.', $roleId, $role['name'], json_encode($ruleList)));
+        return Result::success($roleId);
     }
 
     /**

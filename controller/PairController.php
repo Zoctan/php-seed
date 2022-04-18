@@ -29,6 +29,37 @@ class PairController extends BaseController
     }
 
     /**
+     * List pair
+     * 
+     * @param int currentPage
+     * @param int pageSize
+     * @param object pair {description:string, key:string, value:string}
+     * @return Result
+     */
+    public function list()
+    {
+        $currentPage = intval($this->request->get('currentPage', 0));
+        $pageSize = intval($this->request->get('pageSize', 20));
+
+        $pair = $this->request->get('pair');
+
+        $where = [];
+        if ($pair) {
+            if (isset($pair['description'])) {
+                $where['description[~]'] = $pair['description'];
+            }
+            if (isset($pair['key'])) {
+                $where['key[~]'] = $pair['key'];
+            }
+            if (isset($pair['value'])) {
+                $where['value[~]'] = $pair['value'];
+            }
+        }
+        $result = $this->pairModel->page($currentPage, $pageSize, $this->pairModel->getColumns(), $where);
+        return Result::success($result);
+    }
+
+    /**
      * Get Value by key
      * 
      * @param string key
