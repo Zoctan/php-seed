@@ -67,7 +67,7 @@ class RuleController extends BaseController
             'description' => $description,
             'permission' => $permission,
         ]);
-        $this->logModel->asInfo(sprintf('Add [id:%d][permission:%s] rule.', $ruleId, $permission));
+        $this->logModel->asInfo(sprintf('Add rule: [id:%d][permission:%s].', $ruleId, $permission));
 
         return Result::success($ruleId);
     }
@@ -115,17 +115,17 @@ class RuleController extends BaseController
             'description' => $description,
             'permission' => $permission,
         ], $ruleId);
-        $this->logModel->asInfo(sprintf('Update [id:%d][permission:%s] rule.', $ruleId, $permission));
+        $this->logModel->asInfo(sprintf('Update rule: [id:%d][permission:%s].', $ruleId, $permission));
         return Result::success();
     }
 
     /**
-     * Delete rule list by rule id list
+     * Remove rule list by rule id list
      * 
      * @param array ruleIdList
      * @return Result
      */
-    public function deleteList()
+    public function removeList()
     {
         $ruleIdList = (array) $this->request->get('ruleIdList');
         if (empty($ruleIdList)) {
@@ -134,24 +134,24 @@ class RuleController extends BaseController
         foreach ($ruleIdList as $id) {
             $this->ruleModel->deleteById($id);
         }
-        $this->logModel->asInfo(sprintf('Delete rule list by id list: %s.', json_encode($ruleIdList)));
+        $this->logModel->asInfo(sprintf('Remove rule list by id list: %s.', json_encode($ruleIdList)));
         return Result::success();
     }
 
     /**
-     * Delete rule by id
+     * Remove rule by id
      * 
      * @param int id
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $ruleId = intval($this->request->get('id'));
         if (empty($ruleId)) {
             return Result::error('Rule id does not exist.');
         }
         $this->ruleModel->deleteById($ruleId);
-        $this->logModel->asInfo(sprintf('Delete [id:%d] rule.', $ruleId));
+        $this->logModel->asInfo(sprintf('Remove rule: [id:%d].', $ruleId));
         return Result::success();
     }
 }

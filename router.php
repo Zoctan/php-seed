@@ -32,7 +32,7 @@ if ($env === 'development') {
     ->addRoute('PUT', '/updateProfile', 'updateProfile')
     ->addRoute('PUT', '/updateDetail', 'updateDetail')
     ->addRoute('POST', '/add', 'add')
-    ->addRoute('DELETE', '/delete', 'delete');
+    ->addRoute('DELETE', '/remove', 'remove');
 
   $router->addGroup('/role', 'RoleController')
     ->addRoute('POST', '/list', 'list')
@@ -40,33 +40,33 @@ if ($env === 'development') {
     ->addRoute(['GET', 'POST'], '/detail', 'detail')
     ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/update', 'update')
-    ->addRoute('DELETE', '/delete', 'delete')
+    ->addRoute('DELETE', '/remove', 'remove')
     ->addRoute('POST', '/addMemberRole', 'addMemberRole')
-    ->addRoute('DELETE', '/deleteMemberRole', 'deleteMemberRole');
+    ->addRoute('DELETE', '/removeMemberRole', 'removeMemberRole');
 
   $router->addGroup('/rule', 'RuleController')
     ->addRoute('POST', '/list', 'list')
     ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/updateList', 'updateList')
     ->addRoute('PUT', '/update', 'update')
-    ->addRoute('DELETE', '/deleteList', 'deleteList')
-    ->addRoute('DELETE', '/delete', 'delete');
+    ->addRoute('DELETE', '/removeList', 'removeList')
+    ->addRoute('DELETE', '/remove', 'remove');
 
   $router->addGroup('/upload', 'UploadController')
     ->addRoute('GET', '', 'download', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/add', 'add')
-    ->addRoute(['GET', 'POST', 'DELETE'], '/delete', 'delete');
+    ->addRoute(['GET', 'POST', 'DELETE'], '/remove', 'remove');
 
   $router->addGroup('/pair', 'PairController')
     ->addRoute('POST', '/list', 'list')
     ->addRoute('POST', '/getValue', 'getValue')
     ->addRoute('POST', '/add', 'add')
     ->addRoute('PUT', '/update', 'update')
-    ->addRoute('DELETE', '/delete', 'delete');
+    ->addRoute('DELETE', '/remove', 'remove');
 
   $router->addGroup('/log', 'LogController')
     ->addRoute('POST', '/list', 'list')
-    ->addRoute('DELETE', '/delete', 'delete');
+    ->addRoute('DELETE', '/remove', 'remove');
 
   $router->addGroup('/fake', 'FakeController')
     ->addRoute('GET', '/getName', 'getName');

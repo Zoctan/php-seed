@@ -37,8 +37,8 @@ class Route
 
     /**
      * permission list
-     * and: ['article:add', 'article:delete'] or [ 'joint' => 'and', 'list' => ['article:add', 'article:delete'] ]
-     * or:  [ 'joint' => 'or', 'list' => ['article:add', 'article:delete'] ]
+     * and: ['article:add', 'article:remove'] or [ 'joint' => 'and', 'list' => ['article:add', 'article:remove'] ]
+     * or:  [ 'joint' => 'or', 'list' => ['article:add', 'article:remove'] ]
      * 
      * @var array
      */

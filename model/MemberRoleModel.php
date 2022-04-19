@@ -72,7 +72,7 @@ class MemberRoleModel extends BaseModel
         foreach ($ruleTree as $rule) {
             if (isset($rule['children'])) {
                 foreach ($rule['children'] as $child) {
-                    // [resource]:[handle], like: member:add, member:delete
+                    // [resource]:[handle], like: member:add, member:remove
                     array_push($permissionList, sprintf('%s:%s', $rule['permission'], $child['permission']));
                 }
             }

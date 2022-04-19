@@ -136,7 +136,7 @@ class RoleController extends BaseController
 
         $this->roleRuleModel->updateRuleByRoleId($ruleList, $roleId);
 
-        $this->logModel->asInfo(sprintf('Add [id:%d][name:%s] role, ruleList: %s.', $roleId, $role['name'], json_encode($ruleList)));
+        $this->logModel->asInfo(sprintf('Add role: [id:%d][name:%s], ruleList: %s.', $roleId, $role['name'], json_encode($ruleList)));
         return Result::success($roleId);
     }
 
@@ -153,7 +153,7 @@ class RoleController extends BaseController
             return Result::error('Role does not exist.');
         }
         $ruleList = $this->request->get('ruleList');
-        $this->logModel->asInfo(sprintf('Update [id:%d][name:%s] role, ruleList: %s.', $role['id'], $role['name'], json_encode($ruleList)));
+        $this->logModel->asInfo(sprintf('Update role: [id:%d][name:%s], ruleList: %s.', $role['id'], $role['name'], json_encode($ruleList)));
 
         $this->roleModel->updateById($role, $role['id']);
         $this->roleRuleModel->updateRuleByRoleId($ruleList, $role['id']);
@@ -161,19 +161,19 @@ class RoleController extends BaseController
     }
 
     /**
-     * Delete role by id
+     * Remove role by id
      * 
      * @param int id
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $roleId = intval($this->request->get('id'));
         if (empty($roleId)) {
             return Result::error('Role id does not exist.');
         }
         $this->roleModel->deleteById($roleId);
-        $this->logModel->asInfo(sprintf('Delete [id:%d] role.', $roleId));
+        $this->logModel->asInfo(sprintf('Remove role: [id:%d].', $roleId));
         return Result::success();
     }
 
@@ -193,19 +193,19 @@ class RoleController extends BaseController
         }
         $memberRoleModel = new MemberRoleModel();
         $memberRoleId = $memberRoleModel->insert(['member_id' => $memberId, 'role_id' => $roleId]);
-        $this->logModel->asInfo(sprintf('Add [id:%d][memberId:%d][roleId:%d] memberRole.', $memberRoleId, $memberId, $roleId));
+        $this->logModel->asInfo(sprintf('Add memberRole: [id:%d][memberId:%d][roleId:%d].', $memberRoleId, $memberId, $roleId));
         $role = $this->roleModel->getById($this->roleModel->getColumns(), $roleId);
         return Result::success($role);
     }
 
     /**
-     * Delete member role
+     * Remove member role
      * 
      * @param int memberId
      * @param int roleId
      * @return Result
      */
-    public function deleteMemberRole()
+    public function removeMemberRole()
     {
         $memberId = intval($this->request->get('memberId'));
         $roleId = intval($this->request->get('roleId'));
@@ -214,7 +214,7 @@ class RoleController extends BaseController
         }
         $memberRoleModel = new MemberRoleModel();
         $memberRoleModel->deleteByMember_idRole_id([$memberId, $roleId]);
-        $this->logModel->asInfo(sprintf('Delete [memberId:%d][roleId:%d] memberRole.', $memberId, $roleId));
+        $this->logModel->asInfo(sprintf('Remove memberRole: [memberId:%d][roleId:%d].', $memberId, $roleId));
         return Result::success();
     }
 }

@@ -30,7 +30,7 @@ class RoleRuleModel extends BaseModel
     {
         // list old rule first
         $oldRuleList = $this->selectByRole_id($this->getColumns(), $roleId);
-        $oldRuleIdList = Util::getValueList('rule_id', $oldRuleList);
+        $oldRuleIdList = Util::getValueAsListByKey('rule_id', $oldRuleList);
 
         // in old list, but not in new list, delete:
         // oldRuleIdList: [1, 2, 3, 4, 5]

@@ -129,7 +129,7 @@ return [
         // refresh time (minute): can get new access token in this period
         'refreshMinutes' => 1440,
         // expires time (minute)
-        'expiresMinutes' => 1,
+        'expiresMinutes' => 30,
         // private key
         'signingKey' => $basePath . '/rsa/private-key.pem',
         // public key

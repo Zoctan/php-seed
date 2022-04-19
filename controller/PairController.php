@@ -62,12 +62,12 @@ class PairController extends BaseController
     /**
      * Get Value by key
      * 
-     * @param string key
+     * @param string|array key
      * @return Result
      */
     public function getValue()
     {
-        $key = strval($this->request->get('key'));
+        $key = $this->request->get('key');
         if (empty($key)) {
             return Result::error('Key does not exist.');
         }
@@ -88,7 +88,7 @@ class PairController extends BaseController
             return Result::error('Pair does not exist.');
         }
         $pairId = $this->pairModel->insert($pair);
-        $this->logModel->asInfo(sprintf('Add [id:%d][key:%s][value:%s] pair.', $pairId, $pair['key'], $pair['value']));
+        $this->logModel->asInfo(sprintf('Add pair: [id:%d][key:%s][value:%s].', $pairId, $pair['key'], $pair['value']));
         return Result::success();
     }
 
@@ -105,24 +105,24 @@ class PairController extends BaseController
             return Result::error('Pair does not exist.');
         }
         $this->pairModel->updateById($pair, $pair['id']);
-        $this->logModel->asInfo(sprintf('Update [id:%d][key:%s][value:%s] pair.', $pair['id'], $pair['key'], $pair['value']));
+        $this->logModel->asInfo(sprintf('Update pair: [id:%d][key:%s][value:%s].', $pair['id'], $pair['key'], $pair['value']));
         return Result::success();
     }
 
     /**
-     * Delete pair by id
+     * Remove pair by id
      * 
      * @param int pairId
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $pairId = intval($this->request->get('id'));
         if (empty($pairId)) {
             return Result::error('Pair id does not exist.');
         }
         $this->pairModel->deleteById($pairId);
-        $this->logModel->asInfo(sprintf('Delete [id:%d] pair.', $pairId));
+        $this->logModel->asInfo(sprintf('Remove pair: [id:%d].', $pairId));
         return Result::success();
     }
 }

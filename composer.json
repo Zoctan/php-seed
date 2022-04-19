@@ -1,6 +1,6 @@
 {
     "name": "phpseed/api",
-    "description": "PHPSeed for finishing project quickly.",
+    "description": "PHP api project seed",
     "type": "project",
     "license": "Apache",
     "autoload": {

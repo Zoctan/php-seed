@@ -2,12 +2,14 @@
 
 namespace App\Controller;
 
+use Medoo\Medoo;
 use App\Util\Util;
 use App\Util\Jwt;
 use App\Model\LogModel;
 use App\Model\MemberModel;
 use App\Model\MemberDataModel;
 use App\Model\MemberRoleModel;
+use App\Model\RoleModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
 use App\Core\Result\ResultCode;
@@ -131,7 +133,7 @@ class MemberController extends BaseController
             return Result::error('Username error');
         }
         if (!$this->memberModel->verifyPassword($password, $member['password'])) {
-            $this->logModel->asInfo('Try login, but password error.');
+            $this->logModel->asError('Try login, but password error.');
             return Result::error('Password error.');
         }
         if ($member['status'] !== 1) {
@@ -204,12 +206,12 @@ class MemberController extends BaseController
         }
         $authMember = $this->jwt->getAuthMember($refreshToken);
         if (empty($authMember) || empty($authMember->member['id'])) {
-            $this->logModel->asInfo('Try refresh access token, but refreshToken error.');
+            $this->logModel->asError('Try refresh access token, but refreshToken error.');
             return Result::error('New authMember does not exist, refreshToken error.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         // is access token and refresh token from the same member
         if ($oldAuthMember->member['id'] !== $authMember->member['id']) {
-            $this->logModel->asInfo('Try refresh access token, but accessToken does not match the refreshToken.');
+            $this->logModel->asError('Try refresh access token, but accessToken does not match the refreshToken.');
             return Result::error('AccessToken does not match the refreshToken.', ResultCode::REFRESH_TOKEN_EXCEPTION);
         }
         $result = $this->jwt->signAccessToken($authMember->member['id']);
@@ -302,25 +304,28 @@ class MemberController extends BaseController
                         $memberDataList[] = $_memberData;
                     }
                 );
-                array_push($conditionList, Util::getValueList('member_id', $memberDataList));
+                array_push($conditionList, Util::getValueAsListByKey('member_id', $memberDataList));
             }
         }
         $memberRoleList = [];
         if ($role) {
             $memberRoleWhere = [];
-            if (isset($role['id']) && is_numeric($role['id'])) {
-                $memberRoleWhere['role_id'] = $role['id'];
+            if (isset($role['name'])) {
+                $roleModel = new RoleModel();
+                $roleName = $role['name'];
+                $roleListDB = $roleModel->select($roleModel->getColumns('id'), Medoo::raw("WHERE LOWER(`name`) LIKE LOWER('%$roleName%')"));
+                $memberRoleWhere['role_id'] = $roleListDB ? Util::getValueAsListByKey('id', $roleListDB) : 0;
             }
 
             if ($memberRoleWhere) {
                 $memberRoleModel->select(
-                    $memberDataModel->getColumns('member_id'),
+                    $memberRoleModel->getColumns('member_id'),
                     $memberRoleWhere,
                     function ($_memberRole) use (&$memberRoleList) {
                         $memberRoleList[] = $_memberRole;
                     }
                 );
-                array_push($conditionList, Util::getValueList('member_id', $memberRoleList));
+                array_push($conditionList, Util::getValueAsListByKey('member_id', $memberRoleList));
             }
         }
         $memberList = [];
@@ -335,18 +340,19 @@ class MemberController extends BaseController
 
             if ($memberWhere) {
                 $this->memberModel->select(
-                    $memberDataModel->getColumns('member_id'),
+                    $this->memberModel->getColumns('id'),
                     $memberWhere,
                     function ($_member) use (&$memberList) {
                         $memberList[] = $_member;
                     }
                 );
-                array_push($conditionList, Util::getValueList('member_id', $memberList));
+                array_push($conditionList, Util::getValueAsListByKey('id', $memberList));
             }
         }
         // \App\debug('memberDataList', $memberDataList);
         // \App\debug('memberRoleList', $memberRoleList);
         // \App\debug('memberList', $memberList);
+        // \App\debug('conditionList', $conditionList);
         // all subsets make intersect
         $memberPageWhere = [];
         if (!empty($conditionList)) {
@@ -437,7 +443,7 @@ class MemberController extends BaseController
             return Result::error('Member or memberData does not exist.');
         }
         if (!empty($member)) {
-            $this->logModel->asInfo(sprintf('Update [id:%d][username:%s] detail.', $member['id'], $member['username']));
+            $this->logModel->asInfo(sprintf('Update member: [id:%d][username:%s].', $member['id'], $member['username']));
             $this->memberModel->update($member, $member['id']);
         }
         if (!empty($memberData)) {
@@ -464,7 +470,7 @@ class MemberController extends BaseController
             return Result::error('Member does not exist.');
         }
         $memberId = $this->memberModel->add($member);
-        $this->logModel->asInfo(sprintf('Add [id:%d][username:%s] member.', $member['id'], $member['username']));
+        $this->logModel->asInfo(sprintf('Add member: [id:%d][username:%s].', $member['id'], $member['username']));
         if (!empty($memberData)) {
             $memberDataModel = new MemberDataModel();
             $memberDataModel->updateByMember_id($memberData, $memberId);
@@ -477,19 +483,19 @@ class MemberController extends BaseController
     }
 
     /**
-     * Delete member by id
+     * Remove member by id
      * 
      * @param int id
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $memberId = intval($this->request->get('id'));
         if (empty($memberId)) {
             return Result::error('Member id does not exist.');
         }
         $this->memberModel->deleteById($memberId);
-        $this->logModel->asInfo(sprintf('Delete [id:%d] member.', $memberId));
+        $this->logModel->asInfo(sprintf('Remove member: [id:%d].', $memberId));
 
         $memberDataModel = new MemberDataModel();
         $memberDataModel->deleteByMember_id($memberId);

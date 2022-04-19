@@ -431,11 +431,11 @@ abstract class MedooModel
                         }
                     }
                     // select(array|string $columns, array $where, callable $callback)
-                    if (count($arguments) === 3) {
+                    else if (count($arguments) === 3) {
                         $wherePosition = 1;
                     }
                     // select(array $join, array $columns, array $where, callable $callback)
-                    if (count($arguments) === 4) {
+                    else if (count($arguments) === 4) {
                         $wherePosition = 2;
                     }
                     break;
@@ -458,7 +458,7 @@ abstract class MedooModel
                     }
                     // has(array $join, array $where)
                     // count(array $join, array $where)
-                    if (count($arguments) === 2) {
+                    else if (count($arguments) === 2) {
                         $wherePosition = 1;
                     }
                     break;
@@ -493,7 +493,16 @@ abstract class MedooModel
                 if (!is_array($whereValueList)) {
                     $whereValueList = [$whereValueList];
                 }
-                $where = array_combine($whereKeyList, $whereValueList);
+                // 'name' => 'test'
+                if (count($whereKeyList) === count($whereValueList)) {
+                    $where = array_combine($whereKeyList, $whereValueList);
+                }
+                // 'name' => ['test', 'demo', 'xxx']
+                else if (count($whereKeyList) === 1 && count($whereValueList) > 1) {
+                    $where = [$whereKeyList[0] => $whereValueList];
+                } else {
+                    throw new DatabaseException('Where key list not equal value list when using "By".');
+                }
                 $arguments[$wherePosition] = $where;
             }
         }

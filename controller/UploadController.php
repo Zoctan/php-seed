@@ -60,7 +60,7 @@ class UploadController extends BaseController
      * @param bool useTimeDir
      * @param bool useRandomName
      * @param bool overwrite
-     * @param object reizeConfig     {enable: true/false, width: null, width: height}
+     * @param object reizeConfig     {enable: true/false, width: null, height: int}
      * @param object compressConfig  {enable: true/false, quality: 0-100}
      * @param object watermarkConfig {enable: true/false, path: '', x: 0, y: 0, position: top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right}
      * @return Result
@@ -73,7 +73,7 @@ class UploadController extends BaseController
         $targetDir = strval($this->request->get('targetDir'));
         // use time directory
         $useTimeDir = boolval($this->request->get('useTimeDir', false));
-        // use random file name
+        // use random filename
         $useRandomName = boolval($this->request->get('useRandomName', false));
         // overwrite file
         $overwrite = boolval($this->request->get('overwrite', false));
@@ -133,7 +133,7 @@ class UploadController extends BaseController
 
             // upload failed
             if (!is_uploaded_file($fileTmp)) {
-                $this->logModel->asInfo(sprintf('Upload file failed: %s.', $fileNameWithExt));
+                $this->logModel->asError(sprintf('Upload file failed: %s.', $fileNameWithExt));
                 array_push($failList, $fileNameWithExt);
                 continue;
             }
@@ -151,7 +151,7 @@ class UploadController extends BaseController
                 // rename upload file
                 while (file_exists($localUploadFile)) {
                     if (!$useRandomName) {
-                        return Result::error(sprintf('File name already existed: %s. If you want to replace it, please post { replace: true }. If you do not, please post { useRandomName: true } to use random file name.', $fileNameWithExt));
+                        return Result::error(sprintf('Filename already existed: %s. If you want to overwrite it, please post { overwrite: true }. If you do not, please post { useRandomName: true } to use random filename.', $fileNameWithExt));
                     }
                     // set random filename
                     // test.jpg => renamexxxxxx.jpg
@@ -207,13 +207,13 @@ class UploadController extends BaseController
     }
 
     /**
-     * Delete file
+     * Remove file
      * 
      * @param string filename
      * @param string type
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
@@ -221,15 +221,15 @@ class UploadController extends BaseController
             return Result::error('Filename or type does not exist.');
         }
 
-        $localUploadFile = str_replace($this->baseUrl, $this->basePath, $filename);
+        $localUploadFile = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
         if (!file_exists($localUploadFile)) {
             return Result::error('File does not exist.');
         }
         if (!unlink($localUploadFile)) {
-            $this->logModel->asInfo(sprintf('Delete file failed: %s.', $filename));
-            return Result::error('Delete failed.');
+            $this->logModel->asError(sprintf('Remove file failed: %s.', $filename));
+            return Result::error('Remove failed.');
         }
-        $this->logModel->asInfo(sprintf('Delete file success: %s.', $filename));
+        $this->logModel->asInfo(sprintf('Remove file success: %s.', $filename));
         return Result::success();
     }
 }

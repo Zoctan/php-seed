@@ -69,7 +69,7 @@ class Util
      * ]
      * => [18, 19]
      */
-    public static function getValueList($key, $list)
+    public static function getValueAsListByKey($key, $list)
     {
         $valueList = [];
         for ($i = 0; $i < count($list); $i++) {
@@ -107,11 +107,11 @@ class Util
     }
 
     /**
-     * Delete emoji char
+     * Remove emoji char
      * 
      * @param string $str
      */
-    public static function deleteEmojiChar($str)
+    public static function removeEmojiChar($str)
     {
         $mbLen = mb_strlen($str);
         $strArr = [];

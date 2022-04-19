@@ -54,12 +54,12 @@ class LogController extends BaseController
     }
 
     /**
-     * Delete log
+     * Remove log
      * 
      * @param int id
      * @return Result
      */
-    public function delete()
+    public function remove()
     {
         $logId = intval($this->request->get('id'));
         if (empty($logId)) {
