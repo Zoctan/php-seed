@@ -14,7 +14,6 @@ use App\Core\Result\Result;
 class UploadController extends BaseController
 {
     private $basePath;
-    private $baseUrl;
     private $config;
     /**
      * @var LogModel
@@ -25,7 +24,6 @@ class UploadController extends BaseController
     {
         parent::__construct();
         $this->basePath = \App\DI()->config['basePath'];
-        $this->baseUrl = \App\DI()->config['baseUrl'];
         $this->config = \App\DI()->config['upload'];
         $this->logModel = $logModel;
     }
@@ -72,11 +70,11 @@ class UploadController extends BaseController
         // target directory, like: /test/abc/
         $targetDir = strval($this->request->get('targetDir'));
         // use time directory
-        $useTimeDir = boolval($this->request->get('useTimeDir', false));
+        $useTimeDir = $this->request->get('useTimeDir', false);
         // use random filename
-        $useRandomName = boolval($this->request->get('useRandomName', false));
+        $useRandomName = $this->request->get('useRandomName', false);
         // overwrite file
-        $overwrite = boolval($this->request->get('overwrite', false));
+        $overwrite = $this->request->get('overwrite', false);
         // reize config
         $reizeConfig = $this->request->get('reizeConfig');
         // compress config
@@ -84,17 +82,22 @@ class UploadController extends BaseController
         // watermark config
         $watermarkConfig = $this->request->get('watermarkConfig');
 
+        \App\debug('useTimeDir', $useTimeDir);
+        \App\debug('useRandomName', $useRandomName);
+        \App\debug('overwrite', $overwrite);
+        \App\debug('reizeConfig', $reizeConfig);
+        \App\debug('compressConfig', $compressConfig);
+        \App\debug('watermarkConfig', $watermarkConfig);
+
         // local saving directory
         $localUploadDir = implode('/', [$this->basePath, $this->config[$type]['localPath']]);
-        // network visit url
-        $uploadUrl = implode('/', [$this->baseUrl, $this->config[$type]['localPath']]);
 
         // upload to target directory
         if (!empty($targetDir)) {
             $localUploadDir = implode('/', [$localUploadDir, $targetDir]);
         }
         // upload to time directory
-        if ($useTimeDir) {
+        if (filter_var($useTimeDir, FILTER_VALIDATE_BOOLEAN)) {
             $localUploadDir = implode('/', [$localUploadDir, date('Y-m-d')]);
         }
         // create local saving directory if it does not exist
@@ -142,7 +145,7 @@ class UploadController extends BaseController
             $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
 
             // overwrite exist file?
-            if ($overwrite) {
+            if (filter_var($overwrite, FILTER_VALIDATE_BOOLEAN)) {
                 if (file_exists($localUploadFile)) {
                     // remove exist file
                     unlink($localUploadFile);
@@ -150,7 +153,7 @@ class UploadController extends BaseController
             } else {
                 // rename upload file
                 while (file_exists($localUploadFile)) {
-                    if (!$useRandomName) {
+                    if (!filter_var($useRandomName, FILTER_VALIDATE_BOOLEAN)) {
                         return Result::error(sprintf('Filename already existed: %s. If you want to overwrite it, please post { overwrite: true }. If you do not, please post { useRandomName: true } to use random filename.', $fileNameWithExt));
                     }
                     // set random filename
@@ -165,26 +168,34 @@ class UploadController extends BaseController
 
                 if ($type === 'image') {
                     // reize config
-                    if ($reizeConfig && $reizeConfig['enable'] && ($reizeConfig['width'] || $reizeConfig['height'])) {
-                        \App\DI()->image::make($localUploadFile)
-                            ->resize($reizeConfig['width'], $reizeConfig['height'])
-                            ->save();
+                    if ($reizeConfig && filter_var($reizeConfig['enable'], FILTER_VALIDATE_BOOLEAN)) {
+                        if ($reizeConfig['width'] || $reizeConfig['height']) {
+                            \App\DI()->image
+                                ->make($localUploadFile)
+                                ->resize($reizeConfig['width'], $reizeConfig['height'])
+                                ->save();
+                        } else {
+                            return Result::error('ReizeConfig width or height does not exist.');
+                        }
                     }
                     // compress config
-                    if ($compressConfig && $compressConfig['enable'] && ($file->mimeType === 'image/jpeg' || $file->mimeType === 'image/png')) {
-                        $compressConfig['quality'] = isset($compressConfig['quality']) ? $compressConfig['quality'] : $this->config[$type]['compressConfig']['quality'];
-                        \App\DI()->image::make($localUploadFile)
+                    if ($compressConfig && filter_var($compressConfig['enable'], FILTER_VALIDATE_BOOLEAN) && ($file->mimeType === 'image/jpeg' || $file->mimeType === 'image/png')) {
+                        $compressConfig['quality'] = isset($compressConfig['quality']) ? intval($compressConfig['quality']) : $this->config[$type]['compressConfig']['quality'];
+                        \App\DI()->image
+                            ->make($localUploadFile)
                             ->encode('jpg', $compressConfig['quality'])
                             ->save();
                         $fileNameWithExt = File::rewriteType($fileNameWithExt, 'jpg');
                     }
                     // watermark config
-                    if ($watermarkConfig && $watermarkConfig['enable']) {
+                    // fixme:not work
+                    if ($watermarkConfig && filter_var($watermarkConfig['enable'], FILTER_VALIDATE_BOOLEAN)) {
                         $watermarkConfig['path'] = isset($watermarkConfig['path']) ? $watermarkConfig['path'] : $this->config[$type]['watermarkConfig']['path'];
                         $watermarkConfig['position'] = isset($watermarkConfig['position']) ? $watermarkConfig['position'] : $this->config[$type]['watermarkConfig']['position'];
-                        $watermarkConfig['x'] = isset($watermarkConfig['x']) ? $watermarkConfig['x'] : $this->config[$type]['watermarkConfig']['x'];
-                        $watermarkConfig['y'] = isset($watermarkConfig['y']) ? $watermarkConfig['y'] : $this->config[$type]['watermarkConfig']['y'];
-                        \App\DI()->image::make($localUploadFile)
+                        $watermarkConfig['x'] = isset($watermarkConfig['x']) ? intval($watermarkConfig['x']) : $this->config[$type]['watermarkConfig']['x'];
+                        $watermarkConfig['y'] = isset($watermarkConfig['y']) ? intval($watermarkConfig['y']) : $this->config[$type]['watermarkConfig']['y'];
+                        \App\DI()->image
+                            ->make($localUploadFile)
                             ->insert($watermarkConfig['path'], $watermarkConfig['position'], $watermarkConfig['x'], $watermarkConfig['y'])
                             ->save();
                     }
@@ -193,7 +204,7 @@ class UploadController extends BaseController
                 $data = [
                     'name' => $fileNameWithExt,
                     // splice visit url
-                    'url' => sprintf('%s?file=%s', $uploadUrl, $fileNameWithExt),
+                    'url' => sprintf('%s?filename=%s&type=%s', $this->config['downloadUrl'], $fileNameWithExt, $type),
                 ];
                 $this->logModel->asInfo(sprintf('Upload file success: %s.', $fileNameWithExt));
                 array_push($successList, $data);

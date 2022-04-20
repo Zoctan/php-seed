@@ -40,6 +40,7 @@ class RoleController extends BaseController
      * 
      * @param int currentPage
      * @param int pageSize
+     * @param object parentIdList
      * @param object role
      * @return Result
      */
@@ -48,9 +49,14 @@ class RoleController extends BaseController
         $currentPage = intval($this->request->get('currentPage', 0));
         $pageSize = intval($this->request->get('pageSize', 0));
 
+        $parentIdList = $this->request->get('parentIdList');
         $role = $this->request->get('role');
 
         $where = [];
+        if ($parentIdList) {
+            $where['parent_id'] = $parentIdList;
+        }
+
         if ($role) {
             if (isset($role['id']) && is_numeric($role['id'])) {
                 $where['id'] = $role['id'];

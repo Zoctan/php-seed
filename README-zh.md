@@ -51,7 +51,12 @@ composer usage:
 
 - 数据库 Medoo(https://github.com/catfan/Medoo)：https://medoo.in/doc
 - Redis 客户端 Predis(https://github.com/predis/predis)：https://github.com/predis/predis#connecting-to-redis
-- Lcobucci JWT(https://github.com/lcobucci/jwt)：https://lcobucci-jwt.readthedocs.io/en/latest/
+- JWT(https://github.com/lcobucci/jwt)：https://lcobucci-jwt.readthedocs.io/en/latest/
 - 数据伪造 Faker(https://github.com/fzaninotto/Faker)：https://github.com/fzaninotto/Faker#basic-usage
 - HTTP 客户端 Guzzle(https://github.com/guzzle/guzzle)：https://docs.guzzlephp.org/en/stable/quickstart.html
+
 - 图片处理 Image(https://github.com/Intervention/image)：https://image.intervention.io/v2/usage/overview
+- 图片处理依赖 php_imagick：http://pecl.php.net/package/imagick
+- 图片处理依赖 ImageMagick(ImageMagick-xxx-vc15-x64.zip)：https://windows.php.net/downloads/pecl/deps/
+- Windows 如何安装：https://laksmisetiawati.github.io/articles/php-windows-imagick.html
+- http://www.884358.com/php-imagick-ghostscript-pdf-img/

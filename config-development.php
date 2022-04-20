@@ -18,6 +18,8 @@ return [
     ],
     // upload config
     'upload' => [
+        // UploadController->download method route
+        'downloadUrl' => 'http://127.0.0.1/php-seed/upload/',
         // image file type
         'image' => [
             // local disk path
