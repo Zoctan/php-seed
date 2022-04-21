@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Util\Util;
-use App\Util\File;
+use App\Util\FileInfo;
 use App\Model\LogModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
@@ -43,11 +43,8 @@ class UploadController extends BaseController
             return Result::error('Filename or type does not exist.');
         }
 
-        $filePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
-        $file = (new File())->setAbsolutePath($filePath);
-        if (!$file->download()) {
-            return Result::error('Download error.');
-        }
+        $absolutePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
+        return Result::download($absolutePath);
     }
 
     /**
@@ -112,7 +109,7 @@ class UploadController extends BaseController
         foreach ($_FILES as $item) {
             // filename with extension
             $fileNameWithExt = $item['name'];
-            // file type
+            // file type, may inaccuracy
             $fileType = $item['type'];
             // file size in byte
             $fileSizeByte = $item['size'];
@@ -127,11 +124,10 @@ class UploadController extends BaseController
                 return Result::error(sprintf('File is too bigger: %d, max limit: %d', $fileSizeKB, $this->config[$type]['maxKB']));
             }
 
-            // wrap file
-            $file = (new File())->setAbsolutePath($fileTmp);
             // check file type
-            if ($file->mimeType !== false && !in_array($file->mimeType, $this->config[$type]['allowMimeType'])) {
-                return Result::error(sprintf('File type not allow: %d, allow type: %s', $file->mimeType, json_encode($this->config[$type]['allowMimeType'])));
+            $fileMimeType = FileInfo::getMimeType($fileTmp);
+            if ($fileMimeType && !in_array($fileMimeType, $this->config[$type]['allowMimeType'])) {
+                return Result::error(sprintf('File type not allow: %d, allow type: %s', $fileMimeType, json_encode($this->config[$type]['allowMimeType'])));
             }
 
             // upload failed
@@ -141,9 +137,9 @@ class UploadController extends BaseController
                 continue;
             }
 
-            // set local upload file path
+            // local upload file saving path
             $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
-
+            $fileExt = FileInfo::getExt($fileNameWithExt);
             // overwrite exist file?
             if (filter_var($overwrite, FILTER_VALIDATE_BOOLEAN)) {
                 if (file_exists($localUploadFile)) {
@@ -157,18 +153,18 @@ class UploadController extends BaseController
                         return Result::error(sprintf('Filename already existed: %s. If you want to overwrite it, please post { overwrite: true }. If you do not, please post { useRandomName: true } to use random filename.', $fileNameWithExt));
                     }
                     // set random filename
-                    // test.jpg => renamexxxxxx.jpg
+                    // test.jpg => renamedemo.jpg
                     $randomStr = Util::randomStr(15);
-                    $fileNameWithExt = implode('.', [$randomStr, $file->fileExt]);
+                    $fileNameWithExt = implode('.', [$randomStr, $fileExt]);
                     $localUploadFile = implode('/', [$localUploadDir, $fileNameWithExt]);
                 }
             }
             // move temp file to local saving directory 
             if (move_uploaded_file($fileTmp, $localUploadFile)) {
-
                 if ($type === 'image') {
                     // reize config
                     if ($reizeConfig && filter_var($reizeConfig['enable'], FILTER_VALIDATE_BOOLEAN)) {
+                        \App\debug('reize', true);
                         if ($reizeConfig['width'] || $reizeConfig['height']) {
                             \App\DI()->image
                                 ->make($localUploadFile)
@@ -179,24 +175,37 @@ class UploadController extends BaseController
                         }
                     }
                     // compress config
-                    if ($compressConfig && filter_var($compressConfig['enable'], FILTER_VALIDATE_BOOLEAN) && ($file->mimeType === 'image/jpeg' || $file->mimeType === 'image/png')) {
+                    if ($compressConfig && filter_var($compressConfig['enable'], FILTER_VALIDATE_BOOLEAN)) {
+                        \App\debug('compress', true);
                         $compressConfig['quality'] = isset($compressConfig['quality']) ? intval($compressConfig['quality']) : $this->config[$type]['compressConfig']['quality'];
                         \App\DI()->image
                             ->make($localUploadFile)
-                            ->encode('jpg', $compressConfig['quality'])
+                            ->encode($fileExt, $compressConfig['quality'])
                             ->save();
-                        $fileNameWithExt = File::rewriteType($fileNameWithExt, 'jpg');
                     }
                     // watermark config
-                    // fixme:not work
                     if ($watermarkConfig && filter_var($watermarkConfig['enable'], FILTER_VALIDATE_BOOLEAN)) {
-                        $watermarkConfig['path'] = isset($watermarkConfig['path']) ? $watermarkConfig['path'] : $this->config[$type]['watermarkConfig']['path'];
+                        \App\debug('watermark', true);
+                        // watermark file disk path
+                        $watermarkConfig['path'] = $this->config[$type]['watermarkConfig']['path'];
                         $watermarkConfig['position'] = isset($watermarkConfig['position']) ? $watermarkConfig['position'] : $this->config[$type]['watermarkConfig']['position'];
                         $watermarkConfig['x'] = isset($watermarkConfig['x']) ? intval($watermarkConfig['x']) : $this->config[$type]['watermarkConfig']['x'];
                         $watermarkConfig['y'] = isset($watermarkConfig['y']) ? intval($watermarkConfig['y']) : $this->config[$type]['watermarkConfig']['y'];
-                        \App\DI()->image
-                            ->make($localUploadFile)
-                            ->insert($watermarkConfig['path'], $watermarkConfig['position'], $watermarkConfig['x'], $watermarkConfig['y'])
+                        // modify the watermark size scale according to the original image
+                        $image = \App\DI()->image
+                            ->make($localUploadFile);
+                        // original image height : watermark height
+                        $heightScale = $this->config[$type]['watermarkConfig']['heightScale'];
+                        $heightScaleList = explode(':', $heightScale);
+                        $watermarkResizeHeight = intval($image->height() / $heightScaleList[0]);
+                        $watermark = \App\DI()->image
+                            ->make($watermarkConfig['path'])
+                            ->resize(null, $watermarkResizeHeight, function ($constraint) {
+                                $constraint->aspectRatio();
+                                $constraint->upsize();
+                            });
+                        $image
+                            ->insert($watermark, $watermarkConfig['position'], $watermarkConfig['x'], $watermarkConfig['y'])
                             ->save();
                     }
                 }

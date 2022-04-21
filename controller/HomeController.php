@@ -21,17 +21,27 @@ class HomeController extends BaseController
         return Result::error('Please see the api document to use!');
     }
 
+    public function demo1()
+    {
+        return Result::success('demo1');
+    }
+
+    public function demo2()
+    {
+        return Result::success('demo2');
+    }
+
     /**
-     * Example for response in different mime type
+     * Demo for response in different mime type
      * 
      * @return Result
      */
-    public function exampleDifferentMimeType()
+    public function demoDifferentMimeType()
     {
         // set mime type when add route in router.php
         // or like this:
-        // $this->response->setContentType(MimeType::XML);
-        // $this->response->setContentType(MimeType::JSON);
-        return Result::success('test xml');
+        // $this->response->setMimeType(MimeType::XML);
+        // $this->response->setMimeType(MimeType::JSON);
+        return Result::success(['test' => 'demo xml']);
     }
 }

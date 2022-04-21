@@ -180,10 +180,11 @@ abstract class MedooModel
         if ($pageSize > 0) {
             $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
             // list id first
-            $where['LIMIT'] = [$limitStart, $pageSize];
             $ids = $this->connection()->select($this->table, $this->primary, $where);
             $total = count($ids);
-            $list = $this->connection()->select($this->table, $columns, [$this->primary => $ids]);
+            $where['LIMIT'] = [$limitStart, $pageSize];
+            $where[$this->primary] = $ids;
+            $list = $this->connection()->select($this->table, $columns, $where);
             return [
                 'list' => $list,
                 'total' => $total,
@@ -216,24 +217,25 @@ abstract class MedooModel
     {
         if ($pageSize > 0) {
             $limitStart = ($currentPage > 0 ? $currentPage - 1 : 0) * $pageSize;
-            $where['LIMIT'] = [$limitStart, $pageSize];
-            $idList = [];
+            $ids = [];
             $this->connection()->select(
                 $this->table,
                 $join,
                 "$this->table.$this->primary",
                 $where,
-                function ($_id) use (&$idList) {
-                    $idList[] = $_id;
+                function ($_id) use (&$ids) {
+                    $ids[] = $_id;
                 }
             );
-            $total = count($idList);
+            $total = count($ids);
+            $where['LIMIT'] = [$limitStart, $pageSize];
+            $where["$this->table.$this->primary"] = $ids;
             $list = [];
             $this->connection()->select(
                 $this->table,
                 $join,
                 $columns,
-                ["$this->table.$this->primary" => $idList],
+                $where,
                 function ($_data) use (&$list) {
                     $list[] = $_data;
                 }
@@ -497,7 +499,7 @@ abstract class MedooModel
                 if (count($whereKeyList) === count($whereValueList)) {
                     $where = array_combine($whereKeyList, $whereValueList);
                 }
-                // 'name' => ['test', 'demo', 'xxx']
+                // 'name' => ['test', 'demo', 'example']
                 else if (count($whereKeyList) === 1 && count($whereValueList) > 1) {
                     $where = [$whereKeyList[0] => $whereValueList];
                 } else {

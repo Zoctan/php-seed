@@ -28,7 +28,7 @@ final class ArrayToXml
 
     public function __construct(
         array $array,
-        $rootElement = '',
+        ?string $rootElement = '',
         bool $replaceSpacesByUnderScoresInKeyNames = true,
         ?string $xmlEncoding = null,
         string $xmlVersion = '1.0',
@@ -145,7 +145,7 @@ final class ArrayToXml
         return $this;
     }
 
-    protected function convertElement(DOMElement $element, mixed $value): void
+    protected function convertElement(DOMElement $element, $value): void
     {
         $sequential = $this->isArrayAllKeySequential($value);
 
@@ -173,7 +173,7 @@ final class ArrayToXml
                     $element->appendChild($fragment);
                 } elseif ($key === '__numeric') {
                     $this->addNumericNode($element, $data);
-                } elseif (str_starts_with($key, '__custom:')) {
+                } elseif (substr($key, 0, strlen('__custom:')) === '__custom:') {
                     $this->addNode($element, str_replace('\:', ':', preg_split('/(?<!\\\):/', $key)[1]), $data);
                 } else {
                     $this->addNode($element, $key, $data);
@@ -230,11 +230,6 @@ final class ArrayToXml
         $element->parentNode->appendChild($child);
     }
 
-    /**
-     * Is array all key sequential
-     * 
-     * @param  array|string|null $value
-     */
     protected function isArrayAllKeySequential($value): bool
     {
         if (!is_array($value)) {

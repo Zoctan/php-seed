@@ -4,11 +4,11 @@ ini_set('display_errors', true);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Util\File;
+use App\Util\FileInfo;
 use App\Util\Collection;
 use App\Core\Http\Request;
 use App\Core\Http\Response;
-use App\Core\Filter;
+use App\Core\BaseFilter;
 use App\Core\Filter\CorsFilter;
 use App\Core\Filter\AuthenticationFilter;
 use App\Core\Exception\ExceptionHandler;
@@ -70,9 +70,9 @@ class Bootstrap
      */
     public function initConfig()
     {
+        $configFile = new FileInfo($this->configPath, true);
         $config = require_once $this->configPath;
         $basePath = $config['basePath'];
-        $configFile = (new File())->setAbsolutePath($this->configPath);
         // $basePath is from config.php, so require config.php first
         $configEnv = require_once sprintf('%s/%s-%s.%s', $basePath, $configFile->fileNameWithoutExt, $config['env'], $configFile->fileExt);
         $this->di->config = new Collection(array_merge($config, $configEnv));
@@ -113,9 +113,8 @@ class Bootstrap
     private function initResponse()
     {
         $this->di->response = (new Response())
-            ->setDebug($this->di->config['debug'])
-            ->setDebugKey($this->di->config['controller']['response']['structureMap']['debug'])
-            ->setContentType($this->di->config['controller']['response']['type']);
+            ->enableDebug($this->di->config['debug'])
+            ->setDebugKey($this->di->config['controller']['response']['structureMap']['debug']);
     }
 
     private function initCache()
@@ -123,7 +122,7 @@ class Bootstrap
         $this->di->cache = new Predis\Client($this->di->config['datasource']['redis']);
     }
 
-    public function doFilterChain(Filter ...$filters)
+    public function doFilterChain(BaseFilter ...$filters)
     {
         foreach ($filters as $filter) {
             if (!$filter->doFilter()) {

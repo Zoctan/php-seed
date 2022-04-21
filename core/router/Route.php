@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Http;
+namespace App\Core\Router;
 
 use App\Core\Response\MimeType;
 
@@ -22,7 +22,7 @@ class Route
 
     /**
      * controller handle method callback function or string
-     * callback function | 'XXController@Method'
+     * callback function | 'Controller@Method'
      * 
      * @var callback|string
      */
@@ -70,7 +70,7 @@ class Route
         return $this;
     }
 
-    public function setMimeType(array $mimeType = MimeType::JSON)
+    public function setMimeType(string $mimeType = MimeType::JSON)
     {
         $this->mimeType = $mimeType;
         return $this;

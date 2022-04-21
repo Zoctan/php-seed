@@ -62,6 +62,16 @@ class Result
             ->send();
     }
 
+    /**
+     * Download file
+     */
+    public static function download($absolutePath)
+    {
+        \App\DI()->get('response', new Response())
+            ->download($absolutePath)
+            ->send();
+    }
+
     private function setErrno($errno)
     {
         $this->errno = $errno;

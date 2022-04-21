@@ -1,7 +1,10 @@
 <?php
 
-namespace App\Core\Http;
+namespace App\Core\Router;
 
+use App\Core\BaseController;
+use App\Core\Http\Request;
+use App\Core\Http\Response;
 use App\Core\Exception\RouterException;
 
 /**
@@ -16,6 +19,11 @@ class Router
     public function getRouteList()
     {
         return $this->routeList;
+    }
+
+    public function getRoute($uri)
+    {
+        return $this->routeList[$uri];
     }
 
     /**
@@ -36,7 +44,7 @@ class Router
      * 
      * @param array|string $methods ['GET', 'POST'] or just 'GET'
      * @param string $uri 'member/list' or '/member/list'
-     * @param callback|string $callback 'MemberController@list' or closure function() {}
+     * @param class|instance|callback|string $callback 'MemberController@list' or closure function() {}
      * @param array $extra extra data for Route()
      */
     public function addRoute($methods, string $uri, $callback, array $extra = [])
@@ -70,14 +78,23 @@ class Router
                 throw new RouterException('If use $groupCallback, please make sure $callback type is a string, like: "list", "get", "search" ...');
             } else {
                 if (is_string($this->groupCallback)) {
+                    if (!class_exists($this->groupCallback)) {
+                        throw new RouterException("$this->groupCallback class does not exist");
+                    }
                     // eg.
-                    // groupCallback => 'MemberController'
-                    // callback => 'MemberController@list'
+                    // groupCallback => 'DemoController'
+                    // callback => 'DemoController@list'
                     $callback = implode('@', [$this->groupCallback, $callback]);
                 } else {
+                    $controllerInstance = $this->groupCallback;
+                    // DemoController::class
+                    if (!($controllerInstance instanceof BaseController)) {
+                        // new class instance
+                        $controllerInstance = \App\DI()->newInstance($controllerInstance);
+                    }
                     // eg.
-                    // groupCallback => new MemberController()
-                    // callback => (new MemberController())->list
+                    // groupCallback => new DemoController()
+                    // callback => (new DemoController())->list
                     $callback = $this->groupCallback->$callback;
                 }
             }
@@ -142,33 +159,30 @@ class Router
      */
     public function dispatch(Request $request, Response $response)
     {
-        if (empty($this->routeList)) {
+        if (empty($this->getRouteList())) {
             throw new RouterException('Route list empty, please add some routes first');
         }
 
         $uri = $request->uri;
-        $method = $request->getMethod();
+        $method = $request->method;
+        $route = $this->getRoute($uri);
 
-        if (!isset($this->routeList[$uri])) {
+        if ($route === null) {
             throw new RouterException('Unknown route');
         }
 
-        $route = $this->routeList[$uri];
         if (!in_array($method, $route->methods)) {
             throw new RouterException('Route method error');
         }
 
         $callback = $route->action;
-        $response->setContentType($route->mimeType);
+        $response->setMimeType($route->mimeType);
         if (is_callable($callback)) {
-            // call closure function, like: $router->register('get', '/', function () { xxx });
+            // call closure function, like: $router->register('get', '/', function () { ... });
             call_user_func($callback);
         } elseif (is_string($callback) && strpos($callback, '@') !== false) {
-            // like: $router->register('get', '/', 'MemberController@list'); 
+            // like: $router->register('get', '/', 'DemoController@list'); 
             list($controllerClass, $controllerMethod) = explode('@', $callback);
-            $controllerNamespace = \App\DI()->config['controller']['namespace'];
-            // App\Controller\XXController
-            $controllerClass = $controllerNamespace . $controllerClass;
             // new class instance
             $controllerInstance = \App\DI()->newInstance($controllerClass);
             // call method

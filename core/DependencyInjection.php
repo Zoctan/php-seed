@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\Util\Singleton;
+
 /**
  *  Dependency Injection
  *  

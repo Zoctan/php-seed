@@ -2,37 +2,22 @@
 
 namespace App\Core\Filter;
 
-use App\Core\Filter;
+use App\Core\BaseFilter;
 use App\Util\Jwt;
 use App\Core\Exception\AccessTokenException;
 
 /**
  * Authentication filter
  */
-class AuthenticationFilter implements Filter
+class AuthenticationFilter extends BaseFilter
 {
-    /**
-     * @var array
-     */
-    private $routeList;
-    /**
-     * @var Request
-     */
-    private $request;
-
-    public function __construct()
-    {
-        $this->routeList = \App\DI()->router->getRouteList();
-        $this->request = \App\DI()->request;
-    }
-
     public function doFilter()
     {
         $uri = $this->request->uri;
         // \App\debug('uri', $uri);
 
         // check authentication
-        $auth = $this->routeList[$uri]->auth;
+        $auth = $this->router->getRoute($uri)->auth;
         if ($auth) {
             $jwt = Jwt::getInstance();
             $token = $jwt->getTokenFromRequest();
@@ -45,7 +30,7 @@ class AuthenticationFilter implements Filter
                 return false;
             }
             // check permission
-            $needPermissionList = $this->routeList[$uri]->permission;
+            $needPermissionList = $this->router->getRoute($uri)->permission;
             $authMember = $jwt->getAuthMember($token);
             if (!$authMember->checkPermission($needPermissionList)) {
                 throw new AccessTokenException('No permission to visit this route');

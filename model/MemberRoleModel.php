@@ -50,8 +50,8 @@ class MemberRoleModel extends BaseModel
         $ruleModel = new RuleModel();
         return $this->select(
             [
-                '[>]role_rule' => ['member_role.role_id' => 'role_id'],
-                '[>]rule' => ['role_rule.rule_id' => 'id'],
+                '[<]role_rule' => ['member_role.role_id' => 'role_id'],
+                '[<]rule' => ['role_rule.rule_id' => 'id'],
             ],
             $ruleModel->getColumns(),
             [

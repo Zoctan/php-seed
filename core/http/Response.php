@@ -4,10 +4,11 @@ namespace App\Core\Http;
 
 use App\Util\ArrayToXml;
 use App\Core\Response\MimeType;
+use App\Util\FileInfo;
 
 class Response
 {
-    public static array $codes = [
+    public static array $codeList = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -80,6 +81,8 @@ class Response
 
     protected bool $sent = false;
 
+    protected bool $isFile = false;
+
     protected bool $isDebug = false;
 
     protected string $debugKey = 'debug';
@@ -90,27 +93,33 @@ class Response
 
     protected string $content = '';
 
-    public function setDebug(bool $isDebug)
+    public function enableDebug(bool $isDebug): self
     {
         $this->isDebug = $isDebug;
         return $this;
     }
 
-    public function setDebugKey(string $debugKey)
+    public function setDebugKey(string $debugKey): self
     {
         $this->debugKey = $debugKey;
         return $this;
     }
 
-    public function appendDebug($key, $value)
+    public function appendDebug($key, $value): self
     {
         $this->debugData[$key] = $value;
         return $this;
     }
 
-    public function setData(array $data)
+    public function setData(array $data): self
     {
         $this->data = $data;
+        return $this;
+    }
+
+    public function appendData(array $data): self
+    {
+        $this->data = array_merge($this->data, $data);
         return $this;
     }
 
@@ -119,13 +128,26 @@ class Response
         return $this->data;
     }
 
-    public function setCode(?int $code = null)
+    public function setContent(string $content): self
     {
-        if ($code === null) {
-            return $this->code;
-        }
+        $this->content = $content;
+        return $this;
+    }
 
-        if (array_key_exists($code, self::$codes)) {
+    public function appendContent(string $content): self
+    {
+        $this->content .= $content;
+        return $this;
+    }
+
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    public function setCode(int $code): self
+    {
+        if (array_key_exists($code, self::$codeList)) {
             $this->code = $code;
         } else {
             throw new \Exception('Invalid status code');
@@ -133,15 +155,20 @@ class Response
         return $this;
     }
 
-    public function appendHeader($keyOrList, ?string $value = null)
+    public function getCode()
     {
-        if (is_array($keyOrList)) {
-            foreach ($keyOrList as $key => $v) {
-                $this->header[$key] = $v;
-            }
-        } else {
-            $this->header[$keyOrList] = $value;
-        }
+        return $this->code;
+    }
+
+    public function setHeader($key, $value = null): self
+    {
+        $this->header[$key] = $value;
+        return $this;
+    }
+
+    public function appendHeader($header): self
+    {
+        $this->header = array_merge($this->header, $header);
         return $this;
     }
 
@@ -150,10 +177,16 @@ class Response
         return $this->header;
     }
 
-    public function setContentType(?string $mimeType = MimeType::JSON): self
+    public function setMimeType(?string $mimeType = MimeType::JSON): self
     {
-        $this->appendHeader('Content-type', $mimeType);
+        $this->mimeType = $mimeType;
+        $this->setHeader('Content-Type', $mimeType);
         return $this;
+    }
+
+    public function getMimeType()
+    {
+        return $this->mimeType;
     }
 
     public function clear(): self
@@ -192,40 +225,32 @@ class Response
     {
         // send status code header
         if (strpos(PHP_SAPI, 'cgi') !== false) {
-            header(sprintf('Status: %d %s', $this->code, self::$codes[$this->code]), true);
+            header(sprintf('Status: %d %s', $this->code, self::$codeList[$this->code]), true);
         } else {
             header(
-                sprintf('%s %d %s', $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1', $this->code, self::$codes[$this->code]),
+                sprintf('%s %d %s', $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1', $this->code, self::$codeList[$this->code]),
                 true,
                 $this->code
             );
         }
 
         // send other header
-        foreach ($this->header as $field => $value) {
-            if (is_array($value)) {
-                foreach ($value as $v) {
-                    header($field . ': ' . $v, false);
-                }
+        foreach ($this->header as $key => $value) {
+            if ($value) {
+                header($key . ': ' . $value, false);
             } else {
-                header($field . ': ' . $value);
+                header($key, false);
             }
-        }
-
-        // send content length
-        $length = $this->getContentLength();
-
-        if ($length > 0) {
-            header('Content-Length: ' . $length);
         }
         return $this;
     }
 
-    public function getContentLength(): int
+    public function setContentLength($length): self
     {
-        return extension_loaded('mbstring') ?
-            mb_strlen($this->content, 'UTF8') :
-            strlen($this->content);
+        if ($length > 0) {
+            $this->setHeader('Content-Length', $length);
+        }
+        return $this;
     }
 
     public function sent(): bool
@@ -241,20 +266,20 @@ class Response
 
         // add debug data
         if ($this->isDebug && !empty($this->debugData)) {
-            $this->data[$this->debugKey] = $this->debugData;
+            $this->appendData([$this->debugKey => $this->debugData]);
         }
 
         switch ($this->mimeType) {
             case MimeType::TXT:
                 break;
             case MimeType::XML:
-                $this->content = ArrayToXml::convert($this->data);
+                $this->setContent(ArrayToXml::convert($this->data, '', true, 'UTF-8'));
                 break;
             case MimeType::HTML:
                 break;
             default:
             case MimeType::JSON:
-                $this->content = json_encode($this->data);
+                $this->setContent(json_encode($this->data));
                 break;
             case MimeType::STREAM:
                 break;
@@ -271,12 +296,45 @@ class Response
         $this->beforeSend();
 
         if (!headers_sent()) {
-            $this->setContentType($this->mimeType);
+            if (!$this->isFile) {
+                $this->setContentLength(extension_loaded('mbstring') ? mb_strlen($this->content, 'UTF8') : strlen($this->content));
+            }
             $this->sendHeader();
         }
 
         echo $this->content;
 
         $this->afterSend();
+    }
+
+    public function download($absolutePath)
+    {
+        $errorCallback = function () {
+            $this->setHeader('HTTP/1.1 404 NOT FOUND');
+        };
+
+        $fileInfo = new FileInfo($absolutePath);
+        if (!$fileInfo->exists()) {
+            return $errorCallback();
+        }
+
+        $file = fopen($absolutePath, 'rb');
+        if (!$file) {
+            fclose($file);
+            return $errorCallback();
+        }
+
+        $fileRead = fread($file, $fileInfo->fileSize);
+        fclose($file);
+        if (!$fileRead) {
+            return $errorCallback();
+        }
+
+        $this->isFile = true;
+        $this->setMimeType(MimeType::STREAM);
+        $this->setContentLength($fileInfo->fileSize);
+        $this->setHeader('Accept-Ranges', 'bytes');
+        $this->setHeader('Content-Disposition: attachment; filename=' . $fileInfo->fileNameWithExt);
+        $this->content = $fileRead;
     }
 }

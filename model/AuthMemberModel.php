@@ -2,6 +2,7 @@
 
 namespace App\Model;
 
+use App\Util\Util;
 use App\Util\Tree;
 use App\Core\AuthMember;
 
@@ -33,10 +34,9 @@ class AuthMemberModel
                 break;
             }
         }
-
+        $ruleModel = new RuleModel();
         $ruleList = [];
         if ($hasAllRule) {
-            $ruleModel = new RuleModel();
             $ruleModel->select(
                 $ruleModel->getColumns(),
                 function ($rule) use (&$ruleList) {
@@ -45,6 +45,9 @@ class AuthMemberModel
             );
         } else {
             $ruleList = $memberRoleModel->listRuleByMemberId($memberId);
+            $ruleParentIdList = Util::getValueAsListByKey('parent_id', $ruleList);
+            $parentRuleList = $ruleModel->listParentByParentIdList($ruleParentIdList, $ruleModel->getColumns());
+            $ruleList = array_merge($ruleList, $parentRuleList);
         }
         $ruleTree = Tree::list2Tree($ruleList);
         $permissionList = $memberRoleModel->getPermissionList($ruleTree);

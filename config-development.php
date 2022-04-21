@@ -9,11 +9,28 @@ return [
         'name' => 'phpseed-development',
         'description' => 'PHP Seed Development',
     ],
+    // controller config
+    'controller' => [
+        // response cofig
+        'response' => [
+            // response data structure map
+            'structureMap' => [
+                // status code key
+                'errno' => 'errno',
+                // message key
+                'msg'   => 'msg',
+                // data key
+                'data'  => 'data',
+                // debug key
+                'debug' => 'debug',
+            ],
+        ],
+    ],
     // router config
     'router' => [
-        // router.php saving path
+        // router.php path
         'path' => $basePath . '/router.php',
-        // routes.cache saving path
+        // routes.cache path
         'cachePath' => $basePath . '/routes-development.cache',
     ],
     // upload config
@@ -34,10 +51,15 @@ return [
             ],
             // watermark config
             'watermarkConfig' => [
-                'path' => $basePath . '/upload/image/watermark.png',
+                'path' => $basePath . '/upload/image/logo.png',
                 'position' => 'bottom-right',
                 'x' => 10,
                 'y' => 10,
+                // (pixel)
+                'width' => 600,
+                'height' => 200,
+                // original image height : watermark height
+                'heightScale' => '15:1',
             ],
             // minimum file size(kb)
             'minKB' => 1,

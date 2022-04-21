@@ -4,7 +4,7 @@ namespace App\Util;
 
 use Predis\Client;
 use App\Model\AuthMemberModel;
-use App\Core\Singleton;
+use App\Util\Singleton;
 use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Exception;
