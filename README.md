@@ -693,7 +693,7 @@ No requires authentication, but need to put the old `accessToken` in the Request
 }
 ```
 
-### 更新角色规则
+### Update rule
 
 * api: `/rule/update`
 * method: `PUT`
