@@ -16,7 +16,7 @@ class FileInfo
     {
         $this->absolutePath = self::platformSlashes($absolutePath);
         if ($checkExist && !$this->exists()) {
-            throw new \Exception('File does not exist.');
+            throw new \Exception('File does not exist');
         }
 
         $this->mimeType = self::getMimeType($absolutePath);

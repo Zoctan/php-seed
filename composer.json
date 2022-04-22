@@ -8,8 +8,7 @@
             "functions.php"
         ],
         "classmap": [
-            ".",
-            ".php"
+            "."
         ],
         "psr-4": {
             "App\\": "."
@@ -29,7 +28,6 @@
         "predis/predis": "^1.1",
         "fzaninotto/faker": "^1.9",
         "catfan/medoo": "^2.1",
-        "guzzlehttp/guzzle": "7.4.x-dev",
         "intervention/image": "^2.7"
     }
 }

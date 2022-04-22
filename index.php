@@ -98,9 +98,6 @@ class Bootstrap
         // faker data util
         $this->di->faker = Faker\Factory::create('en_US');
 
-        // http client util
-        $this->di->curl = new GuzzleHttp\Client();
-
         // image handle util
         $this->di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
     }

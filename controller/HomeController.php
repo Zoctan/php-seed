@@ -18,7 +18,7 @@ class HomeController extends BaseController
      */
     public function home()
     {
-        return Result::error('Please see the api document to use!');
+        return Result::error('Please see the api document to use');
     }
 
     public function demo1()

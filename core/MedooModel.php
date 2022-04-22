@@ -416,7 +416,7 @@ abstract class MedooModel
         if (strpos($method, 'By') !== false) {
             list($method, $whereKeyString) = explode('By', $method);
             if ($whereKeyString === '') {
-                throw new DatabaseException('Empty where string when using "By".');
+                throw new DatabaseException('Empty where string when using "By"');
             } else {
                 $whereKeyList = preg_split("/(?=[A-Z])/", $whereKeyString, -1, PREG_SPLIT_NO_EMPTY);
             }
@@ -503,7 +503,7 @@ abstract class MedooModel
                 else if (count($whereKeyList) === 1 && count($whereValueList) > 1) {
                     $where = [$whereKeyList[0] => $whereValueList];
                 } else {
-                    throw new DatabaseException('Where key list not equal value list when using "By".');
+                    throw new DatabaseException('Where key list not equal value list when using "By"');
                 }
                 $arguments[$wherePosition] = $where;
             }

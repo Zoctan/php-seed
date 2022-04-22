@@ -107,6 +107,9 @@ class Router
                 $route->setAuth($extra['auth']);
             }
             if (isset($extra['permission'])) {
+                if (is_string($extra['permission'])) {
+                    $extra['permission'] = [$extra['permission']];
+                }
                 $route->setPermission($extra['permission']);
             }
             if (isset($extra['mimeType'])) {

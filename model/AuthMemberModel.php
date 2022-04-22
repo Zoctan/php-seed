@@ -19,7 +19,7 @@ class AuthMemberModel
     public function getByMemberId($memberId)
     {
         $memberModel = new MemberModel();
-        $member = $memberModel->getById($memberModel->getColumns(), $memberId);
+        $member = $memberModel->getById($memberModel->getColumnsExcept('password'), $memberId);
 
         $memberDataModel = new MemberDataModel();
         $memberData = $memberDataModel->getByMember_id($memberDataModel->getColumns(), $memberId);

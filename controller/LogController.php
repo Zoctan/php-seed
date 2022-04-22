@@ -63,7 +63,7 @@ class LogController extends BaseController
     {
         $logId = intval($this->request->get('id'));
         if (empty($logId)) {
-            return Result::error('Log id does not exist.');
+            return Result::error('Log id does not exist');
         }
         $this->logModel->deleteById($logId);
         return Result::success();

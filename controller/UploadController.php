@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Util\Util;
 use App\Util\FileInfo;
-use App\Model\LogModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
 
@@ -15,17 +14,12 @@ class UploadController extends BaseController
 {
     private $basePath;
     private $config;
-    /**
-     * @var LogModel
-     */
-    private $logModel;
 
-    public function __construct(LogModel $logModel)
+    public function __construct()
     {
         parent::__construct();
         $this->basePath = \App\DI()->config['basePath'];
         $this->config = \App\DI()->config['upload'];
-        $this->logModel = $logModel;
     }
 
     /**
@@ -40,7 +34,7 @@ class UploadController extends BaseController
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return Result::error('Filename or type does not exist.');
+            return Result::error('Filename or type does not exist');
         }
 
         $absolutePath = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
@@ -132,7 +126,7 @@ class UploadController extends BaseController
 
             // upload failed
             if (!is_uploaded_file($fileTmp)) {
-                $this->logModel->asError(sprintf('Upload file failed: %s.', $fileNameWithExt));
+                \App\log()->asError(sprintf('Upload file failed: %s', $fileNameWithExt));
                 array_push($failList, $fileNameWithExt);
                 continue;
             }
@@ -150,7 +144,7 @@ class UploadController extends BaseController
                 // rename upload file
                 while (file_exists($localUploadFile)) {
                     if (!filter_var($useRandomName, FILTER_VALIDATE_BOOLEAN)) {
-                        return Result::error(sprintf('Filename already existed: %s. If you want to overwrite it, please post { overwrite: true }. If you do not, please post { useRandomName: true } to use random filename.', $fileNameWithExt));
+                        return Result::error(sprintf('Filename already existed: %s. If you want to overwrite it, please post { overwrite: true }. If you do not, please post { useRandomName: true } to use random filename', $fileNameWithExt));
                     }
                     // set random filename
                     // test.jpg => renamedemo.jpg
@@ -171,7 +165,7 @@ class UploadController extends BaseController
                                 ->resize($reizeConfig['width'], $reizeConfig['height'])
                                 ->save();
                         } else {
-                            return Result::error('ReizeConfig width or height does not exist.');
+                            return Result::error('ReizeConfig width or height does not exist');
                         }
                     }
                     // compress config
@@ -215,7 +209,7 @@ class UploadController extends BaseController
                     // splice visit url
                     'url' => sprintf('%s?filename=%s&type=%s', $this->config['downloadUrl'], $fileNameWithExt, $type),
                 ];
-                $this->logModel->asInfo(sprintf('Upload file success: %s.', $fileNameWithExt));
+                \App\log()->asInfo(sprintf('Upload file success: %s', $fileNameWithExt));
                 array_push($successList, $data);
             }
         }
@@ -238,18 +232,18 @@ class UploadController extends BaseController
         $filename = strval($this->request->get('filename'));
         $type = strval($this->request->get('type'));
         if (empty($filename) || empty($type)) {
-            return Result::error('Filename or type does not exist.');
+            return Result::error('Filename or type does not exist');
         }
 
         $localUploadFile = implode('/', [$this->basePath, $this->config[$type]['localPath'], $filename]);
         if (!file_exists($localUploadFile)) {
-            return Result::error('File does not exist.');
+            return Result::error('File does not exist');
         }
         if (!unlink($localUploadFile)) {
-            $this->logModel->asError(sprintf('Remove file failed: %s.', $filename));
-            return Result::error('Remove failed.');
+            \App\log()->asError(sprintf('Remove file failed: %s', $filename));
+            return Result::error('Remove failed');
         }
-        $this->logModel->asInfo(sprintf('Remove file success: %s.', $filename));
+        \App\log()->asInfo(sprintf('Remove file success: %s', $filename));
         return Result::success();
     }
 }

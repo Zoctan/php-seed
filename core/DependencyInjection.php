@@ -36,7 +36,7 @@ use App\Util\Singleton;
  *       $di->simpleKey = array('value');
  *       $di->classKey = 'DependenceInjection';
  *       $di->closureKey = function () {
- *            return 'sth heavy ...';
+ *            ...
  *       };
  */
 

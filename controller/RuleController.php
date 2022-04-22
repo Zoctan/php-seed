@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Model\LogModel;
 use App\Model\RuleModel;
 use App\Core\BaseController;
 use App\Core\Result\Result;
@@ -16,16 +15,11 @@ class RuleController extends BaseController
      * @var RuleModel
      */
     private $ruleModel;
-    /**
-     * @var LogModel
-     */
-    private $logModel;
 
-    public function __construct(RuleModel $ruleModel, LogModel $logModel)
+    public function __construct(RuleModel $ruleModel)
     {
         parent::__construct();
         $this->ruleModel = $ruleModel;
-        $this->logModel = $logModel;
     }
 
     /**
@@ -59,7 +53,7 @@ class RuleController extends BaseController
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($description) || empty($permission)) {
-            return Result::error('Description or permission does not exist.');
+            return Result::error('Description or permission does not exist');
         }
 
         $ruleId = $this->ruleModel->insert([
@@ -67,28 +61,9 @@ class RuleController extends BaseController
             'description' => $description,
             'permission' => $permission,
         ]);
-        $this->logModel->asInfo(sprintf('Add rule: [id:%d][permission:%s].', $ruleId, $permission));
+        \App\log()->asInfo(sprintf('Add rule: [id:%d][permission:%s]', $ruleId, $permission));
 
         return Result::success($ruleId);
-    }
-
-    /**
-     * Update rule list
-     * 
-     * @param array ruleList
-     * @return Result
-     */
-    public function updateList()
-    {
-        $ruleList = (array) $this->request->get('ruleList');
-        if (empty($ruleList)) {
-            return Result::error('RuleList does not exist.');
-        }
-        foreach ($ruleList as $rule) {
-            $this->ruleModel->updateById($rule, $rule['id']);
-        }
-        $this->logModel->asInfo(sprintf('Update rule list: %s.', json_encode($ruleList)));
-        return Result::success();
     }
 
     /**
@@ -105,17 +80,17 @@ class RuleController extends BaseController
         $description = strval($this->request->get('description'));
         $permission = strval($this->request->get('permission'));
         if (empty($ruleId)) {
-            return Result::error('Rule id does not exist.');
+            return Result::error('Rule id does not exist');
         }
         if (empty($description) && empty($permission)) {
-            return Result::error('Description and permission does not exist.');
+            return Result::error('Description and permission does not exist');
         }
 
         $this->ruleModel->updateById([
             'description' => $description,
             'permission' => $permission,
         ], $ruleId);
-        $this->logModel->asInfo(sprintf('Update rule: [id:%d][permission:%s].', $ruleId, $permission));
+        \App\log()->asInfo(sprintf('Update rule: [id:%d][permission:%s]', $ruleId, $permission));
         return Result::success();
     }
 
@@ -129,12 +104,10 @@ class RuleController extends BaseController
     {
         $ruleIdList = (array) $this->request->get('ruleIdList');
         if (empty($ruleIdList)) {
-            return Result::error('Rule id list does not exist.');
+            return Result::error('Rule id list does not exist');
         }
-        foreach ($ruleIdList as $id) {
-            $this->ruleModel->deleteById($id);
-        }
-        $this->logModel->asInfo(sprintf('Remove rule list by id list: %s.', json_encode($ruleIdList)));
+        $this->ruleModel->delete(['id' => $ruleIdList]);
+        \App\log()->asInfo(sprintf('Remove rule list by id list: %s', json_encode($ruleIdList)));
         return Result::success();
     }
 
@@ -148,10 +121,10 @@ class RuleController extends BaseController
     {
         $ruleId = intval($this->request->get('id'));
         if (empty($ruleId)) {
-            return Result::error('Rule id does not exist.');
+            return Result::error('Rule id does not exist');
         }
         $this->ruleModel->deleteById($ruleId);
-        $this->logModel->asInfo(sprintf('Remove rule: [id:%d].', $ruleId));
+        \App\log()->asInfo(sprintf('Remove rule: [id:%d]', $ruleId));
         return Result::success();
     }
 }
