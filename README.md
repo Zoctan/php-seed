@@ -1,6 +1,6 @@
 # PHP SEED
 
-Model + Controller Minimalist multi-user and multi-role API interface
+A Model + Controller minimalist multi-user and multi-role API interface.
 
 ![stars](https://img.shields.io/github/stars/Zoctan/php-seed-template.svg?style=flat-square&label=Stars)
 ![license](https://img.shields.io/github/license/Zoctan/php-seed-template.svg?style=flat-square)
