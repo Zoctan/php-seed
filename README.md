@@ -703,7 +703,7 @@ No requires authentication, but need to put the old `accessToken` in the Request
 
 | parameter | type | require | default | description |
 | --- | --- | --- | --- | --- |
-| id | int | yes |   | 规则id |
+| id | int | yes |   | rule id |
 | description | string | no |   | description |
 | permission | string | no |   | resource / permission |
 
