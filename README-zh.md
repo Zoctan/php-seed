@@ -2,19 +2,17 @@
 
 Model + Controller 极简架构的多用户-多角色 API 接口。
 
-![stars](https://img.shields.io/github/stars/Zoctan/php-seed.svg?style=flat-square&label=Stars)
-![license](https://img.shields.io/github/license/Zoctan/php-seed.svg?style=flat-square)
+![stars](https://img.shields.io/github/stars/Zoctan/php-seed-template.svg?style=flat-square&label=Stars)
+![license](https://img.shields.io/github/license/Zoctan/php-seed-template.svg?style=flat-square)
 
 简体中文 | [English](./README.md)
 
-配合前端项目 [ADMIN-SEED](https://github.com/Zoctan/admin-seed) 的后端项目。
+配合前端项目 [ADMIN-SEED-Template](https://github.com/Zoctan/admin-seed-template) 的后端项目。
 
 包括以下功能：
 - JWT 接口签名认证
 - Redis 缓存中间件
 - Upload 上传接口
-
-注意：这是一个半成品框架，如果要用于生产环境请三思。
 
 欢迎小伙伴 star 和 issues ~ 谢谢 :）
 
@@ -1084,11 +1082,11 @@ refreshToken 本身泄露风险不高，除非 accessToken 时间极短，需要
 
 # 库依赖
 
-- [数据库 Medoo](https://github.com/catfan/Medoo)：[文档](https://medoo.in/doc)
-- [Redis 客户端 Predis](https://github.com/predis/predis)：[文档](https://github.com/predis/predis#connecting-to-redis)
-- [JWT](https://github.com/lcobucci/jwt)：[文档](https://lcobucci-jwt.readthedocs.io/en/latest/)
-- [数据伪造 Faker](https://github.com/fzaninotto/Faker)：[文档](https://github.com/fzaninotto/Faker#basic-usage)
-- [图片处理 Image](https://github.com/Intervention/image)：[文档](https://image.intervention.io/v2/usage/overview)
+- [Medoo：数据库工具](https://medoo.in/doc)
+- [Predis：Redis 客户端](https://github.com/predis/predis#connecting-to-redis)
+- [JWT](https://lcobucci-jwt.readthedocs.io/en/latest/)
+- [Faker：数据伪造](https://github.com/fzaninotto/Faker#basic-usage)
+- [Intervention/image：图片处理](https://image.intervention.io/v2/usage/overview)
 - Windows 如何安装图片处理依赖：https://laksmisetiawati.github.io/articles/php-windows-imagick.html
 - 图片处理依赖 php_imagick 下载：http://pecl.php.net/package/imagick
 - 图片处理依赖 ImageMagick 下载(ImageMagick-xxx-vc15-x64.zip)：https://windows.php.net/downloads/pecl/deps/
