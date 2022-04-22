@@ -1,4 +1,4 @@
-# PHP SEED
+# PHP SEED Template
 
 Model + Controller 极简架构的多用户-多角色 API 接口。
 
