@@ -29,7 +29,7 @@ Welcome friends to star and issues ~ thank you :)
 
 ```
 # clone project
-git clone https://github.com/Zoctan/admin-seed-template.git
+git clone https://github.com/Zoctan/php-seed-template.git
 
 # install dependencies
 composer install

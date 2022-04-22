@@ -18,20 +18,28 @@ Model + Controller 极简架构的多用户-多角色 API 接口。
 
 # 部署
 
+## 依赖版本
+
 - PHP >= 7.4.3
 - MySql >= 8
 - Redis >= 3
 - Apache >= 2.4
 
-安装依赖：composer install
+## 快速开始
 
-## Mysql
+```
+# 克隆项目
+git clone https://github.com/Zoctan/php-seed-template.git
 
-创建数据库：phpseed，把 sql 文件夹下的文件全部导入数据库。
+# 安装依赖
+composer install
 
-## Apache
+# mysql
+创建数据库：phpseed，把 sql 文件夹下的文件全部导入数据库
 
+# apache
 把整个文件夹放到 WWW 目录下
+```
 
 # 文件说明
 
