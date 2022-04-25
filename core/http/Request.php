@@ -115,7 +115,7 @@ final class Request
     public string $host;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param array $config Request configuration
      */

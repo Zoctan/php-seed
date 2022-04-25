@@ -16,6 +16,10 @@ Model + Controller 极简架构的多用户-多角色 API 接口。
 
 欢迎小伙伴 star 和 issues ~ 谢谢 :）
 
+# 生命周期
+
+![Lifecycle](https://github.com/Zoctan/php-seed-template/blob/main/README/Lifecycle.jpg)
+
 # 部署
 
 ## 依赖版本

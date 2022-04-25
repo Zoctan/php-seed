@@ -53,7 +53,7 @@ class Bootstrap
         return $this;
     }
 
-    public function initTimezone()
+    private function initTimezone()
     {
         date_default_timezone_set($this->timezoneId);
     }
@@ -68,7 +68,7 @@ class Bootstrap
      * all config files must be place at the same dir.
      * env config should name as config-xxx.php, eg. config-development.php
      */
-    public function initConfig()
+    private function initConfig()
     {
         $configFile = new FileInfo($this->configPath, true);
         $config = require_once $this->configPath;
@@ -76,30 +76,6 @@ class Bootstrap
         // $basePath is from config.php, so require config.php first
         $configEnv = require_once sprintf('%s/%s-%s.%s', $basePath, $configFile->fileNameWithoutExt, $config['env'], $configFile->fileExt);
         $this->di->config = new Collection(array_merge($config, $configEnv));
-    }
-
-    public function setRouter($path)
-    {
-        $this->routerPath = $path;
-        return $this;
-    }
-
-    public function initRouter()
-    {
-        if (!$this->routerPath) {
-            $this->routerPath = $this->di->config['router']['path'];
-        }
-        $this->di->router = require_once $this->routerPath;
-        return $this;
-    }
-
-    public function initUtil()
-    {
-        // faker data util
-        $this->di->faker = Faker\Factory::create('en_US');
-
-        // image handle util
-        $this->di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
     }
 
     private function initRequest()
@@ -119,6 +95,30 @@ class Bootstrap
         $this->di->cache = new Predis\Client($this->di->config['datasource']['redis']);
     }
 
+    public function setRouter($path)
+    {
+        $this->routerPath = $path;
+        return $this;
+    }
+
+    private function initRouter()
+    {
+        if (!$this->routerPath) {
+            $this->routerPath = $this->di->config['router']['path'];
+        }
+        $this->di->router = require_once $this->routerPath;
+        return $this;
+    }
+
+    private function initUtil()
+    {
+        // faker data util
+        $this->di->faker = Faker\Factory::create('en_US');
+
+        // image handle util
+        $this->di->image = new Intervention\Image\ImageManager(['driver' => 'imagick']);
+    }
+
     public function doFilterChain(BaseFilter ...$filters)
     {
         foreach ($filters as $filter) {
@@ -136,6 +136,9 @@ class Bootstrap
 }
 
 $bootstrap = (new Bootstrap())
+    // ->setTimezone('prc')
+    // ->setConfig(__DIR__ . '/config.php')
+    // ->setRouter(__DIR__ . '/router.php')
     ->init();
 
 $bootstrap

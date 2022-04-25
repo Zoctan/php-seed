@@ -16,6 +16,10 @@ Includes the following features:
 
 Welcome friends to star and issues ~ thank you :)
 
+# Lifecycle
+
+![Lifecycle](https://github.com/Zoctan/php-seed-template/blob/main/README/Lifecycle.jpg)
+
 # Deploy
 
 ## Dependency version

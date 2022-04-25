@@ -5,7 +5,7 @@ namespace App\Core;
 use App\Util\Singleton;
 
 /**
- *  Dependency Injection
+ *  Dependency Injection Container
  *  
  * Call method:
  * - setter/getter: set(key, value), get(key)
