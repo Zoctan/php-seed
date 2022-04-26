@@ -2,8 +2,8 @@
 
 A Model + Controller minimalist multi-user and multi-role API interface.
 
-![stars](https://img.shields.io/github/stars/Zoctan/php-seed-template.svg?style=flat-square&label=Stars)
-![license](https://img.shields.io/github/license/Zoctan/php-seed-template.svg?style=flat-square)
+![stars](https://img.shields.io/github/stars/Zoctan/php-seed.svg?style=flat-square&label=Stars)
+![license](https://img.shields.io/github/license/Zoctan/php-seed.svg?style=flat-square)
 
 English | [简体中文](./README-zh.md)
 
@@ -18,32 +18,32 @@ Welcome friends to star and issues ~ thank you :)
 
 # Lifecycle
 
-![Lifecycle](https://github.com/Zoctan/php-seed-template/blob/main/README/Lifecycle.png)
+![Lifecycle](https://github.com/Zoctan/php-seed/blob/main/README/Lifecycle.png)
 
 # Database Design
 
-There are [nine tables](https://github.com/Zoctan/php-seed-template/tree/main/sql) in the database.
+There are [nine tables](https://github.com/Zoctan/php-seed/tree/main/sql) in the database.
 The five most important tables for role permission control are member, role, member_role, rule, role_rule.
 
 The database relational model is as follows:
-![ERD](https://github.com/Zoctan/php-seed-template/blob/main/README/ERD.jpg)
+![ERD](https://github.com/Zoctan/php-seed/blob/main/README/ERD.jpg)
 
 Note: The foreign keys between tables are only shown in the relational model above, and are not defined in the actual database, but are implemented at the application layer. The benefit is to reduce the workload of maintaining tables and reduce performance loss.
 
 member table: Member login information.
-![member](https://github.com/Zoctan/php-seed-template/blob/main/README/member.jpg)
+![member](https://github.com/Zoctan/php-seed/blob/main/README/member.jpg)
 
 role table: Role information.
-![role](https://github.com/Zoctan/php-seed-template/blob/main/README/role.jpg)
+![role](https://github.com/Zoctan/php-seed/blob/main/README/role.jpg)
 
 member_role table: Member role information, one-to-many.
-![member_role](https://github.com/Zoctan/php-seed-template/blob/main/README/member_role.jpg)
+![member_role](https://github.com/Zoctan/php-seed/blob/main/README/member_role.jpg)
 
 rule table: The resources and operation methods that the authentication role can operate.
-![rule](https://github.com/Zoctan/php-seed-template/blob/main/README/rule.jpg)
+![rule](https://github.com/Zoctan/php-seed/blob/main/README/rule.jpg)
 
 role_rule table: Role rule information, one-to-many.
-![role_rule](https://github.com/Zoctan/php-seed-template/blob/main/README/role_rule.jpg)
+![role_rule](https://github.com/Zoctan/php-seed/blob/main/README/role_rule.jpg)
 
 # Role access control
 
@@ -95,7 +95,7 @@ if (!$authMember->checkPermission($needPermissionList)) { ... }
 
 ```
 # clone project
-git clone https://github.com/Zoctan/php-seed-template.git
+git clone https://github.com/Zoctan/php-seed.git
 
 # install dependencies
 composer install

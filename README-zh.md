@@ -2,8 +2,8 @@
 
 Model + Controller 极简架构的多用户-多角色 API 接口。
 
-![stars](https://img.shields.io/github/stars/Zoctan/php-seed-template.svg?style=flat-square&label=Stars)
-![license](https://img.shields.io/github/license/Zoctan/php-seed-template.svg?style=flat-square)
+![stars](https://img.shields.io/github/stars/Zoctan/php-seed.svg?style=flat-square&label=Stars)
+![license](https://img.shields.io/github/license/Zoctan/php-seed.svg?style=flat-square)
 
 简体中文 | [English](./README.md)
 
@@ -18,31 +18,31 @@ Model + Controller 极简架构的多用户-多角色 API 接口。
 
 # 生命周期
 
-![Lifecycle](https://github.com/Zoctan/php-seed-template/blob/main/README/Lifecycle.jpg)
+![Lifecycle](https://github.com/Zoctan/php-seed/blob/main/README/Lifecycle.jpg)
 
 # 数据库设计
 
-数据库有[9张表](https://github.com/Zoctan/php-seed-template/tree/main/sql)，对角色权限控制最重要的是其中5张表，分别是用户表 member、角色表 role、用户角色表 member_role、权限表 rule、角色权限表 role_rule。
+数据库有[9张表](https://github.com/Zoctan/php-seed/tree/main/sql)，对角色权限控制最重要的是其中5张表，分别是用户表 member、角色表 role、用户角色表 member_role、权限表 rule、角色权限表 role_rule。
 
 数据库关系模型如下：
-![ERD](https://github.com/Zoctan/php-seed-template/blob/main/README/ERD.jpg)
+![ERD](https://github.com/Zoctan/php-seed/blob/main/README/ERD.jpg)
 
 注：表之间的外键仅仅是显示在上面的关系模型，在实际数据库中并没有进行定义，而是在应用层实现，好处是降低维护表的工作量，降低性能的损耗。
 
 member 表：用户信息。
-![member](https://github.com/Zoctan/php-seed-template/blob/main/README/member.jpg)
+![member](https://github.com/Zoctan/php-seed/blob/main/README/member.jpg)
 
 role 表：角色信息。
-![role](https://github.com/Zoctan/php-seed-template/blob/main/README/role.jpg)
+![role](https://github.com/Zoctan/php-seed/blob/main/README/role.jpg)
 
 member_role 表：用户对应的角色，一对多。
-![member_role](https://github.com/Zoctan/php-seed-template/blob/main/README/member_role.jpg)
+![member_role](https://github.com/Zoctan/php-seed/blob/main/README/member_role.jpg)
 
 rule 表：权限能操作的资源以及操作方式。
-![rule](https://github.com/Zoctan/php-seed-template/blob/main/README/rule.jpg)
+![rule](https://github.com/Zoctan/php-seed/blob/main/README/rule.jpg)
 
 role_rule 表：角色所对应的权限，一对多。
-![role_rule](https://github.com/Zoctan/php-seed-template/blob/main/README/role_rule.jpg)
+![role_rule](https://github.com/Zoctan/php-seed/blob/main/README/role_rule.jpg)
 
 # 角色权限控制
 
@@ -88,7 +88,7 @@ if (!$authMember->checkPermission($needPermissionList)) { ... }
 
 ```
 # 克隆项目
-git clone https://github.com/Zoctan/php-seed-template.git
+git clone https://github.com/Zoctan/php-seed.git
 
 # 安装依赖
 composer install
