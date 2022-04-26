@@ -66,7 +66,7 @@ class AuthMember
         // \App\debug('intersect', $intersect);
         if (isset($need['joint'])) {
             if ($need['joint'] === 'and') {
-                return count($intersect) === count($need);
+                return count($intersect) === count($need) - 1;
             } else if ($need['joint'] === 'or') {
                 return count($intersect) > 0;
             }

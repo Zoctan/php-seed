@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS `member`;
 CREATE TABLE `member`
 (
     `id`            BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
-    `username`      VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'username',
-    `password`      VARCHAR(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'password',
+    `username`      VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'username',
+    `password`      VARCHAR(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'password',
     `status`        TINYINT(3) DEFAULT 1 COMMENT '0:abnormal | 1:normal',
     `lock`          TINYINT(3) DEFAULT 0 COMMENT 'unchangeable: 0:unlock | 1:lock',
     `logined_at`    DATETIME DEFAULT NULL COMMENT 'logined at',

@@ -3,12 +3,13 @@ CREATE TABLE `role`
 (
     `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
     `parent_id`    BIGINT(20) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'parent id',
-    `name`         VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'name',
+    `name`         VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'name',
     `has_all_rule` TINYINT(3) DEFAULT 0 COMMENT '0:no | 1:yes',
     `lock`         TINYINT(3) DEFAULT 0 COMMENT 'unchangeable: 0:unlock | 1:lock',
     `created_at`   DATETIME DEFAULT NOW() COMMENT 'created at',
     `updated_at`   DATETIME DEFAULT NULL COMMENT 'updated at',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `K_PID` (`parent_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='role';
 

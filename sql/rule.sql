@@ -3,11 +3,12 @@ CREATE TABLE `rule`
 (
     `id`           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'id',
     `parent_id`    BIGINT(20) UNSIGNED DEFAULT 0 COMMENT 'parent id',
-    `description`  VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'description',
-    `permission`   VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci COMMENT 'permission',
+    `description`  VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'description',
+    `permission`   VARCHAR(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'permission',
     `created_at`   DATETIME DEFAULT NOW() COMMENT 'created at',
     `updated_at`   DATETIME DEFAULT NULL COMMENT 'updated at',
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `K_PID` (`parent_id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT ='rule';
 

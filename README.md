@@ -20,6 +20,68 @@ Welcome friends to star and issues ~ thank you :)
 
 ![Lifecycle](https://github.com/Zoctan/php-seed-template/blob/main/README/Lifecycle.png)
 
+# Database Design
+
+There are [nine tables](https://github.com/Zoctan/php-seed-template/tree/main/sql) in the database.
+The five most important tables for role permission control are member, role, member_role, rule, role_rule.
+
+The database relational model is as follows:
+![ERD](https://github.com/Zoctan/php-seed-template/blob/main/README/ERD.jpg)
+
+Note: The foreign keys between tables are only shown in the relational model above, and are not defined in the actual database, but are implemented at the application layer. The benefit is to reduce the workload of maintaining tables and reduce performance loss.
+
+member table: Member login information.
+![member](https://github.com/Zoctan/php-seed-template/blob/main/README/member.jpg)
+
+role table: Role information.
+![role](https://github.com/Zoctan/php-seed-template/blob/main/README/role.jpg)
+
+member_role table: Member role information, one-to-many.
+![member_role](https://github.com/Zoctan/php-seed-template/blob/main/README/member_role.jpg)
+
+rule table: The resources and operation methods that the authentication role can operate.
+![rule](https://github.com/Zoctan/php-seed-template/blob/main/README/rule.jpg)
+
+role_rule table: Role rule information, one-to-many.
+![role_rule](https://github.com/Zoctan/php-seed-template/blob/main/README/role_rule.jpg)
+
+# Role access control
+
+Client login
+-> the server generates an accessToken
+-> the client saves the accessToken
+
+Client request
+-> the client carries the accessToken
+-> the server authenticates by accessToken
+
+```php
+// controller/MemberController.php
+public function login() {
+    ...
+    // generates accessToken and refreshToken
+    // accessToken only store memberId, do not put so much data in payload and token will be too long to transfer
+    $jwt->sign($memberId)
+}
+```
+
+Server Router + AuthenticationFilter + Json Web Token authenticates:
+
+```php
+// router.php
+$router->addRoute(
+    'POST',
+    '/isMemberExist',
+    'MemberController@isMemberExist',
+    ['auth' => true, 'permission' => ['joint': 'and', 'member:list', 'member:detail']]
+)
+
+// core/filter/AuthenticationFilter.php
+$needPermissionList = $router->getRoute($uri)->permission;
+$authMember = $jwt->getAuthMember($accessToken);
+if (!$authMember->checkPermission($needPermissionList)) { ... }
+```
+
 # Deploy
 
 ## Dependency version

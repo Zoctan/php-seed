@@ -46,6 +46,9 @@ if ($env === 'development') {
     ->addRoute('POST', '/register', 'register', ['auth' => false])
     ->addRoute(['GET', 'POST'], '/login', 'login', ['auth' => false])
     ->addRoute('DELETE', '/logout', 'logout', ['auth' => false])
+    // 'permission' => ['member:list']                    same as: 'permission' => 'member:list'
+    // 'permission' => ['member:list', 'member:detail']   same as: 'permission' => ['joint': 'and', 'member:list', 'member:detail']
+    // 'permission' => ['joint': 'or', 'member:list', 'member:detail']
     ->addRoute(['GET', 'POST'], '/detail', 'detail', ['permission' => 'member:detail'])
     ->addRoute(['GET', 'POST'], '/profile', 'profile')
     ->addRoute('POST', '/list', 'list', ['permission' => 'member:list'])
