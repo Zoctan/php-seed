@@ -7,7 +7,7 @@ A Model + Controller minimalist multi-user and multi-role API interface.
 
 English | [简体中文](./README-zh.md)
 
-Back-end project with front-end project [ADMIN-SEED-Template](https://github.com/Zoctan/admin-seed-template).
+Back-end project with front-end project [admin-vue3-template](https://github.com/Zoctan/admin-vue3-template).
 
 Includes the following features:
 - JWT interface signature authentication

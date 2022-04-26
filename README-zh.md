@@ -7,7 +7,7 @@ Model + Controller 极简架构的多用户-多角色 API 接口。
 
 简体中文 | [English](./README.md)
 
-配合前端项目 [ADMIN-SEED-Template](https://github.com/Zoctan/admin-seed-template) 的后端项目。
+配合前端项目 [admin-vue3-template](https://github.com/Zoctan/admin-vue3-template) 的后端项目。
 
 包括以下功能：
 - JWT 接口签名认证
