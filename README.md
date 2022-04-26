@@ -1,4 +1,4 @@
-# PHP SEED Template
+# php-seed
 
 A Model + Controller minimalist multi-user and multi-role API interface.
 
