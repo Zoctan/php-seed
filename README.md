@@ -18,7 +18,7 @@ Welcome friends to star and issues ~ thank you :)
 
 # Lifecycle
 
-![Lifecycle](https://github.com/Zoctan/php-seed/blob/main/README/Lifecycle.png)
+![Lifecycle](https://github.com/Zoctan/php-seed/blob/main/README/Lifecycle.jpg)
 
 # Database Design
 
