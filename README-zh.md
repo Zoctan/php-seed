@@ -100,6 +100,8 @@ composer install
 把整个文件夹放到 WWW 目录下
 ```
 
+注意：请确保服务容器支持：PUT 和 DELETE 方法，否则请改写 router.php 路由的请求方法。
+
 # 文件说明
 
 ```text

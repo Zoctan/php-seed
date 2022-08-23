@@ -107,6 +107,8 @@ Create a database: phpseed, import all the files in the sql folder into the data
 Put the whole folder in the WWW directory
 ```
 
+Note: make sure server container support 'PUT' and 'DELETE' request method, or you have to rewrite request method for routers where in router.php.
+
 # File description
 
 ```text
