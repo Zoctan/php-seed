@@ -393,13 +393,20 @@ class MemberController extends BaseController
      */
     public function updatePassword()
     {
-        $password = strval($this->request->get('password'));
-        if (empty($password)) {
-            return Result::error('Password does not exist');
+        $newPassword = strval($this->request->get('newPassword'));
+        $checkPassword = strval($this->request->get('checkPassword'));
+        if (empty($newPassword)) {
+            return Result::error('New password does not exist');
+        }
+        if (empty($checkPassword)) {
+            return Result::error('New password2 does not exist');
+        }
+        if ($newPassword !== $checkPassword) {
+            return Result::error('2 new passwords are not equal');
         }
         \App\log()->asInfo('Update password');
         $memberId = $this->authMember->member['id'];
-        $this->memberModel->updateById(['password' => $password], $memberId);
+        $this->memberModel->updateById(['password' => $newPassword, 'id' => $memberId]);
         return Result::success();
     }
 
